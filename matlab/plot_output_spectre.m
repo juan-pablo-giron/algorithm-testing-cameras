@@ -14,17 +14,74 @@ clear all
 close all
 clc
 
-%% ============== Here must be the scripts of python ===================%%
-% In it path must be the netlist 
-PATH = '/home/netware/users/jpgironruiz/Documents/Cadence_analysis/';
-cd(PATH)
+%%  ==== Here are created the folders to the simulation    =============%%
+
+
+PATH_scriptMatlab = pwd;
+PATH_scriptMatlab = strcat(PATH_scriptMatlab,'/')
+cd('..')
+PATH_script = strcat(pwd,'/')
+PATH_scriptPython = strcat(pwd,'/','python/')
+
+% Here are created the others folders
+cd('..')
+
+% folder netlist spectre
+namefolder_netlistSpectre = 'Netlist_Spectre2';
+mkdir(namefolder_netlistSpectre)
+PATH_netlist_spectre = strcat(pwd,'/',namefolder_netlistSpectre,'/')
+
+% folder simulation
+namefolder_simulation = 'Simulation2';
+mkdir(namefolder_simulation)
+PATH_simulation = strcat(pwd,'/',namefolder_simulation,'/')
+
 
 %% ==================== generates the signals ========================= %%
 
 number_pixel = 1;
 
-nameinput = input ...
-    ('Write the name of the input signal without extension e.g. signal ');
+name_simulation = input('Write the name of the simulation' );
+nameinput = strcat('input_',name_simulation);
+
+%enter to folder simulation and create a folder with the same name of the simulation.
+
+
+cd(PATH_simulation)
+[s,mess1,mess2]=mkdir(name_simulation)
+
+while (~strcmp(mess1,''))
+
+		display(mess1)
+		confirm = input('do you want overwrite it [y|n]?');
+		while (~(strcmp(confirm,'y') || strcmp(confirm,'n')))
+		
+			confirm = input('type valid command ...do you want overwrite it [y|n]?');
+		
+		end
+		if strcmp(confirm,'y')
+		
+			fprintf('deleting the folder %s \n',name_simulation)		
+			rmdir(name_simulation,'s')
+			fprintf('Creating the folder %s \n',name_simulation)
+			[s,mess1,mess2]=mkdir(name_simulation);
+		else
+			name_simulation = input('Write other name for the simulation' );
+			[s,mess1,mess2]=mkdir(name_simulation)
+		end
+end
+
+nameinput = strcat('input_',name_simulation)
+
+%create the folders in folder simulation
+
+PATH_folder_simulation=strcat(PATH_simulation,name_simulation,'/');
+cd(PATH_folder_simulation)
+name_folder_matlab_output = strcat('output_matlab_',name_simulation);
+name_images = strcat('images_',name_simulation);
+mkdir(name_folder_matlab_output)
+mkdir(name_images)
+PATH_sim_output_matlab = strcat(PATH_folder_simulation,name_folder_matlab_output,'/')
 
 %called to the function to generates the input signal
 
@@ -32,10 +89,10 @@ eventsPerPeriod = 1000;
 factor_current = 100e-12;
 period_Signal = 1e-3;
 
-signal_sweep_illuminance(number_pixel,nameinput, ...
-                eventsPerPeriod,period_Signal,factor_current)
-            
-path_DIR_input = strcat(PATH,nameinput,'/');
+cd(PATH_scriptMatlab)
+signal_sweep_illuminance(PATH_folder_simulation,name_simulation,number_pixel,nameinput,eventsPerPeriod,period_Signal,factor_current)
+cd(PATH_scriptMatlab)
+
 
 %% ===================== CALL TO SCRIPTS  ==============================%%
 

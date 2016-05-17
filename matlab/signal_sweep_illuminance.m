@@ -10,16 +10,9 @@
 %%% ================================================================ %%
 
 %%
-function y = signal_sweep_illuminance(quant_pixels,nameSignalOutput, ...
-                eventsPerPeriod,period_Signal,factor_current)
+function y = signal_sweep_illuminance(PATH_folder_simulation,name_simulation,quant_pixels,nameSignalOutput,eventsPerPeriod,period_Signal,factor_current)
 
-%eventsPerPeriod = 1000;
-%factor_current = 100e-12;
-%period_Signal = 1e-3;
-%quant_pixels = 1;
-%nameSignalOutput = 'input';
-
-
+cd(PATH_folder_simulation)
 %% Create signal
 delta_t = period_Signal/eventsPerPeriod;
 t  = 0:delta_t:period_Signal-delta_t;
@@ -29,19 +22,6 @@ tmp = zeros(length(t),2);
 tmp(:,1) = t';
 tmp(:,2) = current';
 
-%% Create the output folder
-
-nameFolder = strcat(nameSignalOutput);
-[s,mess,messid]=mkdir(nameFolder);
-if strcmp(mess,'')
-    fprintf('Folder %s created with succesful \n',nameFolder)
-else
-    fprintf('Deleting the folder %s \n',nameFolder)
-    rmdir(nameFolder,'s')
-    [s,mess,messid]=mkdir(nameFolder);
-    fprintf('Folder %s created with succesful \n',nameFolder)
-end
-cd(nameFolder)
 
 %% Create the same numbers of signals than pixels
 
@@ -56,6 +36,9 @@ end
 
 %% Create the images to build the video
 
+PATH_images = strcat(PATH_folder_simulation,'images_',name_simulation);
+cd(PATH_images)
+
 %frsize = [100 100]; % size of the pixel
 %for i = 0:eventsPerPeriod-1
     
@@ -69,6 +52,5 @@ end
     %pause(10*delta_t)
 %    end
 
-%% Return to the main directory
-cd('..')
+
         
