@@ -17,7 +17,7 @@ path_DIR_input = sys.argv[2]
 os.chdir(path_DIR)
 nameNetlist = sys.argv[3]
 namenetlistoutput = sys.argv[4]
-nameinput = sys.argv[5] # name of the data without extension and number
+nameinput = sys.argv[5] # name of the data without extension and number_
 ext_input = sys.argv[6]
 count_pixels = int(sys.argv[7])
 name_n_Voltage = 'V_pd'
