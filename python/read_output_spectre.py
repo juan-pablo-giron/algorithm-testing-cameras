@@ -7,15 +7,15 @@
 
 #============================  ALGORITHM ====================================#
 
-def _sort_output_cadence_(File,Dir_output,name_output):
+def _sort_output_cadence_(File,Dir_output_matlab,name_output):
         
     
     l_signals = ['time']    #by default if the simulation was transient
     string_start = 'VALUE'  #default
     string_stop = 'END'     #default
 
-    path_output = Dir_output+name_output
-    file_output = open(path_output,'w') # Create a file with the columnar ASCII format
+    full_path_output = Dir_output_matlab+name_output
+    file_output = open(full_path_output,'w') # Create a file with the columnar ASCII format
     l_output = list(File.readlines())    # save the output as a list of strings
     l_output = [w.replace('\n','') for w in l_output] # remove the '\n' string 
     len_output = len(l_output)  # return the elements of the list l_output
@@ -40,7 +40,8 @@ def _sort_output_cadence_(File,Dir_output,name_output):
                 l_signals.append(string) # Get the names of the signals simulated
                 x = x + 1
     
-    print l_signals    
+    print l_signals
+    print "reading %d rows" %len_output   
     print 'We are working please wait a fews seconds'    
     
     len_signals = len(l_signals)# return the elements of the list l_signals

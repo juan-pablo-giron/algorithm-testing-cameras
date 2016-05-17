@@ -80,6 +80,7 @@ nameinput = strcat('input_',name_simulation)
 PATH_folder_simulation=strcat(PATH_simulation,name_simulation,'/');
 cd(PATH_folder_simulation)
 name_folder_matlab_output = strcat('output_matlab_',name_simulation);
+name_matlab_output = strcat('output_matlab_',name_simulation,'.csv');
 name_images = strcat('images_',name_simulation);
 mkdir(nameinput)
 mkdir(name_folder_matlab_output)
@@ -115,11 +116,13 @@ command = ['python' ' ' 'setting_input_netlist_UNIX.py' ' ' PATH_netlist_spectre
 system(command)
 
 %% here is executed the spectre simulator
+
 cd(PATH_scriptPython)
-name_output_simulation = input('Write the name of the output simulation with extension: ');
-command = ['python' ' ' 'executing_spectre_command_UNIX.py' ' ' PATH ' ' ...
-    nameNetlist_output ' ' name_output_simulation]
+command = ['python' ' ' 'executing_spectre_command_UNIX.py' ' ' PATH_folder_simulation ' ' nameNetlist_output ' ' PATH_sim_output_matlab ' ' name_matlab_output]
 system(command)
+
+cd(PATH_scriptMatlab)
+
 %% Here is plotted the signals
 
 %signals_simulation = importdata(name_output_simulation);
