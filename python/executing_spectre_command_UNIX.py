@@ -21,14 +21,14 @@ print "executing >>> %s" %line2simulation
 
 #########################  open cadence ##########################
 
-'''
+
 _status = 1
 while(_status == 1):
 
     _status=os.system(line2simulation)
     
 print 'Compiled see the result at the directory defined before'
-'''
+
 
 ##### CALLING TO THE FUNCTION TO TRANSFORM TO VALID FORMAT TO PLOT #####
 
