@@ -12,37 +12,23 @@ import os
 import sys
 #============================  ALGORITHM ====================================#
 
-path_DIR = sys.argv[1]
-path_DIR_input = sys.argv[2]
-os.chdir(path_DIR)
-nameNetlist = sys.argv[3]
-namenetlistoutput = sys.argv[4]
-nameinput = sys.argv[5] # name of the data without extension and number_
-ext_input = sys.argv[6]
-count_pixels = int(sys.argv[7])
+##############   inputs   #########################
+PATH_netlist_spectre = sys.argv[1]
+PATH_output_netlist = sys.argv[2]
+PATH_signal_input = sys.argv[3]
+nameNetlist = sys.argv[4]  #spectre's netlist
+nameNetlistoutput = sys.argv[5] # netlist modified
+name_signal_input = sys.argv[6] # name of the data without extension and number_
+ext_input = sys.argv[7]
+quant_pixels = int(sys.argv[8])
 name_n_Voltage = 'V_pd'
 name_n_Current = 'I_pd'
+################ end inputs ######################
 
-'''
-path_DIR = "/home/netware/users/jpgironruiz/Documents/Cadence_analysis/"
-path_DIR_input = "/home/netware/users/jpgironruiz/Documents/Cadence_analysis/"
-os.chdir(path_DIR)
-name_n_Voltage = 'V_pd'
-name_n_Current = 'I_pd'
-nameNetlist = 'DVS_ONE_PIXEL2.scs'
-namenetlistoutput = 'DVS_ONE_PIXEL.scs'
-nameinput = 'input' # name of the data without extension and number
-ext_input = '.csv'
-'''
-
-
-
-######
-#count_pixels = 16            #quantity of pixels of the array
 l_nodevoltageNames = []     # Save the name of the node voltage
 l_nodecurrentNames = []     # Save the name of the nodes current name
-f = open(nameNetlist,'r')
-f_netlist = open(namenetlistoutput+'.scs','w')
+f = open(PATH_netlist_spectre+nameNetlist,'r')
+f_netlist = open(PATH_output_netlist+nameNetlistoutput+'.scs','w')
 l_netlist = list(f.readlines())
 l_netlist = [w.replace('\n','') for w in l_netlist] # Here is storaged the netlist as a list 
 len_netlist = len(l_netlist) # calculate the length of the list 'l_netlist'
@@ -50,7 +36,7 @@ f.close()
 #### Create the lists with the names of the node voltage/current expected #####
 
 x = 0
-while x < count_pixels:
+while x <quant_pixels:
     nodeVoltageName = name_n_Voltage+str(x)
     nodeCurrentName = name_n_Current+str(x)
     l_nodevoltageNames.append(nodeVoltageName)
@@ -99,7 +85,7 @@ while i<len_nodeVoltageName:
                 
                 
                 ### From here is replaced the file PATH
-                FILE_PATH = 'file='+'"'+path_DIR_input+nameinput+str(i)+ext_input+'"'
+                FILE_PATH = 'file='+'"'+ PATH_signal_input+name_signal_input+str(i)+ext_input+'"'
                 if (find_str_filepwl == -1):
                     string  = l_netlist[x+1]  # get the file where is the 'file=pwl'
                     lst_tmp = string.split(' ') # convert the string in a list

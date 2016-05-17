@@ -10,9 +10,9 @@
 %%% ================================================================ %%
 
 %%
-function y = signal_sweep_illuminance(PATH_folder_simulation,name_simulation,quant_pixels,nameSignalOutput,eventsPerPeriod,period_Signal,factor_current)
+function y = signal_sweep_illuminance(PATH_folder_input,PATH_folder_images,quant_pixels,nameSignalOutput,eventsPerPeriod,period_Signal,factor_current)
 
-cd(PATH_folder_simulation)
+cd(PATH_folder_input)
 %% Create signal
 delta_t = period_Signal/eventsPerPeriod;
 t  = 0:delta_t:period_Signal-delta_t;
@@ -36,8 +36,8 @@ end
 
 %% Create the images to build the video
 
-PATH_images = strcat(PATH_folder_simulation,'images_',name_simulation);
-cd(PATH_images)
+
+cd(PATH_folder_images)
 
 %frsize = [100 100]; % size of the pixel
 %for i = 0:eventsPerPeriod-1
