@@ -29,6 +29,15 @@ while(_status == 1):
     
 print 'Compiled see the result at the directory defined before'
 
+####### Moving the folder .ahdlSimDB  to the respective directory ######
+
+
+nameFolder_ahdlsim = './'+name_Netlist+'.ahdlSimDB/'
+command = 'nohup'+' '+'mv'+' '+nameFolder_ahdlsim+' '+PATH_netlist
+_status=os.system(command)
+command = 'nohup'+' '+'rm'+' '+'-f'+' '+'spectre.ic'+' '+'spectre.fc'+' '+'nohup.out'+' '+'&'
+_status=os.system(command)
+
 
 ##### CALLING TO THE FUNCTION TO TRANSFORM TO VALID FORMAT TO PLOT #####
 
