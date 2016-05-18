@@ -16,7 +16,7 @@ name_output_file = sys.argv[4]
 folder_output_sim = name_Netlist+'.raw'
 nameFilesim = 'tran.tran' ## _ If the simulation was transient _ ##
 command_spectre = 'spectre -format psfascii +mt'
-line2simulation = command_spectre+' '+PATH_netlist+name_Netlist
+line2simulation = command_spectre+' '+PATH_netlist+name_Netlist+'.scs'
 print "executing >>> %s" %line2simulation
 
 #########################  open cadence ##########################
