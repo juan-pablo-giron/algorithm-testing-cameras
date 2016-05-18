@@ -21,12 +21,15 @@ nameNetlistoutput = sys.argv[5] # netlist modified
 name_signal_input = sys.argv[6] # name of the data without extension and number_
 ext_input = sys.argv[7]
 quant_pixels = int(sys.argv[8])
-period_signal = float(sys.argv[9])
-txt_desired_signals = sys.argv[10]
+period_signal = sys.argv[9]
+final_time = sys.argv[10]
+step = sys.argv[11]
+txt_desired_signals = sys.argv[12]
 name_n_Voltage = 'V_pd'
 name_n_Current = 'I_pd'
 name_instance = 'I'
 name_subckts = 'subckts'
+name_tran = 'tran'
 
 ################ end inputs ######################
 
@@ -39,8 +42,8 @@ f_netlist = open(PATH_output_netlist+nameNetlistoutput+'.scs','w')
 l_netlist = list(f.readlines())
 l_netlist = [w.replace('\n','') for w in l_netlist] # Here is storaged the netlist as a list 
 len_netlist = len(l_netlist) # calculate the length of the list 'l_netlist'
-len_desired_signals = len(lst_desired_signals)
 lst_desired_signals = txt_desired_signals.split(',')
+len_desired_signals = len(lst_desired_signals)
 f.close()
 #### Create the lists with the names of the node voltage/current expected #####
 
@@ -101,7 +104,7 @@ while i<len_nodeVoltageName:
                 del l_netlist[x:x_nextInstance]                
                 FILE_PATH = 'file='+'"'+ PATH_signal_input+name_signal_input+str(i)+ext_input+'"'
                 new_row = l_nodecurrentNames[i]+' '+'('+l_nodevoltageNames[i]+' '+'0)'+' '+'isource'+' '+ \
-                          FILE_PATH+' '+'type=pwl'+' '+'scale=1'+' '+'stretch=1'+' '+'pwlperiod='+str(period_signal)
+                          FILE_PATH+' '+'type=pwl'+' '+'scale=1'+' '+'stretch=1'+' '+'pwlperiod='+period_signal
 
                 l_netlist.insert(x,new_row)
                              
@@ -110,6 +113,7 @@ while i<len_nodeVoltageName:
     i = i + 1
 
 ######################## Specifying the desired outputs #########################
+    ## Also is change the period and maxstep by the defined by the user ##
 
 x = 0
 i=0
@@ -117,6 +121,13 @@ len_netlist = len(l_netlist) # calculate the length of the list 'l_netlist'
 
 while x < len_netlist:
     string = l_netlist[x]
+
+    
+    if (name_tran in string):
+
+        l_netlist[x] = 'tran tran stop='+final_time+' errpreset=conservative step='+step+' maxstep='+step+' \ '
+        
+    
     if (name_subckts  in string):
         # Delete all the row and write new ones
         del l_netlist[x:len_netlist-1]
