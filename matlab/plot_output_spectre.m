@@ -110,15 +110,15 @@ ext_input = '.csv';
 
 %% Here is changed the netlist by intuitives names 
 cd(PATH_scriptPython)
-command = ['python' ' ' 'setting_input_netlist_UNIX.py' ' ' PATH_netlist_spectre ' ' PATH_folder_simulation ' ' PATH_folder_input ' ' nameNetlist_spectre ' ' nameNetlist_output ' '...
-    nameinput ' ' ext_input ' ' int2str(number_pixel)]
+command = ['nohup' ' ' 'python' ' ' 'setting_input_netlist_UNIX.py' ' ' PATH_netlist_spectre ' ' PATH_folder_simulation ' ' PATH_folder_input ' ' nameNetlist_spectre ' ' nameNetlist_output ' '...
+    nameinput ' ' ext_input ' ' int2str(number_pixel) ' ' '&']
 
 system(command)
 
 %% here is executed the spectre simulator
 
 cd(PATH_scriptPython)
-command = ['python' ' ' 'executing_spectre_command_UNIX.py' ' ' PATH_folder_simulation ' ' nameNetlist_output ' ' PATH_sim_output_matlab ' ' name_matlab_output]
+command = ['nohup' ' ' 'python' ' ' 'executing_spectre_command_UNIX.py' ' ' PATH_folder_simulation ' ' nameNetlist_output ' ' PATH_sim_output_matlab ' ' name_matlab_output ' ' '&']
 system(command)
 
 cd(PATH_scriptMatlab)
