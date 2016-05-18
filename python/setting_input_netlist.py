@@ -12,30 +12,38 @@ import os
 
 #============================  ALGORITHM ====================================#
 
-path_DIR = "/home/netware/users/jpgironruiz/Documents/Cadence_analysis/"
-path_DIR_input = "/home/netware/users/jpgironruiz/Documents/Cadence_analysis/"
-os.chdir(path_DIR)
+##############   inputs   #########################
+PATH_netlist_spectre = '/home/netware/users/jpgironruiz/Documents/Cadence_analysis/Netlist_Spectre/'#sys.argv[1]
+PATH_output_netlist = '/home/netware/users/jpgironruiz/Documents/Cadence_analysis/Simulation_cameras/Simulation_Straight_line/' #sys.argv[2]
+PATH_signal_input = '/home/netware/users/jpgironruiz/Documents/Cadence_analysis/Simulation_cameras/Simulation_Straight_line/input_Simulation_Straight_line/' #sys.argv[3]
+nameNetlist = 'DVS_ONE_PIXEL.scs' #sys.argv[4]  #spectre's netlist
+nameNetlistoutput = 'netlist_Simulation_Straight_line' #sys.argv[5] # netlist modified
+name_signal_input = 'input_Simulation_Straight_line' #sys.argv[6] # name of the data without extension and number_
+ext_input = '.csv' #sys.argv[7]
+quant_pixels = 1#int(sys.argv[8])
+period_signal = 0.1 #float(sys.argv[9])
+txt_desired_signals = 'Voff,C_OFF_REQ,C_ON_REQ,C_OFF_ACK,C_ON_ACK,Vrst,V_pd,I_pd,Vout_sf' #sys.argv[10]
+lst_desired_signals = txt_desired_signals.split(',')
 name_n_Voltage = 'V_pd'
 name_n_Current = 'I_pd'
-nameNetlist = 'DVS_ONE_PIXEL2.scs'
-namenetlistoutput = 'DVS_ONE_PIXEL.scs'
-nameinput = 'input' # name of the data without extension and number
-ext_input = '.csv'
+name_instance = 'I'
+name_subckts = 'subckts'
+################ end inputs ######################
 
-######
-count_pixels = 16            #quantity of pixels of the array
+
 l_nodevoltageNames = []     # Save the name of the node voltage
 l_nodecurrentNames = []     # Save the name of the nodes current name
-f = open(nameNetlist,'r')
-f_netlist = open(namenetlistoutput,'w')
+f = open(PATH_netlist_spectre+nameNetlist,'r')
+f_netlist = open(PATH_output_netlist+nameNetlistoutput+'.scs','w')
 l_netlist = list(f.readlines())
 l_netlist = [w.replace('\n','') for w in l_netlist] # Here is storaged the netlist as a list 
 len_netlist = len(l_netlist) # calculate the length of the list 'l_netlist'
+len_desired_signals = len(lst_desired_signals)
 f.close()
 #### Create the lists with the names of the node voltage/current expected #####
 
 x = 0
-while x < count_pixels:
+while x <quant_pixels:
     nodeVoltageName = name_n_Voltage+str(x)
     nodeCurrentName = name_n_Current+str(x)
     l_nodevoltageNames.append(nodeVoltageName)
@@ -53,6 +61,7 @@ print l_nodecurrentNames
 #### and both change the name of the current source as the file data
 
 
+################## Replacing the I source by intuitive names ########### 
 i = 0
 f_netlist.seek(0,0)
 while i<len_nodeVoltageName:
@@ -63,7 +72,7 @@ while i<len_nodeVoltageName:
         find_nameVoltage = string.find(nameVoltageName)
 
         if (find_nameVoltage == -1):
-            # There is no
+            # There is not
             
             x = x + 1
         else:
@@ -71,42 +80,73 @@ while i<len_nodeVoltageName:
             # other instance e.g. DVS or ATIS, etc
             if find_str_isource == -1:
                 #Does not corresponde to a current source
-                                x = x + 1
+                x = x + 1
             else:
                 # Really correspond to a current source
-                find_str_filepwl = string.find('type=pwl')
-                lst_tmp = string.split(' ') # Convert the string into a list 
-                lst_tmp[0] = l_nodecurrentNames[i] #replace the name of the source current by the intuitive name
-                          
-                string = ' '.join(lst_tmp) # convert one list to one string separated by one space
-                
-                l_netlist[x] = string # Is updated the new name of the current source (photo diode)
-                
-                
-                ### From here is replaced the file PATH
-                FILE_PATH = 'file='+'"'+path_DIR_input+nameinput+str(i)+ext_input+'"'
-                if (find_str_filepwl == -1):
-                    string  = l_netlist[x+1]  # get the file where is the 'file=pwl'
-                    lst_tmp = string.split(' ') # convert the string in a list
-                    index = lst_tmp.index('type=pwl') #obtain the index to replace the file=PATH
-                    lst_tmp[index-1] = FILE_PATH
-                    string = ' '.join(lst_tmp) # convert one list to one string separated by one space
-                    l_netlist[x+1] = string
-                else:
-                    string  = l_netlist[x]    
-                    lst_tmp = string.split(' ') # convert the string in a list
-                    index = lst_tmp.index('type=pwl')
-                    lst_tmp.insert(index,FILE_PATH)
-                    string = ' '.join(lst_tmp) # convert one list to one string separated by one space
-                    l_netlist[x]=string
+
+                ### Find the next instance ###
+                x_nextInstance = x+1
+                string_next = l_netlist[x_nextInstance]
+                lst_tmp = string_next.split(' ') #convert the string into a list
+                instance = lst_tmp[0] #always take the first element of the row 'cause there is the name instance
+                while not(name_instance in instance):
+                    x_nextInstance = x_nextInstance+1
+                    string_next = l_netlist[x_nextInstance]
+                    lst_tmp = string_next.split(' ')
+                    instance = lst_tmp[0] #always take the first element of the row 'cause there is the name instance
+                ### End the next instance
+                    
+                del l_netlist[x:x_nextInstance]                
+                FILE_PATH = 'file='+'"'+ PATH_signal_input+name_signal_input+str(i)+ext_input+'"'
+                new_row = l_nodecurrentNames[i]+' '+'('+l_nodevoltageNames[i]+' '+'0)'+' '+'isource'+' '+ \
+                          FILE_PATH+' '+'type=pwl'+' '+'scale=1'+' '+'stretch=1'+' '+'pwlperiod='+str(period_signal)
+
+                l_netlist.insert(x,new_row)
+                             
                 x = len_netlist
+                len_netlist = len(l_netlist) # calculate the length of the list 'l_netlist'
     i = i + 1
 
+######################## Specifying the desired outputs #########################
+
 x = 0
-# Here is written the new netlist
+i=0
+len_netlist = len(l_netlist) # calculate the length of the list 'l_netlist'
+
+while x < len_netlist:
+    string = l_netlist[x]
+    if (name_subckts  in string):
+        # Delete all the row and write new ones
+        del l_netlist[x:len_netlist-1]
+        while i<len_nodeVoltageName:
+            index_n_signals = 0
+            while (index_n_signals<len_desired_signals):
+                string = lst_desired_signals[index_n_signals]
+                new_line = 'save '+string+str(i)
+                if lst_desired_signals[index_n_signals]== name_n_Current:
+                    new_line = new_line+':sink'
+                    l_netlist.append(new_line)
+                else:
+                    
+                    l_netlist.append(new_line)
+                index_n_signals = index_n_signals+1
+            i = i+1
+        x = len_netlist
+    else:
+        # continue finding 
+        x = x + 1
+
+l_netlist.append('saveOptions options save=selected')
+
+
+#################### Here is written the new netlist #############################
+x = 0
+len_netlist = len(l_netlist) # calculate the length of the list 'l_netlist'
 while x < len_netlist:
     f_netlist.write(l_netlist[x])
     f_netlist.write('\n')
     x = x + 1
 
 f_netlist.close()
+#end of code
+
