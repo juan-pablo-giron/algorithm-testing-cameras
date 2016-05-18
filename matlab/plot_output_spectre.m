@@ -69,7 +69,7 @@ while (~strcmp(mess1,''))
 			[s,mess1,mess2]=mkdir(name_simulation);
 		else
 			name_simulation = input('Write other name for the simulation' );
-			[s,mess1,mess2]=mkdir(name_simulation)
+			[s,mess1,mess2]=mkdir(name_simulation);
 		end
 end
 
@@ -87,9 +87,10 @@ mkdir(nameinput)
 mkdir(name_folder_matlab_output)
 mkdir(name_images)
 mkdir(name_folder_nohup)
-PATH_sim_output_matlab = strcat(PATH_folder_simulation,name_folder_matlab_output,'/')
-PATH_folder_input = strcat(PATH_folder_simulation,nameinput,'/')
-PATH_folder_images = strcat(PATH_folder_simulation,name_images,'/')
+PATH_sim_output_matlab = strcat(PATH_folder_simulation,name_folder_matlab_output,'/');
+PATH_folder_input = strcat(PATH_folder_simulation,nameinput,'/');
+PATH_folder_images = strcat(PATH_folder_simulation,name_images,'/');
+PATH_folder_nohup = strcat(PATH_folder_simulation,name_folder_nohup,'/');
 
 %called to the function to generates the input signal
 
@@ -98,7 +99,8 @@ factor_current = 100e-12;
 period_Signal = 1e-3;
 
 cd(PATH_scriptMatlab)
-signal_sweep_illuminance(PATH_folder_input,PATH_folder_images,number_pixel,nameinput,eventsPerPeriod,period_Signal,factor_current)
+signal_sweep_illuminance(PATH_folder_input,PATH_folder_images, ...
+    number_pixel,nameinput,eventsPerPeriod,period_Signal,factor_current)
 cd(PATH_scriptMatlab)
 
 
@@ -116,7 +118,8 @@ command = ['nohup' ' ' 'python' ' ' 'setting_input_netlist_UNIX.py' ' ' ...
     PATH_netlist_spectre ' ' PATH_folder_simulation ' ' PATH_folder_input ...
     ' ' nameNetlist_spectre ' ' nameNetlist_output ' '...
     nameinput ' ' ext_input ' ' int2str(number_pixel) ' ' '3>' ' ' ...
-    strcat(PATH_folder_simulation,'error_change_netlist.out') ' ' '&']
+    strcat(PATH_folder_nohup,'error_change_netlist.out') ' ' ...
+    '>' ' ' strcat(PATH_folder_nohup,'status_change_netlist.out') ' ' '&'];
 
 system(command)
 
@@ -126,19 +129,9 @@ cd(PATH_scriptPython)
 command = ['nohup' ' ' 'python' ' ' 'executing_spectre_command_UNIX.py' ...
     ' ' PATH_folder_simulation ' ' nameNetlist_output ' ' ...
     PATH_sim_output_matlab ' ' name_matlab_output ' ' '2>' ' ' ...
-    strcat(PATH_folder_simulation,'error_spectre_exec.out') ' ' ...
-    '>' ' ' strcat(PATH_folder_simulation,'status_spectre_exec.out') ' ' '&']
+    strcat(PATH_folder_nohup,'error_spectre_exec.out') ' ' ...
+    '>' ' ' strcat(PATH_folder_nohup,'status_spectre_exec.out') ' ' '&'];
 system(command)
-
-%% here is moved the folders .ahdlsim to the respective 
-cd(PATH_scriptPython)
-nameFolder_ahdlsim = strcat('./',nameNetlist_output,'.ahdlSimDB/')
-command = ['nohup' ' ' 'mv' ' ' nameFolder_ahdlsim ' ' PATH_folder_simulation]
-system(command)
-command = ['nohup' ' ' 'rm' ' ' '-f' ' ' 'spectre.ic' ' ' 'spectre.fc' ...
-    ' ' 'nohup.out' ' ' '&']
-system(command)
-
 
 cd(PATH_scriptMatlab)
 
