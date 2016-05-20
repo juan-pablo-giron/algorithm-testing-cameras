@@ -32,7 +32,7 @@ time = lst_data(:,1);
 %% ====================== PLOT THE SIGNAL AS A SURFACE ================ %%
 
 %% Define the array of the camera given by the X and Y lengths.
-z  = zeros(X_length+1,Y_length+1);
+z  = zeros(Y_length+1,X_length+1);
 matrix_index_valueON = {[]}; %Storage the valid data in one struct saving resource
 % Find all ON_values on the desired signal for
 % all the pixels on the array using the built-in function FIND
@@ -55,7 +55,8 @@ i = 0;
 
 X = 0:X_length;
 Y = 0:Y_length;
-
+h = figure;
+colormap(h,'gray')
 while i < quant_pixels
    
     j = 1;
@@ -94,10 +95,10 @@ xlabel('X')
 ylabel('Y')
 zlabel('Time')
 name_title = strcat('Events per time with the signal',desired_signal2plot);
-name_fig = strcat('Fig_TimeVs',desired_signal2plot);
+name_fig = strcat('Fig_TimeVs',desired_signal2plot,'.fig');
 title(name_title)
-savefig(name_fig)
-
+%savefig(name_fig)
+saveas(h,name_fig);
 
 
 
