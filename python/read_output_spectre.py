@@ -15,9 +15,9 @@ def _sort_output_cadence_(File,Dir_output_matlab,name_output):
     string_stop = 'END'     #default
     
     full_path_output = Dir_output_matlab+name_output
-    full_path_output_header = Dir_output_matlab+'_signalsheader.csv'
+    #full_path_output_header = Dir_output_matlab+'_signalsheader.csv'
     file_output = open(full_path_output,'w') # Create a file with the columnar ASCII format Only data
-    file_output_header = open(full_path_output_header,'w')
+    #file_output_header = open(full_path_output_header,'w')
     l_output = list(File.readlines())    # save the output as a list of strings
     l_output = [w.replace('\n','') for w in l_output] # remove the '\n' string 
     len_output = len(l_output)  # return the elements of the list l_output
@@ -51,9 +51,9 @@ def _sort_output_cadence_(File,Dir_output_matlab,name_output):
     x = i_start
     file_output.seek(0,0) #the first line of the file
     string = ','.join(l_signals)
-    header = string.replace('"','')
-    file_output_header.write(header+'\n') # put the header of the file to get in matlab
-    file_output_header.close()
+    #header = string.replace('"','')
+    #file_output_header.write(header+'\n') # put the header of the file to get in matlab
+    #file_output_header.close()
     while x < len_output:
         if (l_output[x] == string_stop):
             file_output.close()
