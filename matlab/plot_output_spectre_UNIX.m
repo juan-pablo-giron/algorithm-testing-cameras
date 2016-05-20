@@ -13,17 +13,18 @@
 
 function [] = plot_output_spectre_UNIX(name_simulation,nameNetlist_spectre)
 
-%clear all
-%close all
-%clc
-
-
-
 
 %% ==== Here are the desired signals that the user want see ============%%
 
-% Dont include the nuumbers 
+% Dont include the numbers 
 lst_name_signals = 'V_pd,I_pd,Vout_sf,Voff,Von,C_OFF_REQ,C_ON_REQ,C_OFF_ACK,C_ON_ACK,Vrst';
+vec_signals = regexp(lst_name_signals,',','split');
+len_vector_signals = length(vec_signals);
+desired_signal2plot = 'C_ON_REQ';
+index_desiredSignal2Plot =  f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
+X_length = 1;
+Y_length = 1;
+number_pixels = X_length*Y_length;
 
 
 %%  ==== Here are created the folders to the simulation    =============%%
@@ -52,7 +53,7 @@ PATH_simulation = strcat(pwd,'/',namefolder_simulation,'/')
 
 %% ==================== generates the signals ========================= %%
 
-number_pixel = 1;
+
 
 %name_simulation = input('Write the name of the simulation' );
 nameinput = strcat('input_',name_simulation);
