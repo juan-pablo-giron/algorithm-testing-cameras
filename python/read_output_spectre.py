@@ -51,8 +51,8 @@ def _sort_output_cadence_(File,Dir_output_matlab,name_output):
     x = i_start
     file_output.seek(0,0) #the first line of the file
     string = ','.join(l_signals)
-    string.replace('"','')
-    file_output_header.write(string+'\n') # put the header of the file to get in matlab
+    header = string.replace('"','')
+    file_output_header.write(header+'\n') # put the header of the file to get in matlab
     file_output_header.close()
     while x < len_output:
         if (l_output[x] == string_stop):
