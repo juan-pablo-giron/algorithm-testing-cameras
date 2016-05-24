@@ -16,29 +16,24 @@ function y = signal_triangule(PATH_folder_input,PATH_folder_images, ...
 
 cd(PATH_folder_input)
 %% Create signal
-clear all;clc;close all;
-period_Signal = 1;
-eventsPerPeriod = 11;
-I_ph_max = 100e-12;
-I_ph_min = 1e-12;
-delta_t = period_Signal/eventsPerPeriod;
 m_Iph = (I_ph_max-I_ph_min)/(period_Signal/2);
-t  = 0:delta_t:period_Signal-delta_t;
+t  = 0:delta_t:period_Signal;
 len_t = length(t);
 I_ph = zeros(1,len_t);
 for i=1:len_t
    
     if t(i)<= period_Signal/2
-       I_ph(i) = m_Iph*t(i) + I_ph_min  
+       I_ph(i) = m_Iph*t(i) + I_ph_min;  
     else
-       b = -m_Iph*period_Signal+I_ph_min;
+       b = I_ph_max+m_Iph*period_Signal/2;
        I_ph(i) = -m_Iph*t(i) + b;  
     end
     
 end
 
-plot(t,I_ph)
-
+signal = zeros(length(t),2);
+signal(:,1) = t';
+signal(:,2) = I_ph';
 
 %t  = 0:delta_t:period_Signal-delta_t;
 %i  = 0:length(t)-1;
@@ -54,7 +49,7 @@ plot(t,I_ph)
 for input=0:quant_pixels-1
 
     
-    dlmwrite(strcat(nameSignalOutput,int2str(input),'.csv'),tmp, ...
+    dlmwrite(strcat(nameSignalOutput,int2str(input),'.csv'),signal, ...
         'delimiter',' ','precision',10,'newline','unix');
     
 end

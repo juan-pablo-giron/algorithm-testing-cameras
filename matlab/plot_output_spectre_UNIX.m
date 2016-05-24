@@ -115,7 +115,7 @@ PATH_folder_nohup = strcat(PATH_folder_simulation,name_folder_nohup,'/');
 
 %% ==================== generates the signals ========================= %%
 
-eventsPerPeriod = 100000;
+eventsPerPeriod = 1000;
 I_ph_max = 100e-12;
 I_ph_min = 1e-12;
 period_Signal = 1e-3;
@@ -143,7 +143,7 @@ cd(PATH_scriptMatlab)
 
 % DVS_PIXEL
 
-DVS_model_fn(PATH_folder_input,PATH_sim_output_matlab,Name_simulation,name_simulation)
+DVS_model_fn(PATH_folder_input,PATH_sim_output_matlab,name_simulation)
 
 
 %% ===================== CALL TO SCRIPTS  ==============================%%
