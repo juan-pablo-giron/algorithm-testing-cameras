@@ -24,7 +24,7 @@ desired_signal2plot = 'C_ON_REQ';
 index_desiredSignal2Plot =  f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
 X_length = 1;
 Y_length = 1;
-number_pixels = X_length*Y_length;
+number_pixel = X_length*Y_length;
 
 
 %%  ==== Here are created the folders to the simulation    =============%%
@@ -51,40 +51,48 @@ pwd
 PATH_simulation = strcat(pwd,'/',namefolder_simulation,'/')
 
 
-%% ==================== generates the signals ========================= %%
-
-
-
 %name_simulation = input('Write the name of the simulation' );
 nameinput = strcat('input_',name_simulation);
 
 %enter to folder simulation and create a folder with the same name of the simulation.
-
-
 cd(PATH_simulation)
 pwd
 [s,mess1,mess2]=mkdir(name_simulation);
 
-while (~strcmp(mess1,''))
+%% Only terminal
+if (~strcmp(mess1,''))
 
-		display(mess1)
-		confirm = input('do you want overwrite it [y|n]?');
-		while (~(strcmp(confirm,'y') || strcmp(confirm,'n')))
-		
-			confirm = input('type valid command ...do you want overwrite it [y|n]?');
-		
-		end
-		if strcmp(confirm,'y')
-		
-			fprintf('deleting the folder %s \n',name_simulation)		
-			rmdir(name_simulation,'s')
-			fprintf('Creating the folder %s \n',name_simulation)
-			[s,mess1,mess2]=mkdir(name_simulation);
-		else
-			name_simulation = input('Write other name for the simulation' );
-			[s,mess1,mess2]=mkdir(name_simulation);
-		end
+    fprintf('deleting the folder %s \n',name_simulation)		
+	rmdir(name_simulation,'s')
+	fprintf('Creating the folder %s \n',name_simulation)
+    mkdir(name_simulation);
+else
+    
+    fprintf('Folder %s created with succesful',name_simulation)
+    
 end
+
+%% User defined
+% while (~strcmp(mess1,''))
+% 
+% 		display(mess1)
+% 		confirm = input('do you want overwrite it [y|n]?');
+% 		while (~(strcmp(confirm,'y') || strcmp(confirm,'n')))
+% 		
+% 			confirm = input('type valid command ...do you want overwrite it [y|n]?');
+% 		
+% 		end
+% 		if strcmp(confirm,'y')
+% 		
+% 			fprintf('deleting the folder %s \n',name_simulation)		
+% 			rmdir(name_simulation,'s')
+% 			fprintf('Creating the folder %s \n',name_simulation)
+% 			[s,mess1,mess2]=mkdir(name_simulation);
+% 		else
+% 			name_simulation = input('Write other name for the simulation' );
+% 			[s,mess1,mess2]=mkdir(name_simulation);
+% 		end
+% end
 
 nameinput = strcat('input_',name_simulation)
 
@@ -105,18 +113,37 @@ PATH_folder_input = strcat(PATH_folder_simulation,nameinput,'/');
 PATH_folder_images = strcat(PATH_folder_simulation,name_images,'/');
 PATH_folder_nohup = strcat(PATH_folder_simulation,name_folder_nohup,'/');
 
-%called to the function to generates the input signal
+%% ==================== generates the signals ========================= %%
 
-eventsPerPeriod = 1000;
-factor_current = 100e-12;
+eventsPerPeriod = 100000;
+I_ph_max = 100e-12;
+I_ph_min = 1e-12;
 period_Signal = 1e-3;
 Nperiods = 4;
 finalTime = Nperiods*period_Signal;
 delta_t = period_Signal/eventsPerPeriod;
 cd(PATH_scriptMatlab)
-signal_sweep_illuminance(PATH_folder_input,PATH_folder_images, ...
-    number_pixel,nameinput,eventsPerPeriod,period_Signal,delta_t,factor_current)
+
+%% Only ON events
+%signal_ramp_illuminance_ON_events(PATH_folder_input,PATH_folder_images, ...
+%    number_pixel,nameinput,eventsPerPeriod,period_Signal,delta_t,I_ph_max,I_ph_min)
+%cd(PATH_scriptMatlab)
+
+%% OFF Events
+
+
+
+%% Triangule (ON/OFF) Events
+signal_triangule(PATH_folder_input,PATH_folder_images, ...
+    number_pixel,nameinput,eventsPerPeriod,period_Signal,delta_t,I_ph_max,I_ph_min)
+
 cd(PATH_scriptMatlab)
+
+%% ==================== CALCULATE THE EXPECTED BEHAVIOUR  ============= %%
+
+% DVS_PIXEL
+
+DVS_model_fn(PATH_folder_input,PATH_sim_output_matlab,Name_simulation,name_simulation)
 
 
 %% ===================== CALL TO SCRIPTS  ==============================%%
