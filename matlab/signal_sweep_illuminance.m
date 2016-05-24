@@ -17,7 +17,7 @@ cd(PATH_folder_input)
 %% Create signal
 t  = 0:delta_t:period_Signal-delta_t;
 i  = 0:length(t)-1;
-current = factor_current*i/eventsPerPeriod;
+current = (factor_current*i/eventsPerPeriod)+100e-15;
 tmp = zeros(length(t),2);
 tmp(:,1) = t';
 tmp(:,2) = current';
