@@ -22,26 +22,26 @@ Isn = 2*nn*fi^2*Kn*Ratio;
 %% ========================== MODEL =============================== %%
 
 %% Input signal
-full_path_input_simulation = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/SIM1/input_SIM1/input_SIM10.csv';
+full_path_input_simulation = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/SIM1_MOD/input_SIM1_MOD/input_SIM1_MOD0.csv';
 signal = importdata(full_path_input_simulation);
 
 t2 = signal(:,1);
 Iph2 = signal(:,2);
 
-Iph = Iph2(2:length(Iph2)); % The first element is infinty
-t = t2(2:length(t2)); % The first element is infinity
+Iph = Iph2(1:length(Iph2)); % The first element is infinty
+t = t2(1:length(t2)); % The first element is infinity
 
 
 %% output spectre
-full_path_input_simulation = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/SIM1/output_matlab_SIM1/output_matlab_SIM1.csv';
+full_path_input_simulation = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/SIM1_MOD/output_matlab_SIM1_MOD/output_matlab_SIM1_MOD.csv';
 signal = importdata(full_path_input_simulation);
 
 t_spectre = signal(:,1);
 C_ON_REQ = signal(:,8);
 
 % Take the second period
-index_valid_period0 = find(t_spectre >= 2e-3,1)
-index_valid_period1 = find(t_spectre >= 3e-3,1)
+index_valid_period0 = find(t_spectre >= 1e-3,1)
+index_valid_period1 = find(t_spectre >= 2e-3,1)
 
 %current_factor = 100e-12;
 %t = 0.1:.00001:10;
@@ -56,26 +56,27 @@ output = zeros(1,len_t);
 %% Equations
 
 % Known vaiables
-Vref = 1.49;
+Vref = 1.46;
 V_p = 1.3;  % V_tetha+
 V_n = 1.6;  % V_tetha-
-Vos = 3e-3;% Voffset comparador
+Vos = 5.42e-3;% Voffset comparador
 
 log_Iph = log(Iph/Iph(1));  
 Vdiff = -nn*fi*A*log_Iph;
 Vdiff_max = max(Vdiff);    %used to normalized
 Vdiff = Vdiff - Vdiff_max; %used to normalized
 Vtemp = Vdiff;
-RS = V_p - Vref + Vos;
+On_event = V_p - Vref + Vos;
+%Off_event = ;
 mem = 0;
-
+ones = 0;
 for i=1:len_t
    value = Vdiff(i);
-   if (value <= RS)
+   if (value <= On_event)
         
        output(i) = 1.8;
        Vdiff(i:len_t) = Vdiff(i:len_t) + abs(value); %reset middle point
-            
+       ones = ones + 1;     
    else
         
        continue
@@ -83,23 +84,28 @@ for i=1:len_t
    end
     
 end
-
+ones
 % Setting the Vref as the plot in spectre
 Vdiff = Vdiff + Vref;
-
+h = figure(1);
 subplot(311)
-stem((t+2e-3),output)
-hold on
-plot(t_spectre([index_valid_period0:index_valid_period1]), ...
-    C_ON_REQ([index_valid_period0:index_valid_period1]),'r')
+stem((t+1e-3),output)
+xlabel('Tiempo')
+ylabel('ON Events expected')
 
 subplot(312)
-plot(t,Vdiff)
+%plot(t,Vdiff)
+plot(t_spectre([index_valid_period0:index_valid_period1]), ...
+    C_ON_REQ([index_valid_period0:index_valid_period1]),'r')
+xlabel('Tiempo')
+ylabel('ON Events From Pixel simulated')
 
 subplot(313)
-plot(t,nn*fi*(-A)*log(Iph/Isn))
-%plot(t(1:length(Vtemp)),Vtemp)
+plot(t+1e-3,nn*fi*(-A)*log(Iph/Isn))
+xlabel('Tiempo')
+ylabel('-A*n*\phi_{t}*Log(Iph/Isn)')
 
+saveas(h,'Plot2.png','png')
 
 %% ================================================================ %%
 
