@@ -11,15 +11,15 @@
 %   The column are order so: time ON_pix0 OFF_pix0 ON_pix1 OFF_pix1 so on
 %% ================================================================ %%
 
-%function [] = DVS_model_fn(path_input_simulation,path_output,Name_simulation)
+function [] = DVS_model_fn(path_input_simulation,path_output,Name_simulation)
 
 
 
-clear all;clc;close all;
+%clear all;clc;close all;
 
-path_input_simulation='/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/SIM2/input_SIM2/';
-path_output = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/SIM2/input_SIM2/';
-Name_simulation='SIM2';
+%path_input_simulation='/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/SIM2/input_SIM2/';
+%path_output = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/SIM2/input_SIM2/';
+%Name_simulation='SIM2';
 D = dir([path_input_simulation, '/*.csv']);
 Num = length(D(not([D.isdir]))); %Count how files there are.
 
@@ -107,17 +107,4 @@ end
 cd(path_output)
 dlmwrite(strcat('Expected_behaviour_',Name_simulation,'.csv'),total_result, ...
         'delimiter',' ','precision',10,'newline','unix');
-    
-%% plot
-
-subplot(2,1,1)
-plot(t,total_result(:,2))
-ylabel('ON EVENTS')
-xlabel('time')
-
-subplot(2,1,2)
-plot(t,total_result(:,3))
-ylabel('OFF EVENTS')
-xlabel('time')
-
 
