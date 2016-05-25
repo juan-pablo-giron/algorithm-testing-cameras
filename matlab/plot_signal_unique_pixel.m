@@ -24,22 +24,10 @@
 %   ----------------------------------------------
 %% ================================================================ %%
 
-time_start  = 1e-3;
-time_stop   = 2e-3;
+function []=plot_signal_unique_pixel(PATH_OUTPUT_SIMULATION,...
+    PATH_INPUT_SIGNAL,Index_ON,Index_OFF,time_start,time_stop)
+    
 
-
-lst_name_signals = 'V_pd,I_pd,Vout_sf,Voff,Von,C_OFF_REQ,C_ON_REQ,C_OFF_ACK,C_ON_ACK,Vrst';
-vec_signals = regexp(lst_name_signals,',','split');
-len_vector_signals = length(vec_signals);
-
-desired_signal2plot = 'C_ON_REQ';
-Index_ON =  f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
-Index_ON = Index_ON + 1; %The time is included
-desired_signal2plot = 'C_OFF_REQ';
-Index_OFF =  f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
-Index_OFF = Index_OFF + 1;
-PATH_OUTPUT_SIMULATION = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/SIM1/output_matlab_SIM1/';
-PATH_INPUT_SIGNAL = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/SIM1/input_SIM1/';
 
 %% ======================= LOADING THE SIGNALS ===================== %%
 
@@ -82,8 +70,6 @@ index_time_stop_sim  = find(time_simulated >= time_stop);
 %% ====================== HERE ARE PLOTTED THE SIGNALS ============== %%
 
 h=figure('Visible','off');
-
-title('Comparasion expected signal and simulated both ON / OFF events')
 
 subplot(321)
 stem(t+time_start,ON_expected)
