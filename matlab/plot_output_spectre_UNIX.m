@@ -31,10 +31,10 @@ number_pixel = X_length*Y_length;
 
 
 PATH_scriptMatlab = pwd;
-PATH_scriptMatlab = strcat(PATH_scriptMatlab,'/')
+PATH_scriptMatlab = strcat(PATH_scriptMatlab,'/');
 cd('..')
-PATH_script = strcat(pwd,'/')
-PATH_scriptPython = strcat(pwd,'/','python/')
+PATH_script = strcat(pwd,'/');
+PATH_scriptPython = strcat(pwd,'/','python/');
 
 % Here are created the others folders
 cd('..')
@@ -94,9 +94,9 @@ end
 % 		end
 % end
 
-nameinput = strcat('input_',name_simulation)
 
-%create the folders in folder simulation
+
+%create the others folders in simulation dir
 
 PATH_folder_simulation=strcat(PATH_simulation,name_simulation,'/');
 cd(PATH_folder_simulation)
@@ -191,9 +191,13 @@ command = ['python' ' ' 'executing_spectre_command_UNIX.py' ...
 
 system(command)
 
-cd(PATH_scriptMatlab)
+%% End Simulation
+display('END_SIMULATION')
 
-command = ['mv' ' ' 'output_matlab.out' ' ' PATH_folder_nohup]
+%% Move the file output_matlab_NAMESIMULATION to the respective folder
+cd(PATH_scriptMatlab)
+name_out_matlab = strcat('output_matlab_',name_simulation);
+command = ['mv' ' ' name_out_matlab ' ' PATH_folder_nohup];
 system(command)
 
 exit

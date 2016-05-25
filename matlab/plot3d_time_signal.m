@@ -98,7 +98,7 @@ name_title = strcat('Events per time with the signal',desired_signal2plot);
 name_fig = strcat('Fig_TimeVs',desired_signal2plot,'.fig');
 title(name_title)
 %savefig(name_fig)
-saveas(h,name_fig);
+saveas(h,name_fig,'fig');
 
 
 

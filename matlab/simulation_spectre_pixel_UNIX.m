@@ -41,6 +41,7 @@ PATH_folder_input = getenv('PATH_folder_input')
 PATH_folder_images = getenv('PATH_folder_images')
 PATH_folder_nohup = getenv('PATH_folder_nohup')
 nameinput = getenv('nameinput')
+nameinput = ''
 name_folder_matlab_output = getenv('name_folder_matlab_output')
 name_matlab_output = getenv('name_matlab_output')
 name_images = getenv('name_images')

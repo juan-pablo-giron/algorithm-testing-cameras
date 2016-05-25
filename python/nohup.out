@@ -1,0 +1,22 @@
+python: can't open file 'read_size_outout_matlab.py': [Errno 2] No such file or directory
+python: can't open file 'read_size_outout_matlab.py': [Errno 2] No such file or directory
+Traceback (most recent call last):
+  File "read_size_output_matlab.py", line 16, in <module>
+    size_file = s.path.getsize();
+NameError: name 's' is not defined
+Traceback (most recent call last):
+  File "read_size_output_matlab.py", line 16, in <module>
+    size_file = os.path.getsize();
+TypeError: getsize() takes exactly 1 argument (0 given)
+Traceback (most recent call last):
+  File "read_size_output_matlab.py", line 24, in <module>
+    if os.path.isfile(fname):# Verify if exist one file
+NameError: name 'fname' is not defined
+Traceback (most recent call last):
+  File "read_size_output_matlab.py", line 24, in <module>
+    if os.path.isfile(fname):# Verify if exist one file
+NameError: name 'fname' is not defined
+Traceback (most recent call last):
+  File "read_size_output_matlab.py", line 27, in <module>
+    os.kill(PID_SIM,signal.SIGKILL)
+TypeError: an integer is required
