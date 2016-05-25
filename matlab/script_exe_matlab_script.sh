@@ -105,7 +105,11 @@ export name_images
 export name_folder_nohup
 export name_matlab_out
 
+
 nohup matlab -nodesktop -nosplash -r "simulation_spectre_pixel_UNIX "$name_simulation" "$nameNetlist_spectre"" > $name_matlab_out & export PID_SIM=$! 
-#mv output_matlab ../../Simulation_cameras/$name_simulation/"nohup_"$name_simulation/ 
+
+cd $PATH_scriptPython
+
+nohup python read_size_output_matlab.py & 
 
 
