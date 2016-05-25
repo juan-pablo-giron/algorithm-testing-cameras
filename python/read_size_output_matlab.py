@@ -13,7 +13,6 @@ os.chdir(PATH_scriptMatlab)
 
 size_max_meg = 1
 size_max = size_max_meg*1024*1024; #convertion to bytes
-size_file = s.path.getsize();
 
 _Notexit_ = 1
 wait_file = 0
