@@ -6,6 +6,7 @@ import time
 
 # get the environment variables
 PID_SIM = os.environ['PID_SIM']
+PID_PYTHON = os.envirn['PID_PYTHON']
 PATH_scriptMatlab = os.environ['PATH_scriptMatlab']
 PATH_scriptPython = os.environ['PATH_scriptPython']
 name_matlab_out = os.environ['name_matlab_out']
@@ -28,6 +29,7 @@ while ( _Notexit_ ):
         if size_file >= size_max:
             os.kill(int(PID_SIM),signal.SIGKILL)
             _Notexit_ = False
+            os.kill(int(PID_PYTHON),signal.SIGKILL)
             exit
         else:
             time.sleep(1)
@@ -42,8 +44,10 @@ while ( _Notexit_ ):
             os.chdir(PATH_scriptPython)
             if os.path.isfile('nohup.out'):
                 os.remove('nohup.out')
+                os.kill(int(PID_PYTHON),signal.SIGKILL)
                 exit
             else:
+                os.kill(int(PID_PYTHON),signal.SIGKILL)
                 exit
         
         
