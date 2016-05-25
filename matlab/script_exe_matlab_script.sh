@@ -81,6 +81,8 @@ PATH_folder_input=$PATH_folder_simulation$nameinput/
 PATH_folder_images=$PATH_folder_simulation$name_images/
 PATH_folder_nohup=$PATH_folder_simulation$name_folder_nohup/
 
+name_matlab_out="output_matlab_"$name_simulation".out"
+
 cd $PATH_scriptMatlab
 
 ###################### EXPORTING THE PATHS ###############
@@ -101,9 +103,9 @@ export name_folder_matlab_output
 export name_matlab_output
 export name_images
 export name_folder_nohup
+export name_matlab_out
 
-
-nohup matlab -nodesktop -nosplash -r "simulation_spectre_pixel_UNIX "$name_simulation" "$nameNetlist_spectre"" > "output_matlab_"$name_simulation".out" & export PID_SIM=$! 
+nohup matlab -nodesktop -nosplash -r "simulation_spectre_pixel_UNIX "$name_simulation" "$nameNetlist_spectre"" > $name_matlab_out & export PID_SIM=$! 
 #mv output_matlab ../../Simulation_cameras/$name_simulation/"nohup_"$name_simulation/ 
 
 
