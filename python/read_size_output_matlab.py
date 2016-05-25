@@ -16,7 +16,8 @@ size_max = size_max_meg*1024*1024; #convertion to bytes
 size_file = s.path.getsize();
 
 _Notexit_ = 1
-
+wait_file = 0
+max_wait = 20
 ## Logic
 
 while ( _Notexit_ ):
@@ -31,7 +32,14 @@ while ( _Notexit_ ):
             time.sleep(1)
             _Notexit_ = True
     else:
-        _Notexit_ = False
-        exit
+
+        if wait_file <= max_wait:
+            time.sleep(2)
+            wait_file = wait_file + 1
+            _Notexit_ = True
+        else:
+            exit
+        
+        
 
         
