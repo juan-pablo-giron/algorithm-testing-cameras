@@ -112,4 +112,5 @@ cd $PATH_scriptPython
 
 nohup python read_size_output_matlab.py & 
 
+cd $PATH_scriptMatlab
 
