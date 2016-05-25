@@ -24,7 +24,7 @@ while ( _Notexit_ ):
     if os.path.isfile(name_matlab_out):# Verify if exist one file
         size_file = os.path.getsize(name_matlab_out);
         if size_file >= size_max:
-            os.kill(PID_SIM,signal.SIGKILL)
+            os.kill(int(PID_SIM),signal.SIGKILL)
             _Notexit_ = False
             exit
         else:
