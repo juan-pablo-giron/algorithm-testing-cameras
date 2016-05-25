@@ -7,7 +7,9 @@ import time
 # get the environment variables
 PID_SIM = os.environ['PID_SIM']
 PATH_scriptMatlab = os.environ['PATH_scriptMatlab']
+PATH_scriptPython = os.environ['PATH_scriptPython']
 name_matlab_out = os.environ['name_matlab_out']
+
 
 os.chdir(PATH_scriptMatlab)
 
@@ -33,11 +35,16 @@ while ( _Notexit_ ):
     else:
 
         if wait_file <= max_wait:
-            time.sleep(2)
+            time.sleep(1)
             wait_file = wait_file + 1
             _Notexit_ = True
         else:
-            exit
+            os.chdir(PATH_scriptPython)
+            if os.path.isfile('nohup.out'):
+                os.remove('nohup.out')
+                exit
+            else:
+                exit
         
         
 
