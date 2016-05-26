@@ -41,7 +41,6 @@ PATH_folder_input = getenv('PATH_folder_input')
 PATH_folder_images = getenv('PATH_folder_images')
 PATH_folder_nohup = getenv('PATH_folder_nohup')
 nameinput = getenv('nameinput')
-nameinput = ''
 name_folder_matlab_output = getenv('name_folder_matlab_output')
 name_matlab_output = getenv('name_matlab_output')
 name_images = getenv('name_images')
@@ -119,6 +118,8 @@ cd(PATH_scriptMatlab)
 name_out_matlab = strcat('output_matlab_',name_simulation,'.out');
 command = ['mv' ' ' name_out_matlab ' ' PATH_folder_nohup];
 system(command)
+
+
 
 exit
 
