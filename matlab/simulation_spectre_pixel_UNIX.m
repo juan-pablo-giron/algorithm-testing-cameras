@@ -120,6 +120,26 @@ command = ['mv' ' ' name_out_matlab ' ' PATH_folder_nohup];
 system(command)
 
 
+<<<<<<< HEAD
 
+=======
+%Plot the signals
+
+desired_signal2plot = 'C_ON_REQ';
+Index_ON =  f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
+Index_ON = Index_ON + 1;
+
+desired_signal2plot = 'C_OFF_REQ';
+Index_OFF =  f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
+Index_OFF = Index_OFF + 1;
+
+time_start = 1e-3;
+time_stop = 2e-3;
+
+plot_signal_unique_pixel(PATH_sim_output_matlab,...
+    PATH_folder_input,Index_ON,Index_OFF,time_start,time_stop)
+
+cd(PATH_scriptMatlab)
+>>>>>>> eb32f846fffd9a8dca8acec2b912d86469e6a1fa
 exit
 
