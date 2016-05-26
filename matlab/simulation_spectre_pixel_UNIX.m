@@ -108,7 +108,7 @@ command = ['python' ' ' 'executing_spectre_command_UNIX.py' ...
     ' ' PATH_folder_simulation ' ' nameNetlist_output ' ' ...
     PATH_sim_output_matlab ' ' name_matlab_output];
 
-system(command)
+status=system(command)
 
 % End Simulation
 display('END_SIMULATION')
@@ -119,23 +119,28 @@ name_out_matlab = strcat('output_matlab_',name_simulation,'.out');
 command = ['mv' ' ' name_out_matlab ' ' PATH_folder_nohup];
 system(command)
 
+if status==0
 
-%Plot the signals
+	%Plot the signals
 
-desired_signal2plot = 'C_ON_REQ';
-Index_ON =  f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
-Index_ON = Index_ON + 1;
+	desired_signal2plot = 'C_ON_REQ';
+	Index_ON =  f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
+	Index_ON = Index_ON + 1;
 
-desired_signal2plot = 'C_OFF_REQ';
-Index_OFF =  f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
-Index_OFF = Index_OFF + 1;
+	desired_signal2plot = 'C_OFF_REQ';
+	Index_OFF =  f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
+	Index_OFF = Index_OFF + 1;
 
-time_start = 1e-3;
-time_stop = 2e-3;
+	time_start = 1e-3;
+	time_stop = 2e-3;
 
-plot_signal_unique_pixel(PATH_sim_output_matlab,...
-    PATH_folder_input,Index_ON,Index_OFF,time_start,time_stop)
+	plot_signal_unique_pixel(PATH_sim_output_matlab,...
+    	PATH_folder_input,Index_ON,Index_OFF,time_start,time_stop)
 
-cd(PATH_scriptMatlab)
-exit
+	cd(PATH_scriptMatlab)
+	exit
+else
+	exit
+
+end
 

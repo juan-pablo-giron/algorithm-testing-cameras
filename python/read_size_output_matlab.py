@@ -41,14 +41,15 @@ while ( _Notexit_ ):
             wait_file = wait_file + 1
             _Notexit_ = True
         else:
-            os.chdir(PATH_scriptPython)
-            if os.path.isfile('nohup.out'):
-                os.remove('nohup.out')
-                os.kill(int(PID_PYTHON),signal.SIGKILL)
-                exit
-            else:
-                os.kill(int(PID_PYTHON),signal.SIGKILL)
-                exit
+            #os.chdir(PATH_scriptPython)
+            #if os.path.isfile('nohup.out'):
+            #    os.remove('nohup.out')
+            #    os.kill(int(PID_PYTHON),signal.SIGKILL)
+            #    exit
+            #else:
+            #    os.kill(int(PID_PYTHON),signal.SIGKILL)
+             
+  	    exit
         
         
 
