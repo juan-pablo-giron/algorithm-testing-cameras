@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "read_size_output_matlab.py", line 9, in <module>
+    PID_PYTHON = os.environ['PID_PYTHON']
+  File "/usr/lib64/python2.7/UserDict.py", line 23, in __getitem__
+    raise KeyError(key)
+KeyError: 'PID_PYTHON'
