@@ -1,4 +1,6 @@
 
+
+
 %% =====================================================================%%
 % It function execute several script written in python which allow
 % simulate a netlist using the Spectre simulador, it script return in the 
@@ -112,12 +114,9 @@ status=system(command)
 
 % End Simulation
 
+cd(PATH_scriptMatlab)
 
-
-%if status==0
-
-
-	%Plot the signals
+%plot the signals
 desired_signal2plot = 'C_ON_REQ';
 Index_ON =  f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
 Index_ON = Index_ON + 1;
@@ -132,16 +131,6 @@ time_stop = 2e-3;
 plot_signal_unique_pixel(PATH_sim_output_matlab,...
 PATH_folder_input,Index_ON,Index_OFF,time_start,time_stop)
 
-cd(PATH_scriptMatlab)
-
-%	exit
-	
-	
-%else
-	
-%	exit
-
-%end
 
 % Move the file output_matlab_NAMESIMULATION to the respective folder
 cd(PATH_scriptMatlab)
