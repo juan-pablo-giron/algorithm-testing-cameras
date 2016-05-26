@@ -48,7 +48,7 @@ while ( _Notexit_ ):
             #    exit
             #else:
             #    os.kill(int(PID_PYTHON),signal.SIGKILL)
-             
+            os.kill(int(PID_PYTHON),signal.SIGKILL) 
   	    exit
         
         
