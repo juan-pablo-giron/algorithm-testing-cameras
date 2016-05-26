@@ -41,7 +41,6 @@ PATH_folder_input = getenv('PATH_folder_input')
 PATH_folder_images = getenv('PATH_folder_images')
 PATH_folder_nohup = getenv('PATH_folder_nohup')
 nameinput = getenv('nameinput')
-nameinput = ''
 name_folder_matlab_output = getenv('name_folder_matlab_output')
 name_matlab_output = getenv('name_matlab_output')
 name_images = getenv('name_images')
@@ -120,5 +119,23 @@ name_out_matlab = strcat('output_matlab_',name_simulation,'.out');
 command = ['mv' ' ' name_out_matlab ' ' PATH_folder_nohup];
 system(command)
 
+
+%Plot the signals
+
+desired_signal2plot = 'C_ON_REQ';
+Index_ON =  f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
+Index_ON = Index_ON + 1;
+
+desired_signal2plot = 'C_OFF_REQ';
+Index_OFF =  f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
+Index_OFF = Index_OFF + 1;
+
+time_start = 1e-3;
+time_stop = 2e-3;
+
+plot_signal_unique_pixel(PATH_sim_output_matlab,...
+    PATH_folder_input,Index_ON,Index_OFF,time_start,time_stop)
+
+cd(PATH_scriptMatlab)
 exit
 

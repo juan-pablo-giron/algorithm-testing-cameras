@@ -110,7 +110,7 @@ nohup matlab -nodesktop -nosplash -r "simulation_spectre_pixel_UNIX "$name_simul
 
 cd $PATH_scriptPython
 
-nohup python read_size_output_matlab.py & 
+nohup python read_size_output_matlab.py & export PID_PYTHON=$! 
 
 cd $PATH_scriptMatlab
 

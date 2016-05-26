@@ -6,7 +6,7 @@ import time
 
 # get the environment variables
 PID_SIM = os.environ['PID_SIM']
-PID_PYTHON = os.environ['PID_PYTHON']
+PID_PYTHON = os.envirn['PID_PYTHON']
 PATH_scriptMatlab = os.environ['PATH_scriptMatlab']
 PATH_scriptPython = os.environ['PATH_scriptPython']
 name_matlab_out = os.environ['name_matlab_out']
