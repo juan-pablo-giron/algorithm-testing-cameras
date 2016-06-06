@@ -37,7 +37,7 @@ cd $PATH_simulation
 ############### CREATING THE DIRECTORIES   #########
 mkdir $name_simulation
 
-# Guarantee that the simulation have a unique name
+# Guarantee that the simulation has a unique name
 while [ $? -ne 0 ]; do
   
   echo " The directory exist"
@@ -98,6 +98,7 @@ export PATH_sim_output_matlab
 export PATH_folder_input
 export PATH_folder_images
 export PATH_folder_nohup
+export name_simulation
 export nameinput
 export name_folder_matlab_output
 export name_matlab_output
