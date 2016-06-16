@@ -23,9 +23,12 @@ vec_desiredData(:,1) = time;
 
 for i=1:len_index
     % Convert the analog signal in digital signal
-    tmp_signal = data_Sim(:,index_desired(i));
-    
-    vec_desiredData(:,i+1)=data_Sim(:,index_desired(i));
+    digital_signal = data_Sim(:,index_desired(i));
+    index_ONE = find(digital_signal >= middle_point);
+    index_ZERO = find(digital_signal <middle_point);
+    digital_signal([index_ONE]) = 1;
+    digital_signal([index_ZERO]) = 0;
+    vec_desiredData(:,i+1) = digital_signal;
 end
 
 
