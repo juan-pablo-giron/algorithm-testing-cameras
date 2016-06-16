@@ -7,6 +7,7 @@ name_simulation = 'DVS2x2_resol20';
 string_data = strcat('data_',name_simulation,'.csv');
 string_index_file = 'index_data.csv';
 number_bits = 3;
+middle_point = 0.9;
 % header
 
 %Importing the data
@@ -21,5 +22,12 @@ time = data_Sim(:,1);
 vec_desiredData(:,1) = time;
 
 for i=1:len_index
+    % Convert the analog signal in digital signal
+    tmp_signal = data_Sim(:,index_desired(i));
+    
     vec_desiredData(:,i+1)=data_Sim(:,index_desired(i));
 end
+
+
+
+
