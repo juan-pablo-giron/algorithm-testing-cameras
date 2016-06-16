@@ -84,6 +84,7 @@ PATH_folder_nohup=$PATH_folder_simulation$name_folder_nohup/
 name_matlab_out="output_matlab_"$name_simulation".out"
 
 cd $PATH_scriptMatlab
+name_folder_output_Spectre="netlist_"$name_simulation".raw"
 
 ###################### EXPORTING THE PATHS ###############
 
@@ -105,7 +106,7 @@ export name_matlab_output
 export name_images
 export name_folder_nohup
 export name_matlab_out
-
+export name_folder_output_Spectre
 
 nohup matlab -nodesktop -nosplash -r "simulation_spectre_pixel_UNIX "$name_simulation" "$nameNetlist_spectre"" > $name_matlab_out & export PID_SIM=$! 
 
