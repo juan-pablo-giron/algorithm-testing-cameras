@@ -1,11 +1,11 @@
 % It script creates a triangule wave as steps that increases progessive
 clear all;clc;close all;
-resol = 10; % Resolution
-T = 5e-3; % Signal's period
-Imax = 100;
-Imin = 1;
+resol = 20; % Resolution
+T = 30e-3; % Signal's period
+Imax = 100e-12;
+Imin = 0.01e-12;
 deltaI = (Imax - Imin)/(resol-1);
-samplesPerHold = 100; 
+samplesPerHold = 10; 
 deltat = (T/2)/(samplesPerHold*resol); % T/2 porque es para arriba y para abjao en el mismo periodo
 t = 0:deltat:T;
 len_t = length(t);
@@ -49,4 +49,4 @@ cd('/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulatio
 dlmwrite(strcat(nameSignalOutput,'.csv'),signal,'delimiter',' ','precision',10,'newline','unix');
 
 
-plot(t,log(I_ph))
+plot(t,(I_ph))

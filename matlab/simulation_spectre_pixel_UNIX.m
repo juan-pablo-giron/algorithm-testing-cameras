@@ -52,10 +52,10 @@ name_folder_nohup = getenv('name_folder_nohup')
 
 %% ==================== generates the signals ========================= %%
 
-eventsPerPeriod = 1000;
+eventsPerPeriod = 100000;
 I_ph_max = 100e-12;
 I_ph_min = 1e-12;
-period_Signal = 1e-3;
+period_Signal = 20e-3;
 Nperiods = 4;
 finalTime = Nperiods*period_Signal;
 delta_t = period_Signal/eventsPerPeriod;
@@ -104,32 +104,32 @@ system(command)
 
 % here is executed the spectre simulator
 
-cd(PATH_scriptPython)
-
-command = ['python' ' ' 'executing_spectre_command_UNIX.py' ...
-    ' ' PATH_folder_simulation ' ' nameNetlist_output ' ' ...
-    PATH_sim_output_matlab ' ' name_matlab_output];
-
-status=system(command)
+% cd(PATH_scriptPython)
+% 
+% command = ['python' ' ' 'executing_spectre_command_UNIX.py' ...
+%     ' ' PATH_folder_simulation ' ' nameNetlist_output ' ' ...
+%     PATH_sim_output_matlab ' ' name_matlab_output];
+% 
+% status=system(command)
 
 % End Simulation
 
-cd(PATH_scriptMatlab)
-
-%plot the signals
-desired_signal2plot = 'C_ON_REQ';
-Index_ON =  f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
-Index_ON = Index_ON + 1;
-
-desired_signal2plot = 'C_OFF_REQ';
-Index_OFF = f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
-Index_OFF = Index_OFF + 1;
-
-time_start = 1e-3;
-time_stop = 2e-3;
-
-plot_signal_unique_pixel(PATH_sim_output_matlab,...
-PATH_folder_input,Index_ON,Index_OFF,time_start,time_stop)
+% %cd(PATH_scriptMatlab)
+% 
+% %plot the signals
+% % desired_signal2plot = 'C_ON_REQ';
+% % Index_ON =  f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
+% % Index_ON = Index_ON + 1;
+% % 
+% % desired_signal2plot = 'C_OFF_REQ';
+% % Index_OFF = f_findIndexInCell(desired_signal2plot,vec_signals,len_vector_signals);
+% % Index_OFF = Index_OFF + 1;
+% % 
+% % time_start = 1e-3;
+% % time_stop = 2e-3;
+% % 
+% % plot_signal_unique_pixel(PATH_sim_output_matlab,...
+% % PATH_folder_input,Index_ON,Index_OFF,time_start,time_stop)
 
 
 % Move the file output_matlab_NAMESIMULATION to the respective folder
