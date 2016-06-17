@@ -1,0 +1,20 @@
+path_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/SIMTEST2/input_SIMTEST2/';
+name_file = 'trianguleWave_ATIS';
+
+current_pwd = pwd;
+cd (path_input)
+data = importdata(name_file);
+time = data(:,1);
+I_ph = data(:,2);
+I = 0;
+
+len_time = length(time);
+resetSignal = 1.8*ones(1,len_time);
+
+for i=1:len_time
+   
+    
+    
+    
+end
+

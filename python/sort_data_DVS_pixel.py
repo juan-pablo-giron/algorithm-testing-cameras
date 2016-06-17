@@ -13,10 +13,10 @@ import time
 
 ## Paths
 
-PATH_sim_output_matlab = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/DVS2x2_X_Arbiter_TS_20res/output_matlab/'
-PATH_folder_simulation = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/DVS2x2_X_Arbiter_TS_20res/'
-name_simulation = 'DVS2x2_resol20'
-name_folder_output_Spectre = 'DVS2x2_resol20.raw'
+PATH_sim_output_matlab = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/DVS2x2_TW_T30ms/output_matlab/'
+PATH_folder_simulation = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/DVS2x2_TW_T30ms/'
+name_simulation = 'DVS2x2_TW_T30ms'
+name_folder_output_Spectre = 'DVS2x2_TW_T30ms.raw'
 number_bits = 3;
 
 
@@ -27,7 +27,7 @@ string_start = 'VALUE'  #default
 string_stop = 'END'     #default
 string_index_file = 'index_data'
 string_data = 'data_'+name_simulation
-lst_desired_signals = ['data','En_Read_Row','En_Read_pixel']
+lst_desired_signals = ['data','En_Read_Row','En_Read_pixel','Global_rst']
 lst_bus_data = ['data']
 
 File = open(PATH_folder_simulation+name_folder_output_Spectre+'/tran.tran','r')
@@ -99,6 +99,7 @@ while x < len_output:
     x = x + len_signals
 stop_time = time.time()
 print "signals>>"+str(l_signals)
-print "We made it in %f seconds" %(stop_time-start_time)
 file_data.close()
+print "We made it in %f seconds" %(stop_time-start_time)
+
 
