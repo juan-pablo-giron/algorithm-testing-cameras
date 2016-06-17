@@ -1,8 +1,15 @@
 % Este script plotea la salida de una camara DVS 
 
+pwd_current = pwd;
 
-PATH_sim_output_matlab = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/DVS2x2_X_Arbiter_TS_20res/output_matlab/';
+%PATH_sim_output_matlab = '/home/netware/users/jpgironruiz/Desktop/%Documents/Cadence_analysis/Simulation_cameras/DVS2x2_X_Arbiter_TS_20res/%output_matlab/';
+PATH_sim_output_matlab = '/sdcard/documents/MSc/Cadence_analysis/Sim_DATA_PIXELS/output_matlab/';
 cd(PATH_sim_output_matlab)
+
+%mide el tiempo que dura el script en ejecutarse 
+tic;
+
+
 name_simulation = 'DVS2x2_resol20';
 string_data = strcat('data_',name_simulation,'.csv');
 string_index_file = 'index_data.csv';
@@ -21,6 +28,8 @@ vec_desiredData = zeros(len_row_data_Sim,len_index);
 time = data_Sim(:,1);
 vec_desiredData(:,1) = time;
 
+
+
 for i=1:len_index
     % Convert the analog signal in digital signal
     digital_signal = data_Sim(:,index_desired(i));
@@ -31,6 +40,5 @@ for i=1:len_index
     vec_desiredData(:,i+1) = digital_signal;
 end
 
-
-
-
+cd(pwd_current)
+toc
