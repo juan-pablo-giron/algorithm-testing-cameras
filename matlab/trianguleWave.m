@@ -1,11 +1,14 @@
 % It script creates a triangule wave as steps that increases progessive
 clear all;clc;close all;
-resol = 20; % Resolution
-T = 30e-3; % Signal's period
+resol = 500; % Resolution
+t_hold = 100e-3;
+T = t_hold*resol;
+%T = 7.65; % Signal's period
+
 Imax = 100e-12;
 Imin = 0.01e-12;
 deltaI = (Imax - Imin)/(resol-1);
-samplesPerHold = 10; 
+samplesPerHold = 100; 
 deltat = (T/2)/(samplesPerHold*resol); % T/2 porque es para arriba y para abjao en el mismo periodo
 t = 0:deltat:T;
 len_t = length(t);
@@ -41,12 +44,13 @@ while ( i<=len_t)
     
 end
 
-nameSignalOutput = 'trianguleWave';
+nameSignalOutput = 'trianguleWave_ATIS';
 signal(:,1) = t';
 signal(:,2) = I_ph';
 
 cd('/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/SIMTEST2/input_SIMTEST2')
 dlmwrite(strcat(nameSignalOutput,'.csv'),signal,'delimiter',' ','precision',10,'newline','unix');
+
 
 
 plot(t,(I_ph))
