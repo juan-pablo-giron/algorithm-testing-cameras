@@ -62,7 +62,7 @@ vec_desiredData(:,5) = digitalSignal(:,index_En_ReadPixel); %en read pixel
 %vec_desiredData(:,6) = digitalSignal(:,index_Globalrst); %global reset
 
 
-%paso 4. Maquina de estados para determinar la validez de un dato
+%paso 3. Maquina de estados para determinar la validez de un dato
 
 state = 0;
 % structure ON 
@@ -110,17 +110,108 @@ while (i<=len_row_data_Sim)
         
     end
     
-	% ind_GlobalRst = find(vec_desiredData(:,5)==0,1);
-	%i = ind_GlobalRst;
-	% ind_GlobalRst = find(vec_desiredData(:,5)==1,1);
-	
-%	ind_read_pixel_H = find(vec_desiredData(:,4) == 1,1) 
-%	i = i + 1
-	%state 1
 	
 end 
 
-ON_events=ON_events';
-OFF_events=OFF_events';
+
+
+% Paso 4. Plot
+
+% ON EVENTS
+X_length = 2;
+Y_length = 2;
+i = 0;
+X = 0:X_length;
+Y = 0:Y_length;
+z  = zeros(Y_length+1,X_length+1);
+len_ON_events = length(ON_events);
+fig_ON = figure(1);
+colormap(fig_ON,'gray')
+
+if ( len_ON_events >=1)
+    while i < len_ON_events
+
+        vec_time_pix = ON_events{i+1};
+        t = vec_time_pix(1);
+        pixel = vec_time_pix(2);
+        row = rem(pixel,X_length);
+        col = fix(pixel/X_length);
+        y1  = row+1;
+        y2  = y1+1;
+        x1  = col+1;
+        x2  = x1+1;
+        z(:,:) = NaN; % Avoid that Matlab create lines no desired
+        z([y1 y2],[x1 x2]) = t;
+        surf(X,Y,z)
+        hold on
+        grid on
+        i = i+1;
+
+    end
+
+    % adjusting apperance
+    colorbar;
+    set(gca,'xtick',X);
+    set(gca,'ytick',Y);
+    vec_time_pix = ON_events{1};
+    min_t = vec_time_pix(1);
+    vec_time_pix = ON_events{len_ON_events};
+    max_t = 1.1*vec_time_pix(1); % 10% more
+    set(gca,'zlim',[min_t max_t])
+    xlabel('X')
+    ylabel('Y')
+    zlabel('Time')
+    name_title = 'ON EVENTS';
+    name_fig = 'ON_events_3D.fig';
+    title(name_title)
+    saveas(fig_ON,name_fig,'fig');
+end
+
+
+len_OFF_events = length(OFF_events);
+z  = zeros(Y_length+1,X_length+1);
+fig_OFF = figure(2);
+colormap(fig_OFF,'gray')
+i = 0;
+
+if ( len_OFF_events >=1)
+    while i < len_OFF_events
+
+        vec_time_pix = OFF_events{i+1};
+        t = vec_time_pix(1);
+        pixel = vec_time_pix(2);
+        row = rem(pixel,X_length);
+        col = fix(pixel/X_length);
+        y1  = row+1;
+        y2  = y1+1;
+        x1  = col+1;
+        x2  = x1+1;
+        z(:,:) = NaN; % Avoid that Matlab create lines no desired
+        z([y1 y2],[x1 x2]) = t;
+        surf(X,Y,z)
+        hold on
+        grid on
+        i = i+1;
+
+    end
+
+    % adjusting apperance
+    colorbar;
+    set(gca,'xtick',X);
+    set(gca,'ytick',Y);
+    vec_time_pix = OFF_events{1};
+    min_t = vec_time_pix(1);
+    vec_time_pix = OFF_events{len_OFF_events};
+    max_t = 1.1*vec_time_pix(1); % 10% more
+    set(gca,'zlim',[min_t max_t])
+    xlabel('X')
+    ylabel('Y')
+    zlabel('Time')
+    name_title = 'OFF EVENTS';
+    name_fig = 'OFF_events_3D.fig';
+    title(name_title)
+    saveas(fig_OFF,name_fig,'fig');
+end
+
 cd(pwd_current)
 toc
