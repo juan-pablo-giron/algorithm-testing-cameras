@@ -12,15 +12,21 @@ tic;
 
 clear all;clc;close all;
 
-N = 180; 
-M = 180;
+N = 4; 
+M = 4;
 
 curr_path = pwd;
 PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/';
-cd(PATH_input)
-%dlmwrite('test.csv',[20 30],'delimiter',' ','-append','precision',10,'newline','unix');
-
-
+cd(PATH_input);
+nameSignal = strcat('spiral',int2str(N),'X',int2str(M));
+[s,mess1,mess2]=mkdir(nameSignal);
+if (~strcmp(mess1,''))
+   
+    rmdir(nameSignal)
+    mkdir(nameSignal);
+end
+PATH_input = strcat(PATH_input,nameSignal,'/');
+cd(curr_path);
 pixel = 0;
 start_col = 1;end_Col = N;
 start_row = 2;end_row = M;
@@ -33,7 +39,9 @@ Array = I0*ones(M,N);
 i = 1;j=1;
 
 T = 1/freq;
-vec_time = 0:T/quant_pixel:T-T/quant_pixel;
+delta_time = T/quant_pixel;
+vec_time = 0:delta_time:T-delta_time;
+samples = 20;
 
 % Only for the plot
 
@@ -51,22 +59,13 @@ while (pixel < quant_pixel)
             if ( j < end_Col)
                 Array(i,j) = Ich;
                 time = vec_time(pixel+1);
-                % --- plot ---%
-                y1  = i+1;
-                y2  = y1+1;
-                x1  = j+1;
-                x2  = x1+1;
-                z([y1 y2],[x1 x2]) = time;
-                surf(X,Y,z)
-                hold on
-                grid on
-                % --- End plot ---%
                 j = j + 1;
                 pixel = pixel + 1;
+                export = true;
             else
                 end_Col = end_Col - 1;
                 state = 1;
-
+                export = false;
             end
             
        case 1
@@ -75,21 +74,13 @@ while (pixel < quant_pixel)
             if ( i < end_row )
                 Array(i,j) = Ich;
                 time = vec_time(pixel+1);
-                % --- plot ---%
-                y1  = i+1;
-                y2  = y1+1;
-                x1  = j+1;
-                x2  = x1+1;
-                z([y1 y2],[x1 x2]) = time;
-                surf(X,Y,z)
-                hold on
-                grid on
-                % --- End plot ---%
                 i = i + 1;
                 pixel = pixel + 1;
+                export = true;
             else
                 end_row = end_row - 1;
                 state = 2;
+                export = false;
             end
        case 2
            
@@ -97,47 +88,28 @@ while (pixel < quant_pixel)
             if ( j > start_col)
                 Array(i,j) = Ich;
                 time = vec_time(pixel+1);
-                % --- plot ---%
-                y1  = i+1;
-                y2  = y1+1;
-                x1  = j+1;
-                x2  = x1+1;
-                z([y1 y2],[x1 x2]) = time;
-                surf(X,Y,z)
-                hold on
-                grid on
-                % --- End plot ---%
                 j = j - 1;
                 pixel = pixel + 1;
+                export = true;
             else
                 start_col = start_col + 1;
                 state = 3;
+                export = false;
             end
        case 3
            
            % El gradiente esta subiendo por una columna
            if ( i >= start_row) 
                Array(i,j) = Ich;
-               
                time = vec_time(pixel+1);
-               
-               % --- plot ---%
-                y1  = i+1;
-                y2  = y1+1;
-                x1  = j+1;
-                x2  = x1+1;
-                z([y1 y2],[x1 x2]) = time;
-                surf(X,Y,z)
-                hold on
-                grid on
-                % --- End plot ---%
-                i = i - 1;
-                pixel = pixel + 1;
+               i = i - 1;
+               pixel = pixel + 1;
+               export = true;
            else
                i = i + 1;
                j = j + 1;
                start_row = start_row + 1;
-               
+               export = false;
                if pixel+1 == quant_pixel
                    
                    state = 4;
@@ -150,20 +122,29 @@ while (pixel < quant_pixel)
            % Left one pixel only!
            Array(i,j) = Ich;
            time = vec_time(pixel+1);
-           % --- plot ---%
-           y1  = i+1;
-           y2  = y1+1;
-           x1  = j+1;
-           x2  = x1+1;
-           z([y1 y2],[x1 x2]) = time;
-           surf(X,Y,z)
-           hold on
-           grid on
-           % --- End plot ---%
            pixel = pixel + 1;
-          
+           export = true;
    end
-   %Array
+   % --- Export data ---%
+   
+   if (export)
+        create_InputSignal(time,delta_time,N,M,samples,Array,nameSignal,PATH_input)
+        Array(:,:) = I0;
+   end
+    
+       
+   
+   % --- End expor data ---%
+   % --- plot ---%
+   y1  = i;
+   y2  = y1+1;
+   x1  = j;
+   x2  = x1+1;
+   z([y1 y2],[x1 x2]) = time;
+   surf(X,Y,z)
+   hold on
+   grid on
+   % --- End plot ---%
       
 end
 cd(curr_path)
