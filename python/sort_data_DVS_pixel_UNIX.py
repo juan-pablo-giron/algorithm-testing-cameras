@@ -9,15 +9,15 @@
 
 from getIndex_desiredSignals import getIndex_desiredSignals
 import time
-#def _sort_output_cadence_(File,Dir_output_matlab,name_output):
+import os
 
-## Paths
+## Getting the enviroment variables
 
-PATH_sim_output_matlab = sys.argv[1]
-PATH_folder_simulation = sys.argv[2]
-name_simulation = sys.argv[3]
-name_folder_output_Spectre = sys.argv[4]  
-number_bits = int(sys.argv[5])
+PATH_sim_output_matlab = os.environ['PATH_sim_output_matlab'] sys.argv[1]
+PATH_folder_simulation = os.environ['PATH_folder_simulation']
+name_simulation = os.environ['name_simulation']
+name_folder_output_Spectre = os.environ['name_folder_output_Spectre']  
+number_bits = int(os.environ['number_bits'])
 name_tran = 'tran'
 
 
