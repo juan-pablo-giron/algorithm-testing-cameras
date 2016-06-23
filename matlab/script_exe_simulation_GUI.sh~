@@ -251,7 +251,7 @@ echo "export N" >> env_var.sh
 
 # Execution of commands
 
-spectre -format psfascii $nameNetlist_spectre
+spectre -format psfascii +mt $nameNetlist_spectre
 
 # Command for DVS pixel
 if [ "$?" = 0 ]
