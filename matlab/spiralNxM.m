@@ -12,27 +12,30 @@ tic;
 
 clear all;clc;close all;
 
-N = 4; 
-M = 4;
+N = 8; 
+M = 8;
+freq = 250;
+rpm = freq*60;
 
 curr_path = pwd;
 PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/';
 cd(PATH_input);
-nameSignal = strcat('spiral',int2str(N),'X',int2str(M));
-[s,mess1,mess2]=mkdir(nameSignal);
+nameSignal = strcat('spiral',int2str(N),'X',int2str(M),'_',int2str(freq));
+name_folder = strcat(nameSignal,'/');
+[s,mess1,mess2]=mkdir(name_folder);
 if (~strcmp(mess1,''))
    
-    rmdir(nameSignal)
-    mkdir(nameSignal);
+    rmdir(name_folder,'s');
+    mkdir(name_folder);
 end
 PATH_input = strcat(PATH_input,nameSignal,'/');
 cd(curr_path);
 pixel = 0;
 start_col = 1;end_Col = N;
 start_row = 2;end_row = M;
-I0 = 0;
-Ich = 1;
-freq = 200; 
+I0 = 50e-12;
+Ich = 100e-12;
+
 state = 0;
 quant_pixel = N*M;
 Array = I0*ones(M,N);
@@ -48,6 +51,7 @@ samples = 20;
 X = 0:2*N-1;
 Y = 0:2*M-1;
 z  = zeros(2*M,2*N);
+h = figure(1);
 while (pixel < quant_pixel)
    
    z(:,:) = NaN;
@@ -59,6 +63,18 @@ while (pixel < quant_pixel)
             if ( j < end_Col)
                 Array(i,j) = Ich;
                 time = vec_time(pixel+1);
+                
+                % --- plot ---%
+                y1  = i;
+                y2  = y1+1;
+                x1  = j;
+                x2  = x1+1;
+                z([y1 y2],[x1 x2]) = time;
+                surf(X,Y,z)
+                hold on
+                grid on
+                % --- End plot ---%
+                
                 j = j + 1;
                 pixel = pixel + 1;
                 export = true;
@@ -74,6 +90,18 @@ while (pixel < quant_pixel)
             if ( i < end_row )
                 Array(i,j) = Ich;
                 time = vec_time(pixel+1);
+                
+                % --- plot ---%
+                y1  = i;
+                y2  = y1+1;
+                x1  = j;
+                x2  = x1+1;
+                z([y1 y2],[x1 x2]) = time;
+                surf(X,Y,z)
+                hold on
+                grid on
+                % --- End plot ---%
+                
                 i = i + 1;
                 pixel = pixel + 1;
                 export = true;
@@ -88,6 +116,18 @@ while (pixel < quant_pixel)
             if ( j > start_col)
                 Array(i,j) = Ich;
                 time = vec_time(pixel+1);
+                
+                % --- plot ---%
+                y1  = i;
+                y2  = y1+1;
+                x1  = j;
+                x2  = x1+1;
+                z([y1 y2],[x1 x2]) = time;
+                surf(X,Y,z)
+                hold on
+                grid on
+                % --- End plot ---%
+                
                 j = j - 1;
                 pixel = pixel + 1;
                 export = true;
@@ -102,6 +142,19 @@ while (pixel < quant_pixel)
            if ( i >= start_row) 
                Array(i,j) = Ich;
                time = vec_time(pixel+1);
+               
+               % --- plot ---%
+               y1  = i;
+               y2  = y1+1;
+               x1  = j;
+               x2  = x1+1;
+               z([y1 y2],[x1 x2]) = time;
+               surf(X,Y,z)
+               hold on
+               grid on
+               % --- End plot ---%
+
+               
                i = i - 1;
                pixel = pixel + 1;
                export = true;
@@ -124,28 +177,46 @@ while (pixel < quant_pixel)
            time = vec_time(pixel+1);
            pixel = pixel + 1;
            export = true;
+           % --- plot ---%
+           y1  = i;
+           y2  = y1+1;
+           x1  = j;
+           x2  = x1+1;
+           z([y1 y2],[x1 x2]) = time;
+           surf(X,Y,z)
+           hold on
+           grid on
+           % --- End plot ---%
    end
    % --- Export data ---%
-   
+
    if (export)
         create_InputSignal(time,delta_time,N,M,samples,Array,nameSignal,PATH_input)
         Array(:,:) = I0;
    end
-    
-       
-   
+      
    % --- End expor data ---%
-   % --- plot ---%
-   y1  = i;
-   y2  = y1+1;
-   x1  = j;
-   x2  = x1+1;
-   z([y1 y2],[x1 x2]) = time;
-   surf(X,Y,z)
-   hold on
-   grid on
-   % --- End plot ---%
+   
+   
       
 end
+cd(PATH_input)
+period = vec_time(length(vec_time))+delta_time-delta_time/samples;
+fid = fopen('README.txt','wt');
+fprintf(fid,' N %d\n M %d\n T %d \n freq %d (Hz) \n Sample %d \n RPM %d \n',N,M,period,1/period,samples,rpm);
+fclose(fid);
+
+colorbar;
+set(gca,'xtick',X);
+set(gca,'ytick',Y);
+xlabel('COLUMNS')
+ylabel('ROWS')
+zlabel('Time s')
+name_title = 'Spiral';
+title(name_title)
+xlim([0 N])
+ylim([0 M])
+saveas(h,strcat(nameSignal,'.fig','.fig'))
+saveas(h,strcat(nameSignal,'.png','.png'))
 cd(curr_path)
 toc;
