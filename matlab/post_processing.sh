@@ -22,6 +22,7 @@ then
   cd $PATH_scriptMatlab
   echo $PATH_scriptMatlab
   matlab -nodesktop -nosplash -r plotTran_DVS
+  kdialog --msgbox "Post-processing with successful check the images"
 else
   kdialog --error "PLEASE verify your Python script there are some errors
   run post-processing after solved"
