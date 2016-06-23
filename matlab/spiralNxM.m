@@ -44,6 +44,9 @@ i = 1;j=1;
 T = 1/freq;
 delta_time = T/quant_pixel;
 vec_time = 0:delta_time:T-delta_time;
+len_t=length(vec_time);
+t_start=vec_time(1);
+t_stop=vec_time(len_t);
 samples = 20;
 
 % Only for the plot
@@ -200,11 +203,16 @@ while (pixel < quant_pixel)
    
       
 end
+
+%interp1 is used to interpolate the input
+interp_InputSignal(PATH_input,nameSignal,quant_pixel,t_start,t_stop,len_t) 
+
 cd(PATH_input)
 period = vec_time(length(vec_time))+delta_time-delta_time/samples;
 fid = fopen('README.txt','wt');
 fprintf(fid,' N %d\n M %d\n T %d \n freq %d (Hz) \n Sample %d \n RPM %d \n',N,M,period,1/period,samples,rpm);
 fclose(fid);
+
 
 colorbar;
 set(gca,'xtick',X);
@@ -216,7 +224,7 @@ name_title = 'Spiral';
 title(name_title)
 xlim([0 N])
 ylim([0 M])
-saveas(h,strcat(nameSignal,'.fig','.fig'))
+%saveas(h,strcat(nameSignal,'.fig','.fig'))
 saveas(h,strcat(nameSignal,'.png','.png'))
 cd(curr_path)
 toc;
