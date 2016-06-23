@@ -18,12 +18,12 @@ freq = 250;
 rpm = freq*60;
 
 curr_path = pwd;
-%PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/';
-PATH_input = '/sdcard/documents/MSc/Cadence_analysis/Inputs/';
+PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/';
+%PATH_input = '/sdcard/documents/MSc/Cadence_analysis/Inputs/';
 cd(PATH_input);
 nameSignal = strcat('spiral',int2str(N),'X',int2str(M),'_',int2str(freq));
 name_folder = strcat(nameSignal,'/');
-[s,mess1,mess2]=mkdir(name_folder);
+[s,mess1,mess2]=mkdir(name_folder)
 if (~strcmp(mess1,''))
    
     rmdir(name_folder,'s');
@@ -44,7 +44,8 @@ i = 1;j=1;
 
 T = 1/freq;
 delta_time = T/quant_pixel;
-vec_time = 0:delta_time:T-delta_time;
+%vec_time = 0:delta_time:T-delta_time;
+vec_time = 0:delta_time:T;
 len_t=length(vec_time)
 t_start=vec_time(1);
 t_stop=vec_time(len_t);
@@ -59,6 +60,15 @@ h = figure(1);
 while (pixel < quant_pixel)
    
    z(:,:) = NaN;
+   
+   if ( pixel == 0 )
+      
+       time = vec_time(pixel+1);
+       Array(:,:) = I0;
+       create_InputSignal(time,delta_time,N,M,samples,Array,nameSignal,PATH_input)
+   end
+   
+   
    switch state
        
        case 0
@@ -66,7 +76,7 @@ while (pixel < quant_pixel)
             % the gradient go to rigth
             if ( j < end_Col)
                 Array(i,j) = Ich;
-                time = vec_time(pixel+1);
+                time = vec_time(pixel+2);
                 
                 % --- plot ---%
                 y1  = i;
@@ -93,7 +103,7 @@ while (pixel < quant_pixel)
             % The gradient is downing by one column
             if ( i < end_row )
                 Array(i,j) = Ich;
-                time = vec_time(pixel+1);
+                time = vec_time(pixel+2);
                 
                 % --- plot ---%
                 y1  = i;
@@ -119,7 +129,7 @@ while (pixel < quant_pixel)
             % el gradiente esta yendo de derecha a izquierda
             if ( j > start_col)
                 Array(i,j) = Ich;
-                time = vec_time(pixel+1);
+                time = vec_time(pixel+2);
                 
                 % --- plot ---%
                 y1  = i;
@@ -145,7 +155,7 @@ while (pixel < quant_pixel)
            % El gradiente esta subiendo por una columna
            if ( i >= start_row) 
                Array(i,j) = Ich;
-               time = vec_time(pixel+1);
+               time = vec_time(pixel+2);
                
                % --- plot ---%
                y1  = i;
@@ -178,7 +188,7 @@ while (pixel < quant_pixel)
        case 4
            % Left one pixel only!
            Array(i,j) = Ich;
-           time = vec_time(pixel+1);
+           time = vec_time(pixel+2);
            pixel = pixel + 1;
            export = true;
            % --- plot ---%

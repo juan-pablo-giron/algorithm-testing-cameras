@@ -265,7 +265,7 @@ then
     cd $PATH_scriptMatlab
     matlab -nodesktop -nosplash -r plotTran_DVS.m
   else
-    kdialog --error "PLEASE verify your Python script there are errors
+    kdialog --error "PLEASE verify your Python script there are some errors
     run post-processing after solved"
   fi
 else
