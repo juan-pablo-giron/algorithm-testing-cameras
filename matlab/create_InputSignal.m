@@ -10,7 +10,7 @@ for ind_y=1:M
         value_pixel = Array(ind_y,ind_x);
         vec_value = value_pixel*ones(1,length(vec_time));
         name_file = strcat(nameSignal,'_',int2str(pixel),'.csv');
-        dlmwrite(name_file,[vec_time' vec_value'],'delimiter',' ','-append','precision',10,'newline','unix');
+        dlmwrite(name_file,[vec_time' vec_value'],'delimiter',',','-append','precision',10,'newline','unix');
         pixel = pixel + 1;
     end
    

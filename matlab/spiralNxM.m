@@ -12,13 +12,14 @@ tic;
 
 clear all;clc;close all;
 
-N = 8; 
-M = 8;
+N = 16; 
+M = 16;
 freq = 250;
 rpm = freq*60;
 
 curr_path = pwd;
-PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/';
+%PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/';
+PATH_input = '/sdcard/documents/MSc/Cadence_analysis/Inputs/';
 cd(PATH_input);
 nameSignal = strcat('spiral',int2str(N),'X',int2str(M),'_',int2str(freq));
 name_folder = strcat(nameSignal,'/');
@@ -44,10 +45,10 @@ i = 1;j=1;
 T = 1/freq;
 delta_time = T/quant_pixel;
 vec_time = 0:delta_time:T-delta_time;
-len_t=length(vec_time);
+len_t=length(vec_time)
 t_start=vec_time(1);
 t_stop=vec_time(len_t);
-samples = 20;
+samples = 4;
 
 % Only for the plot
 
@@ -205,7 +206,7 @@ while (pixel < quant_pixel)
 end
 
 %interp1 is used to interpolate the input
-interp_InputSignal(PATH_input,nameSignal,quant_pixel,t_start,t_stop,len_t) 
+interp_InputSignal(PATH_input,nameSignal,quant_pixel,len_t,samples) 
 
 cd(PATH_input)
 period = vec_time(length(vec_time))+delta_time-delta_time/samples;
@@ -214,7 +215,7 @@ fprintf(fid,' N %d\n M %d\n T %d \n freq %d (Hz) \n Sample %d \n RPM %d \n',N,M,
 fclose(fid);
 
 
-colorbar;
+%colorbar;
 set(gca,'xtick',X);
 set(gca,'ytick',Y);
 xlabel('COLUMNS')
