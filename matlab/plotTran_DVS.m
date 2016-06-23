@@ -2,23 +2,30 @@
 clear all; clc; close all;
 pwd_current = pwd;
 
-PATH_sim_output_matlab ='/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/DVS2x2_TW_T30ms/output_matlab/';
+%PATH_sim_output_matlab ='/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/DVS2x2_TW_T30ms/output_matlab/';
 %PATH_sim_output_matlab = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/DVS2x2_X_Arbiter_TS_20res/output_matlab/';
 %PATH_sim_output_matlab = '/sdcard/documents/MSc/Cadence_analysis/Sim_DATA_PIXELS/output_matlab/';
-cd(PATH_sim_output_matlab)
 
 %mide el tiempo que dura el script en ejecutarse 
 tic;
 
+PATH_sim_output_matlab = getenv('PATH_sim_output_matlab');
+name_simulation = getenv('name_simulation');
+PATH_folder_images = getenv('PATH_folder_images');
+number_bits = str2num(getenv('number_bits'));
+N = str2num(getenv('N'));
+M = str2num(getenv('M'));
+
+cd(PATH_sim_output_matlab)
 
 %name_simulation = 'DVS2x2_resol20';
-name_simulation ='DVS2x2_TW_T30ms';
+%name_simulation ='DVS2x2_TW_T30ms';
 string_data = strcat('data_',name_simulation,'.csv');
 string_index_file = 'index_data.csv';
-number_bits = 3;
+%number_bits = 3;
 middle_point = 0.9;
-% header
 
+% header
 %Importing the data
 
 data_Sim = importdata(string_data);
@@ -122,14 +129,18 @@ end
 % Paso 4. Plot
 
 
+cd(PATH_folder_images)
 
 % ON EVENTS
-X_length = 2;
-Y_length = 2;
+
 i = 0;
-X = 0:X_length;
-Y = 0:Y_length;
-z  = zeros(Y_length+1,X_length+1);
+%X = 0:X_length;
+%Y = 0:Y_length;
+X = 0:2*N-1;
+Y = 0:2*M-1;
+z  = zeros(2*M,2*N);
+
+%z  = zeros(Y_length+1,X_length+1);
 len_ON_events = length(ON_events);
 fig_ON = figure(1);
 colormap(fig_ON,'gray')
@@ -140,8 +151,8 @@ if ( len_ON_events >=1)
         vec_time_pix = ON_events{i+1};
         t = vec_time_pix(1);
         pixel = vec_time_pix(2);
-        row = rem(pixel,X_length);
-        col = fix(pixel/X_length);
+        row = rem(pixel,N);
+        col = fix(pixel/N);
         y1  = row+1;
         y2  = y1+1;
         x1  = col+1;
@@ -159,6 +170,8 @@ if ( len_ON_events >=1)
     colorbar;
     set(gca,'xtick',X);
     set(gca,'ytick',Y);
+    xlim([0 N])
+    ylim([0 M])
     vec_time_pix = ON_events{1};
     min_t = vec_time_pix(1);
     vec_time_pix = ON_events{len_ON_events};
@@ -168,14 +181,15 @@ if ( len_ON_events >=1)
     ylabel('Y')
     zlabel('Time ms')
     name_title = 'ON EVENTS';
-    name_fig = 'ON_events_3D.fig';
+    name_fig = 'ON_events_3D';
     title(name_title)
-    saveas(fig_ON,name_fig,'fig');
+    saveas(fig_ON,strcat(name_fig,'.fig'),'fig');
+    saveas(fig_ON,strcat(name_fig,'.png'),'png');
 end
 
 
 len_OFF_events = length(OFF_events);
-z  = zeros(Y_length+1,X_length+1);
+z  = zeros(2*M,2*N);
 fig_OFF = figure(2);
 colormap(fig_OFF,'gray')
 i = 0;
@@ -186,8 +200,8 @@ if ( len_OFF_events >=1)
         vec_time_pix = OFF_events{i+1};
         t = vec_time_pix(1);
         pixel = vec_time_pix(2);
-        row = rem(pixel,X_length);
-        col = fix(pixel/X_length);
+        row = rem(pixel,N);
+        col = fix(pixel/N);
         y1  = row+1;
         y2  = y1+1;
         x1  = col+1;
@@ -205,6 +219,8 @@ if ( len_OFF_events >=1)
     colorbar;
     set(gca,'xtick',X);
     set(gca,'ytick',Y);
+    xlim([0 N])
+    ylim([0 M])
     vec_time_pix = OFF_events{1};
     min_t = vec_time_pix(1);
     vec_time_pix = OFF_events{len_OFF_events};
@@ -214,10 +230,12 @@ if ( len_OFF_events >=1)
     ylabel('Y')
     zlabel('Time ms')
     name_title = 'OFF EVENTS';
-    name_fig = 'OFF_events_3D.fig';
+    name_fig = 'OFF_events_3D';
     title(name_title)
-    saveas(fig_OFF,name_fig,'fig');
+    saveas(fig_OFF,strcat(name_fig,'.fig'),'fig');
+    saveas(fig_OFF,strcat(name_fig,'.png'),'png');
 end
 
 cd(pwd_current)
 toc
+exit

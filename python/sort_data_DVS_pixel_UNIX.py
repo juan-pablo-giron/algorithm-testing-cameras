@@ -13,12 +13,12 @@ import os
 
 ## Getting the enviroment variables
 
-PATH_sim_output_matlab = os.environ['PATH_sim_output_matlab'] sys.argv[1]
+PATH_sim_output_matlab = os.environ['PATH_sim_output_matlab'] 
 PATH_folder_simulation = os.environ['PATH_folder_simulation']
 name_simulation = os.environ['name_simulation']
 name_folder_output_Spectre = os.environ['name_folder_output_Spectre']  
 number_bits = int(os.environ['number_bits'])
-name_tran = 'tran'
+name_tran = 'tran.tran'
 
 
 
