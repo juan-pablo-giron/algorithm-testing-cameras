@@ -12,8 +12,8 @@ tic;
 
 clear all;clc;close all;
 
-N = 16; 
-M = 16;
+N = 8; 
+M = 8;
 freq = 250;
 rpm = freq*60;
 
@@ -215,7 +215,7 @@ fprintf(fid,' N %d\n M %d\n T %d \n freq %d (Hz) \n Sample %d \n RPM %d \n',N,M,
 fclose(fid);
 
 
-%colorbar;
+colorbar;
 set(gca,'xtick',X);
 set(gca,'ytick',Y);
 xlabel('COLUMNS')
@@ -225,7 +225,7 @@ name_title = 'Spiral';
 title(name_title)
 xlim([0 N])
 ylim([0 M])
-%saveas(h,strcat(nameSignal,'.fig','.fig'))
+saveas(h,strcat(nameSignal,'.fig','.fig'))
 saveas(h,strcat(nameSignal,'.png','.png'))
 cd(curr_path)
 toc;

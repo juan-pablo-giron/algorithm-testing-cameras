@@ -2,23 +2,26 @@
 clear all; clc; close all;
 pwd_current = pwd;
 
-PATH_sim_output_matlab ='/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/DVS2x2_TW_T30ms/output_matlab/';
+%PATH_sim_output_matlab ='/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/DVS2x2_TW_T30ms/output_matlab/';
 %PATH_sim_output_matlab = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/DVS2x2_X_Arbiter_TS_20res/output_matlab/';
 %PATH_sim_output_matlab = '/sdcard/documents/MSc/Cadence_analysis/Sim_DATA_PIXELS/output_matlab/';
+
+PATH_sim_output_matlab = getenv('PATH_sim_output_matlab');
+name_simulation = getenv('name_simulation');
+PATH_folder_images = getenv('$PATH_folder_images');
 cd(PATH_sim_output_matlab)
 
 %mide el tiempo que dura el script en ejecutarse 
 tic;
 
-
 %name_simulation = 'DVS2x2_resol20';
-name_simulation ='DVS2x2_TW_T30ms';
+%name_simulation ='DVS2x2_TW_T30ms';
 string_data = strcat('data_',name_simulation,'.csv');
 string_index_file = 'index_data.csv';
 number_bits = 3;
 middle_point = 0.9;
-% header
 
+% header
 %Importing the data
 
 data_Sim = importdata(string_data);
@@ -122,6 +125,7 @@ end
 % Paso 4. Plot
 
 
+cd(PATH_folder_images)
 
 % ON EVENTS
 X_length = 2;
@@ -168,9 +172,10 @@ if ( len_ON_events >=1)
     ylabel('Y')
     zlabel('Time ms')
     name_title = 'ON EVENTS';
-    name_fig = 'ON_events_3D.fig';
+    name_fig = 'ON_events_3D';
     title(name_title)
-    saveas(fig_ON,name_fig,'fig');
+    saveas(fig_ON,strcat(name_fig,'.fig'),'fig');
+    saveas(fig_ON,strcat(name_fig,'.png'),'png');
 end
 
 
@@ -214,9 +219,10 @@ if ( len_OFF_events >=1)
     ylabel('Y')
     zlabel('Time ms')
     name_title = 'OFF EVENTS';
-    name_fig = 'OFF_events_3D.fig';
+    name_fig = 'OFF_events_3D';
     title(name_title)
-    saveas(fig_OFF,name_fig,'fig');
+    saveas(fig_OFF,strcat(name_fig,'.fig'),'fig');
+    saveas(fig_OFF,strcat(name_fig,'.png'),'png');
 end
 
 cd(pwd_current)
