@@ -18,7 +18,7 @@ python sort_data_DVS_pixel_UNIX.py
   
 if [ "$?" = 0 ]
 then
-  kdialog --msgbox "Starting the Post-processing with MATLAB close it when end"
+  #kdialog --msgbox "Starting the Post-processing with MATLAB close it when end"
   cd $PATH_scriptMatlab
   echo $PATH_scriptMatlab
   matlab -nodesktop -nosplash -r plotTran_DVS
