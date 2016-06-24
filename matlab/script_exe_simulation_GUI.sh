@@ -80,7 +80,7 @@ if [ "$?" -ne 0 ]; then
 fi;
 # extract the name of the netlist
 nameNetlist_spectre=$(echo "$PATH_nameNetlist_spectre" | sed "s/.*\///")
-
+nameNetlist_spectre_Orig=$nameNetlist_spectre
 ## Selecting the folder input
 cd $PATH_namefolder_simulation
 count=1
@@ -180,6 +180,7 @@ cd $PATH_folder_simulation
 
 ###################### EXPORTING THE PATHS ###############
 
+export PATH_nameNetlist_spectre
 export PATH_scriptMatlab
 export PATH_script
 export PATH_scriptPython
@@ -202,10 +203,13 @@ export name_folder_output_Spectre
 export number_bits
 export M
 export N
-
+export nameNetlist_spectre_Orig
+export nameNetlist_spectre
 
 # Write one file name to export the same environment variables for future post processing
+
 echo "#!/bin/bash" >> env_var.sh
+echo "PATH_nameNetlist_spectre=$PATH_nameNetlist_spectre" >> env_var.sh
 echo "PATH_scriptMatlab=$PATH_scriptMatlab" >> env_var.sh
 echo "PATH_script=$PATH_script" >> env_var.sh
 echo "PATH_scriptPython=$PATH_scriptPython" >> env_var.sh
@@ -228,6 +232,9 @@ echo "name_folder_output_Spectre=$name_folder_output_Spectre" >> env_var.sh
 echo "number_bits=$number_bits" >> env_var.sh
 echo "M=$M" >> env_var.sh
 echo "N=$N" >> env_var.sh
+echo "nameNetlist_spectre_Orig=$nameNetlist_spectre_Orig" >> env_var.sh
+echo "nameNetlist_spectre=$nameNetlist_spectre" >> env_var.sh
+echo "export PATH_nameNetlist_spectre" >> env_var.sh
 echo "export PATH_scriptMatlab" >> env_var.sh
 echo "export PATH_script" >> env_var.sh
 echo "export PATH_scriptPython" >> env_var.sh
@@ -250,9 +257,17 @@ echo "export name_folder_output_Spectre" >> env_var.sh
 echo "export number_bits" >> env_var.sh
 echo "export M" >> env_var.sh
 echo "export N" >> env_var.sh
+echo "export nameNetlist_spectre_Orig" >> env_var.sh
+echo "export nameNetlist_spectre" >> env_var.sh
 #############################################################################################3
 
 # Execution of commands
+
+cd $PATH_scriptPython
+
+python setting_input_netlist_UNIX_DVS.py
+
+cd $PATH_folder_simulation
 
 spectre +mt=2 -format psfascii $nameNetlist_spectre
 

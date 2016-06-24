@@ -13,44 +13,45 @@ import sys
 #============================  ALGORITHM ====================================#
 
 ##############   inputs   #########################
-PATH_netlist_spectre = sys.argv[1]
-PATH_output_netlist = sys.argv[2]
-PATH_signal_input = sys.argv[3]
-nameNetlist = sys.argv[4]  #spectre's netlist
-nameNetlistoutput = sys.argv[5] # netlist modified
-name_signal_input = sys.argv[6] # name of the data without extension and number_
-ext_input = sys.argv[7]
-quant_pixels = int(sys.argv[8])
-period_signal = sys.argv[9]
-final_time = sys.argv[10]
-step = sys.argv[11]
-txt_desired_signals = sys.argv[12]
-name_n_Voltage = 'V_pd'
-name_n_Current = 'I_pd'
+
+PATH_nameNetlist_spectre = os.environ['PATH_nameNetlist_spectre']
+PATH_folder_simulation = os.environ['PATH_folder_simulation']
+nameNetlist_spectre_Orig = os.environ['nameNetlist_spectre_Orig']
+nameNetlist_spectre = os.environ['nameNetlist_spectre'] # netlist final
+PATH_folder_input = os.environ['PATH_folder_input']
+name_Signalsinput = os.environ['name_Signalsinput']
+ext_input = '.csv'
+
+N = int(os.environ['N'])
+M = int(os.environ['M'])
+quant_pixels = N*M
+
+os.chdir(PATH_folder_simulation)
+name_n_VoltageDVS = 'V_pdD'
+name_n_VoltageATIS = 'V_pdA'
+name_n_CurrentDVS = 'I_pdD'
+name_n_CurrentATIS = 'I_pdA'
 name_instance = 'I'
-name_subckts = 'subckts'
-name_tran = 'tran'
+#name_subckts = 'subckts'
+#name_tran = 'tran'
 
 ################ end inputs ######################
 
 
-
 l_nodevoltageNames = []     # Save the name of the node voltage
 l_nodecurrentNames = []     # Save the name of the nodes current name
-f = open(PATH_netlist_spectre+nameNetlist,'r')
-f_netlist = open(PATH_output_netlist+nameNetlistoutput+'.scs','w')
+f = open(nameNetlist_spectre_Orig,'r')
+f_netlist = open(nameNetlist_spectre,'w')
 l_netlist = list(f.readlines())
 l_netlist = [w.replace('\n','') for w in l_netlist] # Here is storaged the netlist as a list 
 len_netlist = len(l_netlist) # calculate the length of the list 'l_netlist'
-lst_desired_signals = txt_desired_signals.split(',')
-len_desired_signals = len(lst_desired_signals)
 f.close()
 #### Create the lists with the names of the node voltage/current expected #####
 
 x = 0
 while x <quant_pixels:
-    nodeVoltageName = name_n_Voltage+str(x)
-    nodeCurrentName = name_n_Current+str(x)
+    nodeVoltageName = name_n_VoltageDVS+str(x)
+    nodeCurrentName = name_n_CurrentDVS+str(x)
     l_nodevoltageNames.append(nodeVoltageName)
     l_nodecurrentNames.append(nodeCurrentName)
     x = x + 1
@@ -88,68 +89,32 @@ while i<len_nodeVoltageName:
                 x = x + 1
             else:
                 # Really correspond to a current source
-
+                print "x =%d",x
                 ### Find the next instance ###
                 x_nextInstance = x+1
                 string_next = l_netlist[x_nextInstance]
                 lst_tmp = string_next.split(' ') #convert the string into a list
                 instance = lst_tmp[0] #always take the first element of the row 'cause there is the name instance
+                
                 while not(name_instance in instance):
                     x_nextInstance = x_nextInstance+1
                     string_next = l_netlist[x_nextInstance]
                     lst_tmp = string_next.split(' ')
                     instance = lst_tmp[0] #always take the first element of the row 'cause there is the name instance
                 ### End the next instance
-                    
-                del l_netlist[x:x_nextInstance]                
-                FILE_PATH = 'file='+'"'+ PATH_signal_input+name_signal_input+str(i)+ext_input+'"'
+                print "x next instance =%d",x_nextInstance    
+                del l_netlist[x:x_nextInstance]
+                FILE_PATH = 'file='+'"'+ PATH_folder_input+name_Signalsinput+'_'+str(i)+ext_input+'"'
+               
                 new_row = l_nodecurrentNames[i]+' '+'('+l_nodevoltageNames[i]+' '+'0)'+' '+'isource'+' '+ \
-                          FILE_PATH+' '+'type=pwl'+' '+'scale=1'+' '+'stretch=1'+' '+'pwlperiod='+period_signal
+                          FILE_PATH+' '+'type=pwl'+' '+'delay=T_Rst'+' '+'edgetype=halfsine'+' '+ \
+                          'scale=1'+' '+'stretch=1'+' '+'pwlperiod=T'
 
                 l_netlist.insert(x,new_row)
-                             
-                x = len_netlist
+                               
                 len_netlist = len(l_netlist) # calculate the length of the list 'l_netlist'
+                x = len_netlist
     i = i + 1
-
-######################## Specifying the desired outputs #########################
-    ## Also is change the period and maxstep by the defined by the user ##
-
-x = 0
-i=0
-len_netlist = len(l_netlist) # calculate the length of the list 'l_netlist'
-
-while x < len_netlist:
-    string = l_netlist[x]
-
-    
-    if (name_tran in string):
-
-        l_netlist[x] = 'tran tran stop='+final_time+' errpreset=conservative step='+step+' maxstep='+step+' \ '
-        
-    
-    if (name_subckts  in string):
-        # Delete all the row and write new ones
-        del l_netlist[x:len_netlist-1]
-        while i<len_nodeVoltageName:
-            index_n_signals = 0
-            while (index_n_signals<len_desired_signals):
-                string = lst_desired_signals[index_n_signals]
-                new_line = 'save '+string+str(i)
-                if lst_desired_signals[index_n_signals]== name_n_Current:
-                    new_line = new_line+':sink'
-                    l_netlist.append(new_line)
-                else:
-                    
-                    l_netlist.append(new_line)
-                index_n_signals = index_n_signals+1
-            i = i+1
-        x = len_netlist
-    else:
-        # continue finding 
-        x = x + 1
-
-l_netlist.append('saveOptions options save=selected')
 
 
 #################### Here is written the new netlist #############################
