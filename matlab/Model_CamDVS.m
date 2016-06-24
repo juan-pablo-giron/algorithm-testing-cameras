@@ -11,6 +11,14 @@
 close all;clc;clear;
 
 tic;
+
+%PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/spiral7X8_250/';
+PATH_input = getenv('PATH_folder_input'); %'/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
+PATH_folder_images = getenv('PATH_folder_images'); % '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
+name_signal = getenv('name_Signalsinput') %'TrianguleWave7X8_250';
+N = str2num(getenv('N')); %7;
+M = str2num(getenv('M')); %8;
+
 pwd_current=pwd;
 
 nn = 1.334;
@@ -35,13 +43,11 @@ A = 20;             % Gain closed loop differentiator
 VdiffON = V_p - Vref + Vos;  
 VdiffOFF= V_n - Vref + Vos;
 
-PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/spiral7X8_250/';
-name_signal = 'spiral7X8_250';
-name_input = strcat(PATH_input,name_signal,'_0.csv');
+
+
+name_input = strcat(PATH_input,name_signal,'_0.csv')
 input_signal = importdata(name_input);
 t = input_signal(:,1);
-N = 7;
-M = 8;
 len_t = length(t);
 quant_pixel = N*M;
 Vdiff=zeros(len_t,quant_pixel);
@@ -55,11 +61,12 @@ OFF_events = {[]};
 ind_ON = 1;
 ind_OFF = 1;
 
+cd(PATH_input)
+
 for i=0:quant_pixel-1;
 
     % paso 1. Encontrar Vdiff para cada uno de los pixeles
-    name_signal = 'spiral7X8_250';
-    name_input = strcat(PATH_input,name_signal,'_',num2str(i),'.csv');
+    name_input = strcat(name_signal,'_',num2str(i),'.csv');
     input_signal = importdata(name_input);
     Iph = input_signal(:,2);
     log_Iph = log(Iph/Isn);
@@ -97,7 +104,7 @@ end
 % Paso 3. Plot
 
 
-cd(PATH_input)
+cd(PATH_folder_images)
 
 % ON EVENTS
 
@@ -142,11 +149,6 @@ if ( len_ON_events >=1)
     set(gca,'Ydir','reverse')
     xlim([0 N])
     ylim([0 M])
-    %vec_time_pix = ON_events{1};
-    %min_t = vec_time_pix(1);
-    %vec_time_pix = ON_events{len_ON_events};
-    %max_t = vec_time_pix(1);
-    %set(gca,'zlim',[min_t max_t])
     xlabel('COLUMNS')
     ylabel('ROWS')
     zlabel('Time ms')
@@ -192,11 +194,6 @@ if ( len_OFF_events >=1)
     set(gca,'ytick',Y);
     xlim([0 N])
     ylim([0 M])
-    %vec_time_pix = OFF_events{1};
-    %min_t = vec_time_pix(1);
-    %vec_time_pix = OFF_events{len_OFF_events};
-    %max_t = vec_time_pix(1);
-    %set(gca,'zlim',[min_t max_t])
     xlabel('COLUMNS')
     ylabel('ROWS')
     zlabel('Time ms')
@@ -210,3 +207,4 @@ end
 cd(pwd_current)
 
 toc
+exit

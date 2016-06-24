@@ -38,7 +38,6 @@ if [ "$?" -ne 0 ]; then
 fi;
 
 echo $PATH_simulation
-echo "echooooooooo $PWD"
 mkdir $name_simulation
 # Guarantee that the simulation has a unique name
 
@@ -89,8 +88,8 @@ a=""
 direc=()
 for i in $(ls -d */);
 do
-        a=$a$(echo "$count  ${i%%/} ")
-        direc[$((count-1))]=${i%%/}
+        a=$a$(echo "$count  ${i%%//} ")
+        direc[$((count-1))]=${i%%//}
         count=$((count+1))
 done
 echo $a
@@ -98,6 +97,7 @@ echo $a
 choice=$(kdialog --menu "CHOOSE ONE:" $a --title "Select the folder of your input simulation")
 echo $choice
 echo ${direc[$((choice-1))]}
+name_Signalsinput=${direc[$((choice-1))]}
 
 if [ "$?" = 0 ]; then
   PATH_inputs=$PATH_namefolder_simulation${direc[$((choice-1))]}
@@ -191,6 +191,7 @@ export PATH_folder_input
 export PATH_folder_images
 export PATH_folder_nohup
 export name_simulation
+export name_Signalsinput
 export nameinput
 export name_folder_matlab_output
 export name_matlab_output
@@ -216,6 +217,7 @@ echo "PATH_folder_input=$PATH_folder_input" >> env_var.sh
 echo "PATH_folder_images=$PATH_folder_images" >> env_var.sh
 echo "PATH_folder_nohup=$PATH_folder_nohup" >> env_var.sh
 echo "name_simulation=$name_simulation" >> env_var.sh
+echo "name_Signalsinput=$name_Signalsinput" >> env_var.sh
 echo "nameinput=$nameinput" >> env_var.sh
 echo "name_folder_matlab_output=$name_folder_matlab_output" >> env_var.sh 
 echo "name_matlab_output=$name_matlab_output" >> env_var.sh
@@ -237,6 +239,7 @@ echo "export PATH_folder_input" >> env_var.sh
 echo "export PATH_folder_images" >> env_var.sh
 echo "export PATH_folder_nohup" >> env_var.sh
 echo "export name_simulation" >> env_var.sh
+echo "export name_Signalsinput" >> env_var.sh
 echo "export nameinput" >> env_var.sh
 echo "export name_folder_matlab_output" >> env_var.sh 
 echo "export name_matlab_output" >> env_var.sh

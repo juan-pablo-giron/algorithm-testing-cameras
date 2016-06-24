@@ -21,8 +21,8 @@ tic;
 
 clear all;clc;close all;
 
-N = 7; 
-M = 8;
+N = 2; 
+M = 2;
 quant_pixel=N*M;
 freq = 250;
 resol = 255; % Count colours that we wanna to see 
@@ -110,6 +110,7 @@ h=figure(1)
 semilogy(time_interp*scaleTime,I_pd_interp*1e12);
 xlabel('time ms')
 ylabel('I_{pd} (pA)')
+grid on;
 saveas(h,strcat(nameSignal,'.png'),'png');
 saveas(h,strcat(nameSignal,'.fig'),'fig');
 cd(curr_path);
