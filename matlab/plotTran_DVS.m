@@ -177,7 +177,7 @@ if ( len_ON_events >=1)
     %min_t = vec_time_pix(1);
     %vec_time_pix = ON_events{len_ON_events};
     %max_t = vec_time_pix(1);
-    set(gca,'zlim',[min_t max_t])
+    %set(gca,'zlim',[min_t max_t])
     xlabel('X')
     ylabel('Y')
     zlabel('Time ms')
