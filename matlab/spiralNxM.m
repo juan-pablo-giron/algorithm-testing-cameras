@@ -12,7 +12,7 @@ tic;
 
 clear all;clc;close all;
 
-N = 8; 
+N = 7; 
 M = 8;
 freq = 250;
 rpm = freq*60;
@@ -34,8 +34,12 @@ cd(curr_path);
 pixel = 0;
 start_col = 1;end_Col = N;
 start_row = 2;end_row = M;
-I0 = 50e-12;
-Ich = 100e-12;
+%I0 = 50e-12;
+%Ich = 100e-12;
+
+I0 = 500e-12;
+Ich = 1e-9;
+scaleTime = 1e3;
 
 state = 0;
 quant_pixel = N*M;
@@ -45,7 +49,7 @@ i = 1;j=1;
 T = 1/freq;
 delta_time = T/quant_pixel;
 %vec_time = 0:delta_time:T-delta_time;
-vec_time = 0:delta_time:T;
+vec_time = [0:delta_time:T];
 len_t=length(vec_time)
 t_start=vec_time(1);
 t_stop=vec_time(len_t);
@@ -57,6 +61,10 @@ X = 0:2*N-1;
 Y = 0:2*M-1;
 z  = zeros(2*M,2*N);
 h = figure(1);
+
+% y -> Columns
+% x -> Rows
+
 while (pixel < quant_pixel)
    
    z(:,:) = NaN;
@@ -83,7 +91,7 @@ while (pixel < quant_pixel)
                 y2  = y1+1;
                 x1  = j;
                 x2  = x1+1;
-                z([y1 y2],[x1 x2]) = time;
+                z([y1 y2],[x1 x2]) = scaleTime*time;
                 surf(X,Y,z)
                 hold on
                 grid on
@@ -110,7 +118,7 @@ while (pixel < quant_pixel)
                 y2  = y1+1;
                 x1  = j;
                 x2  = x1+1;
-                z([y1 y2],[x1 x2]) = time;
+                z([y1 y2],[x1 x2]) = scaleTime*time;
                 surf(X,Y,z)
                 hold on
                 grid on
@@ -136,7 +144,7 @@ while (pixel < quant_pixel)
                 y2  = y1+1;
                 x1  = j;
                 x2  = x1+1;
-                z([y1 y2],[x1 x2]) = time;
+                z([y1 y2],[x1 x2]) = scaleTime*time;
                 surf(X,Y,z)
                 hold on
                 grid on
@@ -162,7 +170,7 @@ while (pixel < quant_pixel)
                y2  = y1+1;
                x1  = j;
                x2  = x1+1;
-               z([y1 y2],[x1 x2]) = time;
+               z([y1 y2],[x1 x2]) = scaleTime*time;
                surf(X,Y,z)
                hold on
                grid on
@@ -196,7 +204,7 @@ while (pixel < quant_pixel)
            y2  = y1+1;
            x1  = j;
            x2  = x1+1;
-           z([y1 y2],[x1 x2]) = time;
+           z([y1 y2],[x1 x2]) = scaleTime*time;
            surf(X,Y,z)
            hold on
            grid on
@@ -228,14 +236,15 @@ fclose(fid);
 colorbar;
 set(gca,'xtick',X);
 set(gca,'ytick',Y);
+set(gca,'Ydir','reverse')
 xlabel('COLUMNS')
 ylabel('ROWS')
-zlabel('Time s')
+zlabel('Time ms')
 name_title = 'Spiral';
 title(name_title)
 xlim([0 N])
 ylim([0 M])
-saveas(h,strcat(nameSignal,'.fig','.fig'))
-saveas(h,strcat(nameSignal,'.png','.png'))
+saveas(h,strcat(nameSignal,'.fig'),'fig')
+saveas(h,strcat(nameSignal,'.png'),'png')
 cd(curr_path)
 toc;

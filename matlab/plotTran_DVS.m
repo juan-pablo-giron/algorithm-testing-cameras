@@ -151,8 +151,8 @@ if ( len_ON_events >=1)
         vec_time_pix = ON_events{i+1};
         t = vec_time_pix(1);
         pixel = vec_time_pix(2);
-        row = rem(pixel,N);
-        col = fix(pixel/N);
+        row = fix(pixel/N);
+        col = rem(pixel,N);
         y1  = row+1;
         y2  = y1+1;
         x1  = col+1;
@@ -170,12 +170,13 @@ if ( len_ON_events >=1)
     colorbar;
     set(gca,'xtick',X);
     set(gca,'ytick',Y);
+    set(gca,'Ydir','reverse')
     xlim([0 N])
     ylim([0 M])
-    vec_time_pix = ON_events{1};
-    min_t = vec_time_pix(1);
-    vec_time_pix = ON_events{len_ON_events};
-    max_t = vec_time_pix(1);
+    %vec_time_pix = ON_events{1};
+    %min_t = vec_time_pix(1);
+    %vec_time_pix = ON_events{len_ON_events};
+    %max_t = vec_time_pix(1);
     set(gca,'zlim',[min_t max_t])
     xlabel('X')
     ylabel('Y')
@@ -200,8 +201,8 @@ if ( len_OFF_events >=1)
         vec_time_pix = OFF_events{i+1};
         t = vec_time_pix(1);
         pixel = vec_time_pix(2);
-        row = rem(pixel,N);
-        col = fix(pixel/N);
+        row = fix(pixel/N);
+        col = rem(pixel,N);
         y1  = row+1;
         y2  = y1+1;
         x1  = col+1;
@@ -219,15 +220,16 @@ if ( len_OFF_events >=1)
     colorbar;
     set(gca,'xtick',X);
     set(gca,'ytick',Y);
+    set(gca,'Ydir','reverse')
     xlim([0 N])
     ylim([0 M])
-    vec_time_pix = OFF_events{1};
-    min_t = vec_time_pix(1);
-    vec_time_pix = OFF_events{len_OFF_events};
-    max_t = vec_time_pix(1);
-    set(gca,'zlim',[min_t max_t])
-    xlabel('X')
-    ylabel('Y')
+    %vec_time_pix = OFF_events{1};
+    %min_t = vec_time_pix(1);
+    %vec_time_pix = OFF_events{len_OFF_events};
+    %max_t = vec_time_pix(1);
+    %set(gca,'zlim',[min_t max_t])
+    xlabel('COLUMNS')
+    ylabel('ROWS')
     zlabel('Time ms')
     name_title = 'OFF EVENTS';
     name_fig = 'OFF_events_3D';

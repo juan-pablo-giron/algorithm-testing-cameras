@@ -263,12 +263,6 @@ echo "export nameNetlist_spectre" >> env_var.sh
 
 # Execution of commands
 
-cd $PATH_scriptPython
-
-python setting_input_netlist_UNIX_DVS.py
-
-cd $PATH_folder_simulation
-
 spectre +mt=2 -format psfascii $nameNetlist_spectre
 
 # Command for DVS pixel
