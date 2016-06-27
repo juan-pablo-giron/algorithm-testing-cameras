@@ -175,7 +175,7 @@ name_folder_output_Spectre="netlist_"$name_simulation".raw"
 
 # Is copied the input used in the simulation
 cd $nameinput
-cp -rf $PATH_inputs* $PATH_folder_input 
+cp -rf $PATH_namefolder_simulation$name_Signalsinput/* $PATH_folder_input 
 cd $PATH_folder_simulation
 
 ###################### EXPORTING THE PATHS ###############
@@ -265,7 +265,7 @@ echo "export nameNetlist_spectre" >> env_var.sh
 
 cd $PATH_scriptPython
 
-python setting_input_netlist_UNIX_DVS.py
+python setting_input_netlist_UNIX_DVS2.py
 
 cd $PATH_folder_simulation
 
@@ -281,6 +281,7 @@ then
   then
     #kdialog --msgbox "Starting the Post-processing with MATLAB close it when end"
     cd $PATH_scriptMatlab
+    matlab -nodesktop -nosplash -r Model_CamDVS
     matlab -nodesktop -nosplash -r plotTran_DVS
   else
     kdialog --error "PLEASE verify your Python script there are some errors

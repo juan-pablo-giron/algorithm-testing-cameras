@@ -12,9 +12,9 @@ tic;
 
 clear all;clc;close all;
 
-N = 7; 
-M = 8;
-freq = 250;
+N = 32; 
+M = 32;
+freq = 300;
 rpm = freq*60;
 
 curr_path = pwd;
