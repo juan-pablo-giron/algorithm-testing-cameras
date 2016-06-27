@@ -41,11 +41,15 @@ name_instance = 'I'
 l_nodevoltageNames = []     # Save the name of the node voltage
 l_nodecurrentNames = []     # Save the name of the nodes current name
 f = open(nameNetlist_spectre_Orig,'r')
+f_readme=open(PATH_folder_input+'README.txt','r')
 f_netlist = open(nameNetlist_spectre,'w')
+l_readme=list(f_readme.readlines())
+l_readme=[w.replace('\n','') for w in l_readme]
 l_netlist = list(f.readlines())
 l_netlist = [w.replace('\n','') for w in l_netlist] # Here is stored the netlist as a list 
 len_netlist = len(l_netlist) # calculate the length of the list 'l_netlist'
 f.close()
+f_readme.close()
 #### Create the lists with the names of the node voltage/current expected #####
 
 x = 0
@@ -61,6 +65,30 @@ len_nodeVoltageName = len(l_nodevoltageNames)
 print l_nodevoltageNames
 print l_nodecurrentNames
 
+
+#get the signal's period
+len_readme = len(l_readme)
+i=0
+
+while i<len_readme:
+    str_readme=l_readme[i]
+    find_T = str_readme.find('T')
+    if (find_T != -1 ):
+        lst_tmp=str_readme.split(' ')
+	print 'lst_tmp'+str(lst_tmp)
+	index_T=lst_tmp.index('T')
+	T=lst_tmp[index_T+1]
+	i=len_readme
+    else:
+	i=i+1
+
+
+#index_T = l_readme.index('T')
+#T = l_readme[T+2]
+
+print T
+
+
 ################################################################################
 
 #### Search for the node voltage connected to the specific current source
@@ -70,53 +98,64 @@ print l_nodecurrentNames
 ################## Replacing the I source by intuitive names ########### 
 i = 0
 f_netlist.seek(0,0)
-while i<len_nodeVoltageName:
-    nameVoltageName = l_nodevoltageNames[i]
-    x = 0
-    while x < len_netlist:
-        string = l_netlist[x]
-        find_nameVoltage = string.find(nameVoltageName)
-
-        if (find_nameVoltage == -1):
-            # There is not
-            
-            x = x + 1
-        else:
-            find_str_isource = string.find('isource') # Guarantee that the I is by a source current and not for
-            # other instance e.g. DVS or ATIS, etc
-            if find_str_isource == -1:
-                #Does not corresponde to a current source
-                x = x + 1
+#while i<len_nodeVoltageName:
+#    nameVoltageName = l_nodevoltageNames[i]
+#    x = 0
+while x < len_netlist:
+    string = l_netlist[x]
+    find_nameVoltage = string.find('isource')
+    find_parameter = string.find('parameters')
+    if (find_parameter != -1):
+	lst_tmp=string.split(' ')
+	len_lst_tmp=len(lst_tmp)
+	j=0
+	while (j<len_lst_tmp):
+	    find_T=lst_tmp[j].find('T')
+	    if (find_T != -1):
+		lst_tmp[j]='T=%f'%T
+		string=' '.join(lst_tmp)
+		l_netlist[x]=string
+		j=len_lst_tmp
             else:
-                # Really correspond to a current source
-                print "x =%d",x
-                ### Find the next instance ###
-                x_nextInstance = x+1
-                string_next = l_netlist[x_nextInstance]
-                lst_tmp = string_next.split(' ') #convert the string into a list
-                instance = lst_tmp[0] #always take the first element of the row 'cause there is the name instance
-                
-                while not(name_instance in instance):
-                    x_nextInstance = x_nextInstance+1
-                    string_next = l_netlist[x_nextInstance]
-                    lst_tmp = string_next.split(' ')
-                    instance = lst_tmp[0] #always take the first element of the row 'cause there is the name instance
-                ### End the next instance
-                print "x next instance =%d",x_nextInstance    
-                del l_netlist[x:x_nextInstance]
-                FILE_PATH = 'file='+'"'+ PATH_folder_input+name_Signalsinput+'_'+str(i)+ext_input+'"'
-               
-                new_row = l_nodecurrentNames[i]+' '+'('+l_nodevoltageNames[i]+' '+'0)'+' '+'isource'+' '+ \
-                          FILE_PATH+' '+'type=pwl'+' '+'delay=T_Rst'+' '+'edgetype=halfsine'+' '+ \
-                          'scale=1'+' '+'stretch=1'+' '+'pwlperiod=T'
+		j=j+1    	
+	
 
-                l_netlist.insert(x,new_row)
-                               
-                len_netlist = len(l_netlist) # calculate the length of the list 'l_netlist'
-                x = len_netlist
-    i = i + 1
-
-
+    if (find_nameVoltage != -1):
+	     
+	     find_nameVoltage = string.find(name_n_VoltageDVS)
+	     if (find_nameVoltage != -1):
+	         i=i+1
+	         print 'x = %d'%x+'  lst[X]'+string
+	         lst_tmp=string.split(' ')
+	         lst_tmp=[w.replace('(','') for w in lst_tmp]
+	         print lst_tmp
+	         voltage_name=lst_tmp[1] # here the name node voltage
+	         index=l_nodevoltageNames.index(voltage_name)
+	         print index
+	         j=x+1
+	         while j<len_netlist:
+	             string=l_netlist[j]
+	             lst_tmp=string.split(' ')
+	             print lst_tmp
+	             if lst_tmp[0] != '':
+	                 nxt_ins=j
+	                 j=len_netlist
+	             else:
+	                 j=j+1
+	                 
+	         #writing the desired information
+	         print 'nxt_inst %d' %nxt_ins
+	         del l_netlist[x:nxt_ins]
+	         line1 = l_nodecurrentNames[index]+' ('+l_nodevoltageNames[index]+' 0) isource \\'
+	         line2 = '      file='+'"'+ PATH_folder_input+name_Signalsinput+'_'+str(index)+ext_input+'"'+' \\'  
+	         line3 = '      type=pwl delay=T_Rst edgetype=halfsine scale=1 stretch=1 pwlperiod=T'
+	         l_netlist.insert(x,line1)
+	         l_netlist.insert(x+1,line2)
+	         l_netlist.insert(x+2,line3)
+	         len_netlist=len(l_netlist)
+	         print '--------------------------------------------------------'    
+    x=x+1
+print i
 #################### Here is written the new netlist #############################
 x = 0
 len_netlist = len(l_netlist) # calculate the length of the list 'l_netlist'
