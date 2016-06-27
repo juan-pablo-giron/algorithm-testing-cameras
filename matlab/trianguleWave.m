@@ -25,7 +25,7 @@ N = 2;
 M = 2;
 quant_pixel=N*M;
 freq = 250;
-resol = 255; % Count colours that we wanna to see 
+resol = 256; % Count colours that we wanna to see 
 rpm = freq*60;
 t_hold = (1/freq)/resol;
 samplesPerHold = 2; 
@@ -106,7 +106,15 @@ for p=0:quant_pixel-1
 
 end
 
-h=figure(1)
+cd(PATH_input)
+data_tmp=importdata(name_file);
+t=data_tmp(:,1);
+period = t(length(t));
+fid = fopen('README.txt','wt');
+fprintf(fid,' N %d\n M %d\n T %d \n freq %d (Hz) \n',N,M,period,1/period);
+fclose(fid);
+
+h=figure(1);
 semilogy(time_interp*scaleTime,I_pd_interp*1e12);
 xlabel('time ms')
 ylabel('I_{pd} (pA)')

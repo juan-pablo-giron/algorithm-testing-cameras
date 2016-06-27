@@ -1,0 +1,37 @@
+% Coding the gray scale 
+% Esta funcion tiene como entradas dos umbrales Vhigh y Vlow y un tiempo
+% y retorna un valor entre 0 e 255, que indica que tipo de color
+% dentro de la escala cinza 
+% los datos son fijos.
+
+%clear all;close all;clc;
+
+%Vhigh = 1.7;
+%Vlow  = 0.2; 
+
+function Color = CodingGrayScale(Vhigh,Vlow,Time_Sim)
+
+CURVES = importdata('/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/CODING_GRAYSCALE_ATIS/CURVES.csv');
+Ipd_start = 20e-12;
+Ipd_stop = 1e-9;
+resol = 255;
+delta_Ipd = (Ipd_stop-Ipd_start)/(resol-1);
+
+len_CURVES = length(CURVES);
+vec_times = zeros(len_CURVES/2,1);
+
+for i=1:len_CURVES/2
+   
+    index = find(abs(CURVES(:,2*i))<=Vhigh,1);
+    t_high = CURVES(index,2*i-1);
+    index = find(abs(CURVES(:,2*i))<=Vlow,1);
+    t_low = CURVES(index,2*i-1);
+    t_int = t_high - t_low;
+    vec_times(i) = abs(t_int);
+    
+end
+
+% Return the colour
+
+Color = find(vec_times <= Time_Sim,1);
+
