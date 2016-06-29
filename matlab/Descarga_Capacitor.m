@@ -1,5 +1,5 @@
 
-data = importdata('/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Simulation_cameras/SIMTEST2/input_SIMTEST2/input_SIMTEST20.csv');
+data = importdata('/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/spiral8X8_250/spiral8X8_250_0.csv');
 time = data(:,1);
 I_pd = data(:,2);
 
@@ -18,10 +18,8 @@ end
 
 plot(time,Vcap,'r')
 grid on
-axis([0 time(len_time) 0.1 1.7 ])
-Time_high = find(V<=1.7,1)
-Time_low = find(V<=0.1,1)
+%axis([0 time(len_time) 0.1 1.7 ])
+Time_high = find(Vcap<=1.7,1)
+Time_low = find(Vcap<=0.1,1)
 
-time_ = (time(Time_low)-time(Time_high))/1e-3
-
-TENER PRESENTE EL RESET PARA EL CALCULO DE LA TENSION
+time_ = (time(Time_low)-time(Time_high))

@@ -24,7 +24,7 @@ clear all;clc;close all;
 N = 2; 
 M = 2;
 quant_pixel=N*M;
-freq = 250;
+freq = 50;
 resol = 256; % Count colours that we wanna to see 
 rpm = freq*60;
 t_hold = (1/freq)/resol;
@@ -50,7 +50,7 @@ PATH_input = strcat(PATH_input,nameSignal,'/');
 cd(curr_path);
 
 Imax = 1e-9;
-Imin = 1e-12;
+Imin = 5e-12;
 deltaI = (Imax - Imin)/(resol-1);
 
 deltat = (T/2)/(samplesPerHold*resol); % T/2 porque es para arriba y para abjao en el mismo periodo
@@ -111,7 +111,7 @@ data_tmp=importdata(name_file);
 t=data_tmp(:,1);
 period = t(length(t));
 fid = fopen('README.txt','wt');
-fprintf(fid,' N %d\n M %d\n T %d \n freq %d (Hz) \n',N,M,period,1/period);
+fprintf(fid,' N %d\n M %d\n T %d \n freq %d (Hz) \n Period_total %d',N,M,period,1/period,period+200e-6);
 fclose(fid);
 
 h=figure(1);

@@ -12,9 +12,9 @@ tic;
 
 clear all;clc;close all;
 
-N = 32; 
-M = 32;
-freq = 300;
+N = 8; 
+M = 8;
+freq = 250;
 rpm = freq*60;
 
 curr_path = pwd;
@@ -37,8 +37,8 @@ start_row = 2;end_row = M;
 %I0 = 50e-12;
 %Ich = 100e-12;
 
-I0 = 500e-12;
-Ich = 1e-9;
+I0 = 50e-12;
+Ich = 100e-12;
 scaleTime = 1e3;
 
 state = 0;

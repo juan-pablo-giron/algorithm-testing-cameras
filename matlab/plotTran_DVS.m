@@ -241,5 +241,7 @@ end
 dlmwrite('desiredSignals.csv',vec_desiredData,'delimiter',',','precision',10,'newline','unix');
 
 cd(pwd_current)
+
 toc
+exit
 

@@ -9,7 +9,7 @@
 %Vhigh = 1.7;
 %Vlow  = 0.2; 
 
-function Color = CodingGrayScale(Vhigh,Vlow,Time_Sim)
+%function Color = CodingGrayScale(Vhigh,Vlow,Time_Sim)
 
 % CURVES = importdata('/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/CODING_GRAYSCALE_ATIS/CURVES.csv');
 % Ipd_start = 20e-12;
@@ -20,9 +20,9 @@ Ipd_stop = 100e-12;
 resol = 255;
 delta_Ipd = (Ipd_stop-Ipd_start)/(resol-1);
 
-%Time_Sim =  2.179086540000000e-06;
-%Vhigh = 1.7;
-%Vlow = 200e-3;
+Time_Sim =  2.179086540000000e-06;
+Vhigh = 1.7;
+Vlow = 200e-3;
 
 len_CURVES = length(CURVES);
 vec_times = zeros(len_CURVES/2,1);
@@ -47,11 +47,7 @@ end
 
 % Return the colour
 
-if isempty(find(vec_times <= Time_Sim,1))
-    Color = NaN;
-else
-    
-    Color = find(vec_times <= Time_Sim,1);
-    
-end
+if 
+
+Color = find(vec_times <= Time_Sim,1);
 

@@ -12,12 +12,13 @@ close all;clc;clear;
 
 tic;
 
-%PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/spiral7X8_250/';
+
 PATH_input = getenv('PATH_folder_input'); %'/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
 PATH_folder_images = getenv('PATH_folder_images'); % '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
 name_signal = getenv('name_Signalsinput') %'TrianguleWave7X8_250';
 N = str2num(getenv('N')); %7;
 M = str2num(getenv('M')); %8;
+
 
 pwd_current=pwd;
 

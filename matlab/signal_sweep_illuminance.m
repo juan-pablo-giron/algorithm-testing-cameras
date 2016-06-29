@@ -10,11 +10,14 @@
 %%% ================================================================ %%
 
 %%
-function y = signal_sweep_illuminance(PATH_folder_input,PATH_folder_images, ...
-    quant_pixels,nameSignalOutput,eventsPerPeriod,period_Signal,delta_t,factor_current)
+%function y = signal_sweep_illuminance(PATH_folder_input,PATH_folder_images, ...
+    %quant_pixels,nameSignalOutput,eventsPerPeriod,period_Signal,delta_t,factor_current)
 
-cd(PATH_folder_input)
+%cd(PATH_folder_input)
 %% Create signal
+
+
+
 t  = 0:delta_t:period_Signal-delta_t;
 i  = 0:length(t)-1;
 current = (factor_current*i/eventsPerPeriod)+100e-15;
