@@ -110,9 +110,9 @@ for i=0:quant_pixel-1;
     Events{i+1} = Event_pix;
 end
 
- figure(1)
- subplot(2,1,1)
- plot(t,Vdiff(:,1))
+% figure(1)
+% subplot(2,1,1)
+% plot(t,Vdiff(:,1))
 % xlim([0 0.00013])
 
 %% ========================================================= %%
@@ -176,8 +176,8 @@ for i=0:quant_pixel-1;
             
         end
         
-        hold on
-        grid on
+        %hold on
+        %grid on
            
     end
     Matrix_Color{i+1} = Color_pix;

@@ -264,7 +264,7 @@ then
 
   cd $PATH_folder_simulation
 
-  spectre +mt +aps -format psfascii $nameNetlist_spectre
+  spectre +mt ++aps -format psfascii $nameNetlist_spectre
   # Command for DVS pixel
 
 

@@ -1,0 +1,46 @@
+CPLUS_INCLUDE_PATH=/usr/lib64/qt/include
+MANPATH=/usr/local/man:/usr/man:/usr/lib64/java/man
+SSH_AGENT_PID=2595
+DM_CONTROL=/var/run/xdmctl
+HOSTNAME=estinge18.pads.ufrj.br
+GLADE_PIXMAP_PATH=:
+TERM=xterm
+SHELL=/bin/bash
+XDG_SESSION_COOKIE=0ff0ee732227309a96b3341700000011-1467312060.828051-1835993087
+XDM_MANAGED=method=classic
+WINDOWID=31457284
+USER=jpgironruiz
+LS_COLORS=
+GDK_USE_XFT=1
+GLADE_MODULE_PATH=:
+SSH_AUTH_SOCK=/tmp/ssh-jOVFkVMM2594/agent.2594
+SESSION_MANAGER=local/estinge18:@/tmp/.ICE-unix/2603,unix/estinge18:/tmp/.ICE-unix/2603
+T1LIB_CONFIG=/usr/share/t1lib/t1lib.config
+XDG_CONFIG_DIRS=/etc/xdg:/etc/kde/xdg:/etc/xfce/xdg
+MINICOM=-c on
+PATH=/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/games:/cds/Opus/user/bin:/usr/local/matlab/bin:/usr/local/Adobe/Reader9/bin:/usr/local/pads/bin:/usr/local/pads/sbin:/usr/local/cuda/bin:/usr/local/cuda/NVIDIA_GPU_Computing_SDK/bin:/usr/lib64/java/bin:/usr/lib64/kde4/libexec:/usr/lib64/qt/bin:.
+DESKTOP_SESSION=xfce4
+LC_COLLATE=C
+INPUTRC=/etc/inputrc
+PWD=/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/scripts/matlab
+JAVA_HOME=/usr/lib64/java
+LANG=en_US
+KDEDIRS=/usr
+QT4DIR=/usr/lib64/qt
+HOME=/home/netware/users/jpgironruiz
+SHLVL=2
+LS_OPTIONS=-F -b -T 0 --color=auto
+GTK_PATH=:/usr/lib64/gtk-2.0
+LESS=-M
+LOGNAME=jpgironruiz
+XDG_DATA_DIRS=/usr/local/share:/usr/share:/usr/share
+DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-qUssu6pEIe,guid=a56e65f6240735ea6bcc87c60000003e
+LESSOPEN=|lesspipe.sh %s
+PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig:/usr/lib64/pkgconfig
+WINDOWPATH=7
+DISPLAY=:0.0
+GLADE_CATALOG_PATH=:
+LIBGLADE_MODULE_PATH=:/usr/lib64/libglade/2.0
+G_BROKEN_FILENAMES=1
+COLORTERM=Terminal
+_=/usr/bin/env
