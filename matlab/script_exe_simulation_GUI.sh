@@ -258,9 +258,9 @@ then
   echo "Simulating a DVS camera wait it could take some minutes, hours or days"
   # Execution of commands for DVS
 
-  #cd $PATH_scriptPython
+  cd $PATH_scriptPython
 
-  #python setting_input_netlist_UNIX_DVS2.py
+  python setting_input_netlist_UNIX_DVS2.py
 
   cd $PATH_folder_simulation
 

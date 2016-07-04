@@ -238,7 +238,7 @@ if ( len_OFF_events >=1)
     saveas(fig_OFF,strcat(name_fig,'.png'),'png');
 end
 
-dlmwrite('desiredSignals.csv',vec_desiredData,'delimiter',',','precision',10,'newline','unix');
+%dlmwrite('desiredSignals.csv',vec_desiredData,'delimiter',',','precision',10,'newline','unix');
 
 cd(pwd_current)
 

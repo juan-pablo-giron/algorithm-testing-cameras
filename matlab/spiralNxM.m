@@ -14,7 +14,7 @@ clear all;clc;close all;
 
 N = 8; 
 M = 8;
-freq = 250;
+freq = 300;
 rpm = freq*60;
 
 curr_path = pwd;

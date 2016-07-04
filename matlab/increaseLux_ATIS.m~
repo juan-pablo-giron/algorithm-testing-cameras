@@ -14,18 +14,18 @@ frames = 8;
 rpm = freq*60;
 
 
-PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/';
-%PATH_input = '/sdcard/documents/MSc/Cadence_analysis/Inputs/';
-cd(PATH_input);
-nameSignal = strcat('illuminationAtis',int2str(N),'X',int2str(M),'_',int2str(freq));
-name_folder = strcat(nameSignal,'/');
-[s,mess1,mess2]=mkdir(name_folder);
-if (~strcmp(mess1,''))
-   
-    rmdir(name_folder,'s');
-    mkdir(name_folder);
-end
-PATH_input = strcat(PATH_input,nameSignal,'/');
+% PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/';
+% %PATH_input = '/sdcard/documents/MSc/Cadence_analysis/Inputs/';
+% cd(PATH_input);
+% nameSignal = strcat('illuminationAtis',int2str(N),'X',int2str(M),'_',int2str(freq));
+% name_folder = strcat(nameSignal,'/');
+% [s,mess1,mess2]=mkdir(name_folder);
+% if (~strcmp(mess1,''))
+%    
+%     rmdir(name_folder,'s');
+%     mkdir(name_folder);
+% end
+% PATH_input = strcat(PATH_input,nameSignal,'/');
 
 T = 1/freq;
 vec_time = 0:T/(frames):T;
@@ -38,7 +38,6 @@ Color_min = 0;
 deltaColor = (Color_max - Color_min)/(N/2*frames);
 Color = deltaColor;
 
-cd(PATH_input)
 
 for fr=0:frames
 
@@ -62,15 +61,11 @@ for fr=0:frames
         
     end
     
-    
     h = imagesc(uint8(Matrix_tmp));
-    colormap('gray')
-    colorbar
     grid on;
     xlabel('Columns')
     ylabel('Rows')
-    title(strcat('Time = ',num2str(vec_time(fr+1))))
-    saveas(h,strcat('Frame_',num2str(fr),'.png'),'png')
+    title(strcat('Time = ',
     
     % Colocando los valores de la matriz dentro del vector unidimensional
     % de pixeles
@@ -84,12 +79,9 @@ for fr=0:frames
             
         end
     end
-    Matrix_tmp(:,:) = 0;
+    
     
 end
-
-% Interporlation
-
 
 
 
