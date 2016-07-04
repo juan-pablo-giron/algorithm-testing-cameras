@@ -62,15 +62,17 @@ for fr=0:frames
         
     end
     
-    
-    h = imagesc(uint8(Matrix_tmp));
+    h = figure('Visible','off');
+    imagesc((Matrix_tmp));
     colormap('gray')
     colorbar
     grid on;
     xlabel('Columns')
     ylabel('Rows')
+    set(gca,'xtick',[0:N]);
+    set(gca,'ytick',[0:M]);
     title(strcat('Time = ',num2str(vec_time(fr+1))))
-    saveas(h,strcat('Frame_',num2str(fr),'.png'),'png')
+    saveas(gca,strcat('Frame_',num2str(fr)),'png')
     
     % Colocando los valores de la matriz dentro del vector unidimensional
     % de pixeles
@@ -80,7 +82,7 @@ for fr=0:frames
         for ind_y=1:N
             
             Matrix_Ipd(ind_y + (ind_x-1)*M,fr+1) = Matrix_tmp(ind_x,ind_y);
-            fprintf('ind_y+m %d | fr+1 %d \n',ind_y+(ind_x-1)*M,fr+1);
+            %fprintf('ind_y+m %d | fr+1 %d \n',ind_y+(ind_x-1)*M,fr+1);
             
         end
     end
