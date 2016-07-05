@@ -1,5 +1,5 @@
-% Esta función proporciona el conjunto de datos necesarios para 
-% simular una cámara ATIS.
+% Esta funciï¿½n proporciona el conjunto de datos necesarios para 
+% simular una cï¿½mara ATIS.
 
 tic;
 
@@ -14,8 +14,8 @@ frames = 8;
 rpm = freq*60;
 
 
-PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/';
-%PATH_input = '/sdcard/documents/MSc/Cadence_analysis/Inputs/';
+%PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/';
+PATH_input = '/sdcard/documents/MSc/Cadence_analysis/Inputs/';
 cd(PATH_input);
 nameSignal = strcat('illuminationAtis',int2str(N),'X',int2str(M),'_',int2str(freq));
 name_folder = strcat(nameSignal,'/');
@@ -27,6 +27,8 @@ if (~strcmp(mess1,''))
 end
 PATH_input = strcat(PATH_input,nameSignal,'/');
 
+Imax= 1e-9;
+Imin= 20e-12;
 T = 1/freq;
 vec_time = 0:T/(frames):T;
 len_t=length(vec_time);
@@ -61,18 +63,18 @@ for fr=0:frames
         Matrix_tmp(:,:) = 0;
         
     end
-    
-    h = figure('Visible','off');
-    imagesc((Matrix_tmp));
-    colormap('gray')
-    colorbar
-    grid on;
-    xlabel('Columns')
-    ylabel('Rows')
-    set(gca,'xtick',[0:N]);
-    set(gca,'ytick',[0:M]);
-    title(strcat('Time = ',num2str(vec_time(fr+1))))
-    saveas(gca,strcat('Frame_',num2str(fr)),'png')
+    %Matrix_tmp
+    %h = figure('Visible','off');
+    %imwrite(uint8(Matrix_tmp),strcat('frame_',num2str(fr),'.png'));
+    %colormap('gray')
+    %colorbar
+    %grid on;
+    %xlabel('Columns')
+    %ylabel('Rows')
+    %set(gca,'xtick',[0:N]);
+    %set(gca,'ytick',[0:M]);
+    %title(strcat('Time = ',num2str(vec_time(fr+1))))
+    %saveas(gca,strcat('Frame_',num2str(fr)),'png')
     
     % Colocando los valores de la matriz dentro del vector unidimensional
     % de pixeles
@@ -92,15 +94,23 @@ end
 
 % Interporlation
 
+scaleI = falta colocar elvalor del pixel como valor de corriente
 
+time_interp = 0:T/(1000*frames):T;
 
+for i=1:N*M
+	
+	I_pd_interp = interp1(vec_time,Matrix_Ipd(i,:),time_interp,'linear');
+	name_file=strcat(nameSignal,'_',num2str(i-1),'.csv')
+	F=fopen(name_file,'w'); %OCTAVE
+	dlmwrite(F,[time_interp' I_pd_interp'],'delimiter',' ','precision',10,'newline','unix');
+   %dlmwrite(name_file,[time_interp' I_pd_interp'],'delimiter',' ','precision',10,'newline','unix');
+	fclose(F);
 
+end
 
-
-
-
-%fid = fopen('README.txt','wt');
-%fprintf(fid,' N %d\n M %d\n T %d \n freq %d (Hz) \n Period_total %d',N,M,T,freq,T+200e-6);
-%fclose(fid);
+fid = fopen('README.txt','wt');
+fprintf(fid,' N %d\n M %d\n T %d \n freq %d (Hz) \n Period_total %d',N,M,T,freq,T+200e-6);
+fclose(fid);
 
 cd(curr_path);
