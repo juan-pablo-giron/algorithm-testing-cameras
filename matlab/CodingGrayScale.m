@@ -11,12 +11,13 @@
 
 function Color = CodingGrayScale(Vhigh,Vlow,Time_Sim)
 
-% CURVES = importdata('/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/CODING_GRAYSCALE_ATIS/CURVES.csv');
-% Ipd_start = 20e-12;
-% Ipd_stop = 1e-9;
-CURVES = importdata('/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/CODING_GRAYSCALE_ATIS/CURVES_100pAmax.csv');
-Ipd_start = 10e-12;
-Ipd_stop = 100e-12;
+ CURVES = importdata('/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/CODING_GRAYSCALE_ATIS/CURVES.csv');
+ Ipd_start = 20e-12;
+ Ipd_stop = 1e-9;
+
+%CURVES = importdata('/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/CODING_GRAYSCALE_ATIS/CURVES_100pAmax.csv');
+%Ipd_start = 10e-12;
+%Ipd_stop = 100e-12;
 resol = 255;
 delta_Ipd = (Ipd_stop-Ipd_start)/(resol-1);
 

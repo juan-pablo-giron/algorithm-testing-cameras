@@ -291,9 +291,15 @@ then
   fi
 
 else
-
+  
+  # For the ATIS simulation is extracted the quantity of Frames
+  Col_Frame=$(cat $PATH_inputs"README.txt" | awk '{print NF}' | sort -nu | tail -n 1)
+  Frames=$(cat $PATH_inputs"README.txt" | grep "Frames" | cut -d " " -f $Col_Frame)
+  export Frames
+  echo "Frames=$Frames" >> env_var.sh
+  echo "export Frames" >> env_var.sh
   spectre +mt ++aps -format psfascii $nameNetlist_spectre
-
+  
 fi
 
 cd $PATH_scriptMatlab

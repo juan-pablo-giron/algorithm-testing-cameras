@@ -10,7 +10,7 @@ curr_path = pwd;
 N = 8; 
 M = 8;
 freq = 150;
-frames = 8;
+frames = 4;
 rpm = freq*60;
 T_Rst = 200e-6;
 
@@ -41,13 +41,22 @@ Matrix_Color = zeros(M*N,len_t);
 Matrix_Ipd = zeros(M*N,len_t);
 Matrix_tmpColor = zeros(M,N);
 Matrix_tmpIpd = zeros(M,N);
+Matrix_grayscale = zeros(N/2,1);
 Color_max = 255;
 Color_min = 0;
 deltaColor = (Color_max - Color_min)/(N/2*frames);
 deltaIpd = (Imax - Imin)/(N/2*frames);
 Color = deltaColor;
 Ipd = Imin;
+struct_lims = {[]};
 cd(PATH_input)
+
+for x=0:N-1
+    
+    struct_lims{x+1} = x;
+    
+end
+
 
 for fr=0:frames
 
@@ -68,6 +77,7 @@ for fr=0:frames
            Matrix_tmpIpd([Rini:Rend],Cini) = Ipd;
            Rini = Rini - 1 ; Rend = Rend + 1;
            Cini = Cini - 1 ; Cend = Cend + 1;
+           Matrix_grayscale(ind) = (Color)/255;
            Color = Color + deltaColor;
            Ipd = Ipd + deltaIpd;
         end
@@ -75,19 +85,47 @@ for fr=0:frames
         
         Matrix_tmpColor(:,:) = 0;
         Matrix_tmpIpd(:,:) = Inot;
+        Matrix_grayscale(:) = (0)/255;
+        Ipd = Ipd + deltaIpd;
     end
-    %Matrix_tmp
-    %h = figure('Visible','off');
-    %imwrite(uint8(Matrix_tmp),strcat('frame_',num2str(fr),'.png'));
-    %colormap('gray')
-    %colorbar
-    %grid on;
-    %xlabel('Columns')
-    %ylabel('Rows')
-    %set(gca,'xtick',[0:N]);
-    %set(gca,'ytick',[0:M]);
-    %title(strcat('Time = ',num2str(vec_time(fr+1))))
-    %saveas(gca,strcat('Frame_',num2str(fr)),'png')
+    
+    h = figure('Visible','off');
+    
+    imagesc(uint8(Matrix_tmpColor),[0 255])
+    set(gca,'XTickLabel',struct_lims)
+    set(gca,'YTickLabel',struct_lims)
+    colormap([Matrix_grayscale Matrix_grayscale Matrix_grayscale])
+    colorbar('YTick',[1 10 20])
+    grid off;
+    xlabel('Columns')
+    ylabel('Rows')
+    caxis([min(min(Matrix_tmpColor)) max(max(Matrix_tmpColor))]);
+    
+    lim_inf = (samples)*fr+1;
+    lim_sup = lim_inf + (samples-1);
+    title(strcat('Time = [ ',num2str(vec_time(lim_inf)*1e3),' - ', ...
+        num2str(vec_time(lim_sup)*1e3),'] ms',' Frame = ',num2str(fr)))
+    
+    
+    % Setting the lines vertical and horizontal at the image
+    
+    vc_lineX = linspace(0,N+1,200);
+    vc_lineY = ones(1,length(vc_lineX))/2;
+    
+    for x=1:N
+        
+        for y=1:M
+            
+            hold on;
+            plot(vc_lineX,vc_lineY+y);
+            
+        end
+        hold on
+        line([x+0.5 x+0.5],[0 M+1])
+    end
+    
+    
+    saveas(gca,strcat('Frame_',num2str(fr)),'png')
     
     % Colocando los valores de la matriz dentro del vector unidimensional
     % de pixeles
@@ -95,10 +133,7 @@ for fr=0:frames
     for ind_x=1:M
         
         for ind_y=1:N
-            
-            lim_inf = (samples)*fr+1;
-            lim_sup = lim_inf + (samples-1);
-            
+                              
             Matrix_Color(ind_y + (ind_x-1)*M,lim_inf:lim_sup) = Matrix_tmpColor(ind_x,ind_y);
             Matrix_Ipd(ind_y + (ind_x-1)*M,lim_inf:lim_sup) = Matrix_tmpIpd(ind_x,ind_y);
         end
@@ -116,13 +151,16 @@ for i=1:N*M
 	I_pd_interp = interp1(vec_time,Matrix_Ipd(i,:),time_interp,'linear');
 	name_file=strcat(nameSignal,'_',num2str(i-1),'.csv');
 	dlmwrite(name_file,[time_interp' I_pd_interp'],'delimiter',' ','precision',10,'newline','unix');
-	
+	%plot(time_interp,I_pd_interp)
+    %hold on;
 end
 
 %% Writing the README FILE
 
 fid = fopen('README.txt','wt');
-fprintf(fid,' N %d\n M %d\n T %d \n freq %d (Hz) \n Period_total %d',N,M,T,freq,T+T_Rst);
+fprintf(fid,' N %d\n M %d\n T %d \n freq %d (Hz) \n Frames %d \n Period_total %d ',N,M,T,freq,framT+T_Rst);
 fclose(fid);
+
+toc
 
 cd(curr_path);

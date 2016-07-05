@@ -8,18 +8,20 @@ curr_pwd = pwd;
 
 tic;
 
-PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/spiral8X8_250/';
+%PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/spiral8X8_250/';
 %PATH_input = getenv('PATH_folder_input'); %'/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
 %PATH_folder_images = getenv('PATH_folder_images'); % '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
 %name_signal = getenv('name_Signalsinput') %'TrianguleWave7X8_250';
-name_signal = 'spiral8X8_250';
+%name_signal = 'spiral8X8_250';
 %N = str2num(getenv('N')); %7;
 %M = str2num(getenv('M')); %8;
+
+PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/illuminationAtis8X8_150/';
+name_signal = 'illuminationAtis8X8_150';
 N = 8;
 M = 8;
 
-pwd_current=pwd;
-
+%% Transistor's parameters
 nn = 1.334;
 np = 1.369;
 Vtn = 359.2e-3;
@@ -32,11 +34,11 @@ Isn = 2*nn*fi^2*Kn*Ratio;
 
 % Known vaiables
 Vref = 1.5;
-V_p = 1.4;          % V_tetha+
-V_n = 1.6;         % V_tetha-
+V_p = 1.35;          % V_tetha+
+V_n = 1.65;         % V_tetha-
 Vos = 5.42e-3;      % Voffset comparador
-Iph_max = 100e-12;
-Iph_min = 1e-15;
+Iph_max = 1e-9;
+Iph_min = 20e-12;
 A = 20;             % Gain closed loop differentiator
 
 VdiffON = V_p - Vref + Vos;  
@@ -181,10 +183,8 @@ for i=0:quant_pixel-1;
            
     end
     Matrix_Color{i+1} = Color_pix;
-  % subplot(2,1,2)
-  % plot(t,Vint) 
-  % xlim([0 0.00013])
+  
 end
 
-
+toc
 cd(curr_pwd)
