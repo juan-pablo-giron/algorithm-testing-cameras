@@ -14,7 +14,7 @@ clear all;clc;close all;
 
 N = 8; 
 M = 8;
-freq = 1000;
+freq = 5000;
 rpm = freq*60;
 
 curr_path = pwd;
@@ -50,7 +50,7 @@ T = 1/freq;
 delta_time = T/quant_pixel;
 %vec_time = 0:delta_time:T-delta_time;
 vec_time = [0:delta_time:T];
-len_t=length(vec_time)
+len_t=length(vec_time);
 t_start=vec_time(1);
 t_stop=vec_time(len_t);
 samples = 4;

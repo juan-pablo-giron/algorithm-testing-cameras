@@ -2,6 +2,7 @@
 
 %% ========================= PARAMAMETERS MOSFET  ================= %%
 
+%{
 close all;clc;clear;
 
 curr_pwd = pwd;
@@ -16,8 +17,8 @@ tic;
 %N = str2num(getenv('N')); %7;
 %M = str2num(getenv('M')); %8;
 
-PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/illuminationAtis8X8_150/';
-name_signal = 'illuminationAtis8X8_150';
+PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/illuminationAtis8X8_150_4/';
+name_signal = 'illuminationAtis8X8_150_4';
 N = 8;
 M = 8;
 
@@ -130,6 +131,7 @@ Color_pix = {[]};
 i = 0;
 ack_Rst = 0;
 ack_Vhigh = 0;
+vec_Times_events_pixels = zeros(1,quant_pixel);
 
 for i=0:quant_pixel-1;
     cd(PATH_input)
@@ -172,6 +174,7 @@ for i=0:quant_pixel-1;
                 Color = CodingGrayScale(Vhigh,Vlow,T_int);
                 Color_pix.vec_color(ind_events) = Color;
                 Color_pix.vec_time(ind_events) = t(j);
+                total_events = ind_events;
                 ind_events = ind_events + 1;
                 ack_Vhigh = 0;
             end
@@ -182,9 +185,104 @@ for i=0:quant_pixel-1;
         %grid on
            
     end
+    vec_Times_events_pixels(i+1) = total_events;
     Matrix_Color{i+1} = Color_pix;
   
 end
 
+%}
+
+%% ====================== Painting the images ======================== %%
+
+close all;
+
+len_Matrix_Color = length(Matrix_Color);
+max_Events = max(vec_Times_events_pixels); % se calcula cuanto es el mayor numero de eventos asi mismo sera el de imagenes
+Matrix_paint = zeros(M,N);
+Matrix_grayscale = [];
+struct_lims = {[]};
+vec_time_frame = zeros(N*M,1);  % se usa para decir en la grafica el rango de tiempo
+vec_color_frame = zeros(N*M,1);
+
+Matrix_paint(:,:) = NaN;
+vec_time_frame(:) = NaN;
+vec_color_frame(:) = NaN;
+
+%% setting the numbers from 0 to N-1 for the columns and 0 to M-1 for Rows
+% it works only with square matrixes.
+for x=0:N-1
+    
+    struct_lims{x+1} = num2str(x);
+    
+end
+
+%% Get the ranges to plot
+for i=1:max_Events
+    ind_MGS = 1;
+    for j=1:len_Matrix_Color
+       
+        vec_time = Matrix_Color{j}.vec_time;
+        vec_color = Matrix_Color{j}.vec_color;
+        indx = fix((j-1)/M);
+        indy = rem(j-1,N);
+        indx = indx + 1;
+        indy = indy + 1;
+        if length(vec_time) >= i
+            Matrix_paint(indx,indy) = vec_color(i);
+            Matrix_grayscale(ind_MGS,1) = vec_color(i)/255;
+            ind_MGS = ind_MGS + 1;
+        end
+            
+    end
+    
+    %% Creating the image
+    h = figure('Visible','on');
+    imagesc(uint8(Matrix_paint),[0 255])
+    cmap = unique(Matrix_grayscale); % Elimina los valores repetidos y organiza de menos a más
+    colorbar
+    colorbar('YTick',[1:length(cmap)])
+    colorbar('YTickLabel',num2str(uint8(255*cmap)))
+    set(gca,'XTick',[1:N])
+    set(gca,'YTick',[1:M])
+    set(gca,'XTickLabel',struct_lims)
+    set(gca,'YTickLabel',struct_lims)
+    
+    colormap([cmap cmap cmap])
+    %colorbar('YTick',[1 2])
+    grid off;
+    xlabel('Columns')
+    ylabel('Rows')
+    caxis([min(min(Matrix_paint)) max(max(Matrix_paint))]);
+    
+    %lim_inf = (samples)*fr+1;
+    %lim_sup = lim_inf + (samples-1);
+    %title(strcat('Time = [ ',num2str(vec_time(lim_inf)*1e3),' - ', ...
+    %    num2str(vec_time(lim_sup)*1e3),'] ms',' Frame = ',num2str(fr)))
+    
+    
+    % Setting the lines vertical and horizontal at the image
+    
+    vc_lineX = linspace(0,N+1,200);
+    vc_lineY = ones(1,length(vc_lineX))/2;
+    
+    for x=1:N
+        
+        for y=1:M
+            
+            hold on;
+            plot(vc_lineX,vc_lineY+y);
+            
+        end
+        hold on
+        line([x+0.5 x+0.5],[0 M+1])
+    end
+    
+    
+    %saveas(gca,strcat('Frame_',num2str(fr)),'png')
+    
+end
+
+%text(5,5,['\color{white}' 't=' num2str(4)],'HorizontalAlignment','center')
+tic
 toc
 cd(curr_pwd)

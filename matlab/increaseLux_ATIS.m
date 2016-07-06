@@ -7,17 +7,17 @@ clear all;clc;close all;
 
 curr_path = pwd;
 
-N = 8; 
-M = 8;
+N =8; 
+M =8;
 freq = 150;
-frames = 4;
+frames = 3;
 rpm = freq*60;
 T_Rst = 200e-6;
 
 PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/';
 %PATH_input = '/sdcard/documents/MSc/Cadence_analysis/Inputs/';
 cd(PATH_input);
-nameSignal = strcat('illuminationAtis',int2str(N),'X',int2str(M),'_',int2str(freq));
+nameSignal = strcat('illuminationAtis',int2str(N),'X',int2str(M),'_',int2str(freq),'_',int2str(frames));
 name_folder = strcat(nameSignal,'/');
 
 %% Creating the directory
@@ -29,6 +29,8 @@ if (~strcmp(mess1,''))
     mkdir(name_folder);
 end
 PATH_input = strcat(PATH_input,nameSignal,'/');
+
+%% parameters and declarations of variables
 
 Imax= 1e-9;
 Imin= 20e-12;
@@ -48,15 +50,19 @@ deltaColor = (Color_max - Color_min)/(N/2*frames);
 deltaIpd = (Imax - Imin)/(N/2*frames);
 Color = deltaColor;
 Ipd = Imin;
-struct_lims = {[]};
+struct_limsX = {[]};
+struct_limsY = {[]};
 cd(PATH_input)
 
-for x=0:N-1
-    
-    struct_lims{x+1} = x;
-    
-end
+%% colocar los nombres en los ejes de manera correcta
 
+for x=0:N-1
+    struct_limsX{x+1} = num2str(x);
+end
+struct_limsY = struct_limsX;
+
+    
+%% Creating the frames    
 
 for fr=0:frames
 
@@ -88,18 +94,25 @@ for fr=0:frames
         Matrix_grayscale(:) = (0)/255;
         Ipd = Ipd + deltaIpd;
     end
-    
-    h = figure('Visible','off');
+ %% Painting the frame  
+    h = figure('Visible','on');
     
     imagesc(uint8(Matrix_tmpColor),[0 255])
-    set(gca,'XTickLabel',struct_lims)
-    set(gca,'YTickLabel',struct_lims)
+    
     colormap([Matrix_grayscale Matrix_grayscale Matrix_grayscale])
-    colorbar('YTick',[1 10 20])
+    
+    colorbar('YTick',uint8(255*Matrix_grayscale'),'YTickLabels',{'Cold','Cool','Neutral','Warm'})
+    %colorbar
+    %colorbar('YTick',[1:length(Matrix_grayscale)])
+    %colorbar('YTickLabel',uint8(255*Matrix_grayscale))
+    set(gca,'XTick',[1:N])
+    set(gca,'YTick',[1:M])
+    set(gca,'YTickLabel',struct_limsY)
+    set(gca,'XTickLabel',struct_limsX)
     grid off;
     xlabel('Columns')
     ylabel('Rows')
-    caxis([min(min(Matrix_tmpColor)) max(max(Matrix_tmpColor))]);
+    caxis([min(uint8(255*Matrix_grayscale)) max(uint8(255*Matrix_grayscale))]);
     
     lim_inf = (samples)*fr+1;
     lim_sup = lim_inf + (samples-1);
@@ -127,7 +140,7 @@ for fr=0:frames
     
     saveas(gca,strcat('Frame_',num2str(fr)),'png')
     
-    % Colocando los valores de la matriz dentro del vector unidimensional
+    %% Colocando los valores de la matriz dentro del vector unidimensional
     % de pixeles
     
     for ind_x=1:M
@@ -144,6 +157,7 @@ end
 
 %% Interporlation
 
+
 time_interp = linspace(0,T,200*len_t);
 
 for i=1:N*M
@@ -151,11 +165,11 @@ for i=1:N*M
 	I_pd_interp = interp1(vec_time,Matrix_Ipd(i,:),time_interp,'linear');
 	name_file=strcat(nameSignal,'_',num2str(i-1),'.csv');
 	dlmwrite(name_file,[time_interp' I_pd_interp'],'delimiter',' ','precision',10,'newline','unix');
-	%plot(time_interp,I_pd_interp)
-    %hold on;
+	plot(time_interp,I_pd_interp)
+    hold on;
 end
 
-%% Writing the README FILE
+% Writing the README FILE
 
 fid = fopen('README.txt','wt');
 fprintf(fid,' N %d\n M %d\n T %d \n freq %d (Hz) \n Frames %d \n Period_total %d ',N,M,T,freq,frames,T+T_Rst);
