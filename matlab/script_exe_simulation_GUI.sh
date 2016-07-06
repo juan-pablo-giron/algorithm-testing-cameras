@@ -136,6 +136,40 @@ if [ "$?" -ne 0 ]; then
   return
 fi;
 
+Vdoff=$(kdialog --inputbox "Write the Vdoff in format LONG");
+if [ "$?" -ne 0 ]; then
+  kdialog --error "Simulation Aborted"
+  cd $PATH_scriptMatlab
+  return
+fi;
+
+Vdon=$(kdialog --inputbox "Write the Vdon in format LONG");
+if [ "$?" -ne 0 ]; then
+  kdialog --error "Simulation Aborted"
+  cd $PATH_scriptMatlab
+  return
+fi;
+
+# For ATIS
+
+if [ "$choice_TypeSim" = 2 ] 
+then
+  Vhigh=$(kdialog --inputbox "Write the Vhigh in format LONG");
+  if [ "$?" -ne 0 ]; then
+    kdialog --error "Simulation Aborted"
+    cd $PATH_scriptMatlab
+    return
+  fi;
+  Vlow=$(kdialog --inputbox "Write the Vlow in format LONG");
+  if [ "$?" -ne 0 ]; then
+    kdialog --error "Simulation Aborted"
+    cd $PATH_scriptMatlab
+    return
+  fi;
+
+fi
+
+
 comment_simulation=$(kdialog --inputbox "Write some comments of your Simulation")
 if [ "$?" -ne 0 ]; then
   comment_simulation="Sin comentarios"
@@ -197,6 +231,10 @@ export name_folder_output_Spectre
 export number_bits
 export M
 export N
+export Vdon
+export Vdoff
+export Vhigh
+export Vlow
 export nameNetlist_spectre_Orig
 export nameNetlist_spectre
 
@@ -222,6 +260,10 @@ echo "name_folder_output_Spectre=$name_folder_output_Spectre" >> env_var.sh
 echo "number_bits=$number_bits" >> env_var.sh
 echo "M=$M" >> env_var.sh
 echo "N=$N" >> env_var.sh
+echo "Vdoff=$Vdoff" >> env_var.sh
+echo "Vdoff=$Vdon" >> env_var.sh
+echo "Vhigh=$Vhigh" >> env_var.sh
+echo "Vlow=$Vlow" >> env_var.sh
 echo "nameNetlist_spectre_Orig=$nameNetlist_spectre_Orig" >> env_var.sh
 echo "nameNetlist_spectre=$nameNetlist_spectre" >> env_var.sh
 echo "export PATH_nameNetlist_spectre" >> env_var.sh
@@ -247,6 +289,10 @@ echo "export name_folder_output_Spectre" >> env_var.sh
 echo "export number_bits" >> env_var.sh
 echo "export M" >> env_var.sh
 echo "export N" >> env_var.sh
+echo "export Vdoff" >> env_var.sh
+echo "export Vdon" >> env_var.sh
+echo "export Vhigh" >> env_var.sh
+echo "export Vlow" >> env_var.sh
 echo "export nameNetlist_spectre_Orig" >> env_var.sh
 echo "export nameNetlist_spectre" >> env_var.sh
 #############################################################################################3
