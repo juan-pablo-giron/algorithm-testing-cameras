@@ -18,7 +18,8 @@ PATH_folder_images = getenv('PATH_folder_images'); % '/home/netware/users/jpgiro
 name_signal = getenv('name_Signalsinput') %'TrianguleWave7X8_250';
 N = str2num(getenv('N')); %7;
 M = str2num(getenv('M')); %8;
-
+V_p = str2num(getenv('Vdon'));
+V_n = str2num(getenv('Vdoff'));
 
 pwd_current=pwd;
 
@@ -33,12 +34,10 @@ Ratio = 0.5e-6/2e-6;
 Isn = 2*nn*fi^2*Kn*Ratio;
 
 % Known vaiables
-Vref = 1.5;
-V_p = 1.4;          % V_tetha+
-V_n = 1.6;         % V_tetha-
+Vref = 1.495;
+%V_p = 1.4;          % V_tetha+
+%V_n = 1.6;         % V_tetha-
 Vos = 5.42e-3;      % Voffset comparador
-Iph_max = 100e-12;
-Iph_min = 1e-15;
 A = 20;             % Gain closed loop differentiator
 
 VdiffON = V_p - Vref + Vos;  
