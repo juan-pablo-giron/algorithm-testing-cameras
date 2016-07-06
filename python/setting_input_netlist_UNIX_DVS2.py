@@ -20,6 +20,10 @@ nameNetlist_spectre_Orig = os.environ['nameNetlist_spectre_Orig']
 nameNetlist_spectre = os.environ['nameNetlist_spectre'] # netlist final
 PATH_folder_input = os.environ['PATH_folder_input']
 name_Signalsinput = os.environ['name_Signalsinput']
+Vdoff = float(os.environ['Vdoff'])
+Vdon = float(os.environ['Vdon'])
+
+
 ext_input = '.csv'
 
 N = int(os.environ['N'])
@@ -113,9 +117,11 @@ while x < len_netlist:
         while (j<len_lst_tmp):
             find_T=lst_tmp[j].find('T')
             if (find_T != -1):
-                lst_tmp[j]='T=%1.10f'%float(T)
-                string=' '.join(lst_tmp)
-                l_netlist[x]=string
+                #lst_tmp[j]='Vdon T=%1.10f'%float(T)
+                #string=' '.join(lst_tmp)
+                #l_netlist[x]=string
+                new_line = 'parameters Vdon=%1.3f'%Vdon+' Vdoff=%1.3f'%Vdoff+' T=%1.10f'%float(T)+' T_Rst=%1.10f'%T_Rst
+                l_netlist[x]=new_line
                 j=len_lst_tmp
             else:
                 j=j+1
