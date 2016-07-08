@@ -13,13 +13,19 @@ close all;clc;clear;
 tic;
 
 
-PATH_input = getenv('PATH_folder_input'); %'/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
-PATH_folder_images = getenv('PATH_folder_images'); % '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
-name_signal = getenv('name_Signalsinput'); %'TrianguleWave7X8_250';
-N = str2num(getenv('N')); %7;
-M = str2num(getenv('M')); %8;
-V_p = str2num(getenv('Vdon'));
-V_n = str2num(getenv('Vdoff'));
+%PATH_input = getenv('PATH_folder_input'); %'/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
+
+
+PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/illuminationAtis8X8_150_4/';
+name_signal = 'illuminationAtis8X8_150_4';
+
+
+PATH_folder_images = PATH_input; %getenv('PATH_folder_images'); % '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
+%name_signal = getenv('name_Signalsinput'); %'TrianguleWave7X8_250';
+N = 8;%str2num(getenv('N')); %7;
+M = 8;%str2num(getenv('M')); %8;
+V_p = 1.4;%str2num(getenv('Vdon'));
+V_n = 1.6;%str2num(getenv('Vdoff'));
 
 pwd_current=pwd;
 
@@ -45,9 +51,10 @@ VdiffOFF= V_n - Vref + Vos;
 
 
 
-name_input = strcat(PATH_input,name_signal,'_0.csv')
+name_input = strcat(PATH_input,name_signal,'_0.csv');
 input_signal = importdata(name_input);
 t = input_signal(:,1);
+time_signal = input_signal(:,1);
 len_t = length(t);
 quant_pixel = N*M;
 Vdiff=zeros(len_t,quant_pixel);
@@ -118,12 +125,13 @@ scaleTime=1e3;
 
 %z  = zeros(Y_length+1,X_length+1);
 len_ON_events = length(ON_events);
-fig_ON = figure(1);
-colormap(fig_ON,'gray')
+
 
 if ( len_ON_events >=1)
+    fig_ON = figure(1);
+    colormap(fig_ON,'gray')
     while i < len_ON_events
-
+        
         vec_time_pix = ON_events{i+1};
         t = vec_time_pix(1);
         pixel = vec_time_pix(2);
@@ -155,18 +163,18 @@ if ( len_ON_events >=1)
     name_title = 'ON EVENTS MODEL';
     name_fig = 'ON_events_3D_Model';
     title(name_title)
-    saveas(fig_ON,strcat(name_fig,'.fig'),'fig');
-    saveas(fig_ON,strcat(name_fig,'.png'),'png');
+    %saveas(fig_ON,strcat(name_fig,'.fig'),'fig');
+    %saveas(fig_ON,strcat(name_fig,'.png'),'png');
 end
 
 
-len_OFF_events = length(OFF_events);
+len_OFF_events = length(OFF_events)
 z  = zeros(2*M,2*N);
-fig_OFF = figure(2);
-colormap(fig_OFF,'gray')
 i = 0;
 
-if ( len_OFF_events >=1)
+if ( len_OFF_events >1)
+    fig_OFF = figure(2);
+    colormap(fig_OFF,'gray')
     while i < len_OFF_events
 
         vec_time_pix = OFF_events{i+1};
@@ -200,11 +208,11 @@ if ( len_OFF_events >=1)
     name_title = 'OFF EVENTS MODEL';
     name_fig = 'OFF_events_3D_Model';
     title(name_title)
-    saveas(fig_OFF,name_fig,'fig');
-    saveas(fig_OFF,name_fig,'png');
+    %aveas(fig_OFF,name_fig,'fig');
+    %saveas(fig_OFF,name_fig,'png');
 end
 
 cd(pwd_current)
 
 toc
-exit
+%exit

@@ -4,55 +4,42 @@
 % dentro de la escala cinza 
 % los datos son fijos.
 
-%clear all;close all;clc;
+function [vec_color vec_COD_TIME] = CodingGrayScale(Vhigh,Vlow,resol,Clim)
 
-%Vhigh = 1.7;
-%Vlow  = 0.2; 
+CURVES = importdata('/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/CODING_GRAYSCALE_ATIS/CURVES_2000pts.csv');
+time_RST = 100e-9; % tiempo fijo que se usó para extraer las curvas. 
 
-function Color = CodingGrayScale(Vhigh,Vlow,Time_Sim)
-
- CURVES = importdata('/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/CODING_GRAYSCALE_ATIS/CURVES.csv');
- Ipd_start = 20e-12;
- Ipd_stop = 1e-9;
-
-%CURVES = importdata('/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/CODING_GRAYSCALE_ATIS/CURVES_100pAmax.csv');
-%Ipd_start = 10e-12;
-%Ipd_stop = 100e-12;
-resol = 255;
-delta_Ipd = (Ipd_stop-Ipd_start)/(resol-1);
-
-%Time_Sim =  2.179086540000000e-06;
 %Vhigh = 1.7;
 %Vlow = 200e-3;
+%resol = 4;
+%Clim = [0 255];
+vec_color = linspace(Clim(1),Clim(2),resol);
 
 len_CURVES = length(CURVES);
-vec_times = zeros(len_CURVES/2,1);
+vec_COD_TIME = zeros(resol,1); % es el vectore final que contiene los n espacios definido por la resolucion
+vec_time_curves = zeros(len_CURVES/2,1);
 
+% Tomando los tiempos de todas las curvas
 for i=1:len_CURVES/2
+    vec_time = CURVES(:,2*i-1);
+    v_int = CURVES(:,2*i);
+    len_v_int = length(v_int);
+    start_time = find(vec_time >= time_RST,1);
+    index1 = find(v_int(start_time:len_v_int)<=Vhigh,1);
+    t_high = vec_time(index1+start_time);
+    index2 = find(v_int(start_time:len_v_int)<=Vlow,1);
+    t_low = vec_time(index2+start_time);
+    %if ~(isempty(index1) || isempty(index2)) 
+    vec_time_curves(i) = t_low - t_high;
+    %end
+end
+
+% creando los limites
+
+step = floor((len_CURVES/2)/resol);
+vec_time_curves = sort(vec_time_curves,'descend');
+for i=1:resol-1
    
-    index1 = find(abs(CURVES(:,2*i))<=Vhigh,1);
-    t_high = CURVES(index1,2*i-1);
-    index2 = find(abs(CURVES(:,2*i))<=Vlow,1);
-    t_low = CURVES(index2,2*i-1);
-    if isempty(index1) || isempty(index2)
-        vec_times(i) = NaN;
-    else
-        t_int = t_high - t_low;
-        vec_times(i) = abs(t_int);
-    
-    end
-    
-    
-    
+   vec_COD_TIME(i) = vec_time_curves(step*i);
+      
 end
-
-% Return the colour
-
-if isempty(find(vec_times <= Time_Sim,1))
-    Color = NaN;
-else
-    
-    Color = find(vec_times <= Time_Sim,1);
-    
-end
-
