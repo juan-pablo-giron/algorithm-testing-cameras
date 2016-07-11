@@ -10,7 +10,7 @@ curr_path = pwd;
 N =8; 
 M =8;
 freq = 150;
-frames = 3;
+frames = 4;
 rpm = freq*60;
 T_Rst = 200e-6;
 
@@ -64,6 +64,9 @@ struct_limsY = struct_limsX;
     
 %% Creating the frames    
 
+NroCols = 3;
+NroRows = ceil(frames/NroCols);
+ h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
 for fr=0:frames
 
     Rini = M/2;Rend = Rini + 1;
@@ -83,7 +86,7 @@ for fr=0:frames
            Matrix_tmpIpd([Rini:Rend],Cini) = Ipd;
            Rini = Rini - 1 ; Rend = Rend + 1;
            Cini = Cini - 1 ; Cend = Cend + 1;
-           Matrix_grayscale(ind) = (Color)/255;
+           Matrix_grayscale(ind) = Color;
            Color = Color + deltaColor;
            Ipd = Ipd + deltaIpd;
         end
@@ -91,20 +94,27 @@ for fr=0:frames
         
         Matrix_tmpColor(:,:) = 0;
         Matrix_tmpIpd(:,:) = Inot;
-        Matrix_grayscale(:) = (0)/255;
+        Matrix_grayscale(:) = 0;
         Ipd = Ipd + deltaIpd;
     end
  %% Painting the frame  
-    h = figure('Visible','on');
+    %h = figure('Visible','on');
     
+    subplot(NroRows,NroCols,fr+1)
+    
+    c_min = uint8(min(Matrix_grayscale));
+    c_max = uint8(max(Matrix_grayscale));
+    CMAP = uint8(unique(Matrix_grayscale));
+   
     imagesc(uint8(Matrix_tmpColor),[0 255])
+    colormap(gray)
+    if c_min ~= c_max
+        colorbar('Ylim',[c_min c_max],'YTick',CMAP);
+    else
+        colorbar('YTick',CMAP);
     
-    colormap([Matrix_grayscale Matrix_grayscale Matrix_grayscale])
-    
-    colorbar('YTick',uint8(255*Matrix_grayscale'),'YTickLabels',{'Cold','Cool','Neutral','Warm'})
-    %colorbar
-    %colorbar('YTick',[1:length(Matrix_grayscale)])
-    %colorbar('YTickLabel',uint8(255*Matrix_grayscale))
+    end
+    %colorbar('YTick',uint8(255*Matrix_grayscale'),'YTickLabels',{'Cold','Cool','Neutral','Warm'})
     set(gca,'XTick',[1:N])
     set(gca,'YTick',[1:M])
     set(gca,'YTickLabel',struct_limsY)
@@ -112,13 +122,11 @@ for fr=0:frames
     grid off;
     xlabel('Columns')
     ylabel('Rows')
-    caxis([min(uint8(255*Matrix_grayscale)) max(uint8(255*Matrix_grayscale))]);
     
     lim_inf = (samples)*fr+1;
     lim_sup = lim_inf + (samples-1);
     title(strcat('Time = [ ',num2str(vec_time(lim_inf)*1e3),' - ', ...
         num2str(vec_time(lim_sup)*1e3),'] ms',' Frame = ',num2str(fr)))
-    
     
     % Setting the lines vertical and horizontal at the image
     
@@ -126,19 +134,23 @@ for fr=0:frames
     vc_lineY = ones(1,length(vc_lineX))/2;
     
     for x=1:N
-        
-        for y=1:M
-            
-            hold on;
-            plot(vc_lineX,vc_lineY+y);
-            
-        end
-        hold on
-        line([x+0.5 x+0.5],[0 M+1])
-    end
+       
+       for y=1:M
+           
+           hold on;
+           plot(vc_lineX,vc_lineY+y,'--','Color',[0.7 0.7 0.7]);
+           
+       end
+       hold on
+       line([x+0.5 x+0.5],[0 M+1],'LineStyle','--','Color',[0.7 0.7 0.7])
+   end
     
+    text(N/2+1,M+1.7,['(',char(fr+1+96),') '],...
+        'HorizontalAlignment','right',...
+        'VerticalAlignment','bottom',...
+        'color','k',...
+        'fontw','b')
     
-    saveas(gca,strcat('Frame_',num2str(fr)),'png')
     
     %% Colocando los valores de la matriz dentro del vector unidimensional
     % de pixeles
@@ -154,6 +166,12 @@ for fr=0:frames
     Matrix_tmpColor(:,:) = 0;
     
 end
+
+set(gcf,'PaperPositionMode','auto')
+print('-depsc2', 'Input_ATIS.eps')
+print('-dpng', 'Input_ATIS.png')
+
+%saveas(gca,strcat('Frame_',num2str(fr)),'png')
 
 %% Interporlation
 

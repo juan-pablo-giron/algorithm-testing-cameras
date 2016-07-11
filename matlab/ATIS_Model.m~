@@ -67,6 +67,9 @@ ind_OFF = 1;
 cd(PATH_input)
 
 
+
+
+
 for i=0:quant_pixel-1;
 
     % paso 1. Encontrar Vdiff para cada uno de los pixeles
@@ -115,6 +118,7 @@ end
 cd(PATH_folder_images)
 
 
+
 i = 0;
 %X = 0:X_length;
 %Y = 0:Y_length;
@@ -128,7 +132,7 @@ len_ON_events = length(ON_events);
 
 
 if ( len_ON_events >=1)
-    fig_ON = figure(1);
+    fig_ON = figure('Visible','on','units','normalized');%,'outerposition',[0 0 1 1]);
     colormap(fig_ON,'gray')
     while i < len_ON_events
         
@@ -151,9 +155,10 @@ if ( len_ON_events >=1)
     end
 
     % adjusting apperance
-    colorbar;
+    %colorbar;
     set(gca,'xtick',X);
     set(gca,'ytick',Y);
+    set(gca,'XTickLabels',{'','1','','2'})
     set(gca,'Ydir','reverse')
     xlim([0 N])
     ylim([0 M])
@@ -163,8 +168,9 @@ if ( len_ON_events >=1)
     name_title = 'ON EVENTS MODEL';
     name_fig = 'ON_events_3D_Model';
     title(name_title)
-    %saveas(fig_ON,strcat(name_fig,'.fig'),'fig');
-    %saveas(fig_ON,strcat(name_fig,'.png'),'png');
+    set(fig_ON,'PaperPositionMode','auto')
+    print('-depsc2','DVS_ON_Model.eps')
+    print('-dpng','DVS_ON_Model.png')
 end
 
 
@@ -173,7 +179,7 @@ z  = zeros(2*M,2*N);
 i = 0;
 
 if ( len_OFF_events >1)
-    fig_OFF = figure(2);
+    fig_OFF = figure('Visible','off');
     colormap(fig_OFF,'gray')
     while i < len_OFF_events
 
@@ -196,7 +202,7 @@ if ( len_OFF_events >1)
     end
 
     % adjusting apperance
-    colorbar;
+    %colorbar;
     set(gca,'Ydir','reverse')
     set(gca,'xtick',X);
     set(gca,'ytick',Y);
@@ -208,8 +214,9 @@ if ( len_OFF_events >1)
     name_title = 'OFF EVENTS MODEL';
     name_fig = 'OFF_events_3D_Model';
     title(name_title)
-    %saveas(fig_OFF,name_fig,'fig');
-    %saveas(fig_OFF,name_fig,'png');
+    set(fig_OFF,'PaperPositionMode','auto')
+    print('-depsc2','DVS_OFF_Model.eps')
+    print('-dpng','DVS_OFF_Model.png')
 end
 
 
@@ -341,6 +348,13 @@ Struct_Frames = {[]};
 vec_time_pix_colour_tmp = N*M*ones(1,3);
 ind_struct = 1;
 ind_Matrix_tmp = 1;
+struct_lims = {[
+for x=0:N-1
+    
+    struct_lims{x+1} = num2str(x);
+    
+end
+
 for i=1:len_Matrix2print
     
     time    = Matrix2print(i,1);
@@ -371,11 +385,7 @@ end
 struct_lims = {[]};
 max_col = 3;
 max_rows = ceil(length(Struct_Frames)/3);
-for x=0:N-1
-    
-    struct_lims{x+1} = num2str(x);
-    
-end
+
  h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
  
 for i=1:length(Struct_Frames)
@@ -425,6 +435,8 @@ for i=1:length(Struct_Frames)
        line([x+0.5 x+0.5],[0 M+1],'LineStyle','--','Color',[0.7 0.7 0.7])
    end
    
+   
+   
    % Changing the labels axis
    xlabel('Columns')
    ylabel('Rows')
@@ -433,14 +445,22 @@ for i=1:length(Struct_Frames)
    set(gca,'XTickLabel',struct_lims)
    set(gca,'YTickLabel',struct_lims)
    
-   %saveas(gca,'Output_Model_ATIS','png')
-   %print('-depsc2', 'Output_Model_ATIS.eps')
+   % Inserting the letters to each plot
+   
+   text(N/2+1,M+2.5,['(',char(i+96),') '],...
+        'HorizontalAlignment','right',...
+        'VerticalAlignment','bottom',...
+        'color','k',...
+        'fontw','b')
    
 end
+
+cd(PATH_folder_images)
+
 set(gcf,'PaperPositionMode','auto')
 print('-depsc2', 'Output_Model_ATIS.eps')
-saveas(gca,'Output_Model_ATIS','png')
-%print('-depsc2', 'Output_Model_ATIS.eps')
+print('-dpng', 'Output_Model_ATIS.png')
+
 
 
 toc
