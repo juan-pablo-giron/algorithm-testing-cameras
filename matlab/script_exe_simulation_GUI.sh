@@ -347,7 +347,7 @@ else
   cd $PATH_scriptPython
 
   python setting_input_netlist_UNIX_ATIS.py
-
+  cd $PATH_folder_simulation
   spectre +mt ++aps -format psfascii $nameNetlist_spectre
   
 fi
