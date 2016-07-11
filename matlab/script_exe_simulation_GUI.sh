@@ -316,7 +316,7 @@ then
 
   if [ "$?" = 0 ]
   then
-    sleep 30
+    sleep 50
     cd $PATH_scriptPython
     python sort_data_DVS_pixel_UNIX.py
     
@@ -338,12 +338,16 @@ then
 
 else
   
-  # For the ATIS simulation is extracted the quantity of Frames
-  Col_Frame=$(cat $PATH_inputs/"README.txt" | awk '{print NF}' | sort -nu | tail -n 1)
-  Frames=$(cat $PATH_inputs/"README.txt" | grep "Frames" | cut -d " " -f $Col_Frame)
-  export Frames
-  echo "Frames=$Frames" >> env_var.sh
-  echo "export Frames" >> env_var.sh
+  ## For the ATIS simulation is extracted the quantity of Frames
+  #Col_Frame=$(cat $PATH_inputs/"README.txt" | awk '{print NF}' | sort -nu | tail -n 1)
+  #Frames=$(cat $PATH_inputs/"README.txt" | grep "Frames" | cut -d " " -f $Col_Frame)
+  #export Frames
+  #echo "Frames=$Frames" >> env_var.sh
+  #echo "export Frames" >> env_var.sh
+  cd $PATH_scriptPython
+
+  python setting_input_netlist_UNIX_ATIS.py
+
   spectre +mt ++aps -format psfascii $nameNetlist_spectre
   
 fi
