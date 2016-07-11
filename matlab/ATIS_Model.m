@@ -16,11 +16,17 @@ tic;
 %N = str2num(getenv('N')); %7;
 %M = str2num(getenv('M')); %8;
 
-PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/illuminationAtis8X8_150_4/';
+%PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/illuminationAtis8X8_150_4/';
+%PATH_folder_images  = PATH_input;
+%name_signal = 'illuminationAtis8X8_150_4';
+%N = 8;
+%M = 8;
+
+PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/illuminationAtis2X2_150_4/';
 PATH_folder_images  = PATH_input;
-name_signal = 'illuminationAtis8X8_150_4';
-N = 8;
-M = 8;
+name_signal = 'illuminationAtis2X2_150_4';
+N = 2;
+M = 2;
 
 %% Transistor's parameters
 nn = 1.334;
@@ -427,7 +433,14 @@ for i=1:length(Struct_Frames)
       
    imagesc(uint8(Matrix_paint),[0 255])
    colormap(gray)
-   colorbar('Ylim',[c_min c_max],'YTick',CMAP);
+   
+   if c_min ~= c_max
+        colorbar('Ylim',[c_min c_max],'YTick',CMAP);
+    else
+        colorbar('YTick',CMAP);
+    
+    end
+   
    
    % Find the NaN value to Mark them.
    [rows columns] = find(isnan(Matrix_paint));
@@ -457,7 +470,7 @@ for i=1:length(Struct_Frames)
    
    
    % Changing the labels axis
-   xlabel('Columns')
+   xlabel(['Columns',' ','(',char(i+96),') '])
    ylabel('Rows')
    set(gca,'XTick',[1:N])
    set(gca,'YTick',[1:M])
@@ -466,11 +479,11 @@ for i=1:length(Struct_Frames)
    
    % Inserting the letters to each plot
    
-   text(N/2+1,M+2.5,['(',char(i+96),') '],...
-        'HorizontalAlignment','right',...
-        'VerticalAlignment','bottom',...
-        'color','k',...
-        'fontw','b')
+%    text(N/2+1,M+2.5,['(',char(i+96),') '],...
+%         'HorizontalAlignment','right',...
+%         'VerticalAlignment','bottom',...
+%         'color','k',...
+%         'fontw','b')
    
 end
 

@@ -66,7 +66,7 @@ struct_limsY = struct_limsX;
 
 NroCols = 3;
 NroRows = ceil(frames/NroCols);
- h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
+ h=figure('Visible','on','units','normalized','outerposition',[0 0 1 1]);
 for fr=0:frames
 
     Rini = M/2;Rend = Rini + 1;
@@ -120,7 +120,7 @@ for fr=0:frames
     set(gca,'YTickLabel',struct_limsY)
     set(gca,'XTickLabel',struct_limsX)
     grid off;
-    xlabel('Columns')
+    xlabel(['Columns',' ','(',char(fr+1+96),') '])
     ylabel('Rows')
     
     lim_inf = (samples)*fr+1;
@@ -145,11 +145,11 @@ for fr=0:frames
        line([x+0.5 x+0.5],[0 M+1],'LineStyle','--','Color',[0.7 0.7 0.7])
    end
     
-    text(N/2+1,M+1.7,['(',char(fr+1+96),') '],...
-        'HorizontalAlignment','right',...
-        'VerticalAlignment','bottom',...
-        'color','k',...
-        'fontw','b')
+    %text(N/2 + 0.5,M+1,['(',char(fr+1+96),') ']) ,...
+        %'HorizontalAlignment','center',...
+        %'VerticalAlignment','bottom',...
+        %'color','k',...
+        %'fontw','b')
     
     
     %% Colocando los valores de la matriz dentro del vector unidimensional
