@@ -507,3 +507,4 @@ end
 
 toc
 cd(curr_pwd)
+exit

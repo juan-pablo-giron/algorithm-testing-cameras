@@ -23,7 +23,7 @@ cd $PATH_scriptPython
 
 case "$choice_TypeSim" in
 
-  1)
+  1) #DVS
 
     python sort_data_DVS_pixel_UNIX.py
       
@@ -49,7 +49,7 @@ case "$choice_TypeSim" in
       fi
     fi
     ;;  
-  2)
+  2) # ATIS
     
     cd $PATH_scriptPython
     python sort_data_ATIS_pixel_UNIX.py
@@ -58,8 +58,8 @@ case "$choice_TypeSim" in
     then
       #kdialog --msgbox "Starting the Post-processing with MATLAB close it when end"
       cd $PATH_scriptMatlab
-      #matlab -nodesktop -nosplash -r Model_CamDVS
-      #matlab -nodesktop -nosplash -r plotTran_DVS
+      matlab -nodesktop -nosplash -r ATIS_Model
+      matlab -nodesktop -nosplash -r plotTran_ATIS
     else
       kdialog --error "PLEASE verify your Python script there are some errors
       run post-processing after solved"

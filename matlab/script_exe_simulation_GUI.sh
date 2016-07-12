@@ -362,8 +362,8 @@ else
     then
       #kdialog --msgbox "Starting the Post-processing with MATLAB close it when end"
       cd $PATH_scriptMatlab
-      matlab -nodesktop -nosplash -r Model_CamDVS
-      matlab -nodesktop -nosplash -r plotTran_DVS
+      matlab -nodesktop -nosplash -r ATIS_Model
+      matlab -nodesktop -nosplash -r plotTran_ATIS
     else
       kdialog --error "PLEASE verify your Python script there are some errors
       run post-processing after solved"

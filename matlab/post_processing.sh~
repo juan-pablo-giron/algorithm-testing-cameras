@@ -48,7 +48,7 @@ case "$choice_TypeSim" in
 	return
       fi
     fi
-
+    ;;  
   2)
     
     cd $PATH_scriptPython
@@ -64,7 +64,7 @@ case "$choice_TypeSim" in
       kdialog --error "PLEASE verify your Python script there are some errors
       run post-processing after solved"
     fi
-    
+    ;;
   *)
     kdialog --msgbox "Nothing selected... Aborting the post processing"
     return

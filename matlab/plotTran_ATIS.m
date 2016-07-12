@@ -402,14 +402,24 @@ end
 
 % Painting
 
-max_col = floor(sqrt(length(Struct_Frames)));%3;
-max_rows = ceil(sqrt(length(Struct_Frames)))+1;%ceil(length(Struct_Frames)/3);
+max_subfig = 16;
+ind_subfig = 1;
+ind_nameFig = 1;
+% Garantizar que siempre se vean un maximo de subplot
+% si es hay demasiados frames, entonces se subdividen
+% las figuras. Dando un mejor visual.
 
- h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
- 
+frames_maxsubfig = ceil(length(Struct_Frames)/max_subfig);
+elements_fig = ceil(length(Struct_Frames)/frames_maxsubfig);
+max_col = ceil(sqrt(elements_fig));
+max_rows = max_col;    
+
+
+h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
+
 for i=1:length(Struct_Frames)
    vec_time_pix_colour_tmp = Struct_Frames{i};
-   len_vec = length(vec_time_pix_colour_tmp);
+   len_vec = length(vec_time_pix_colour_tmp(:,1));
    Matrix_paint = zeros(M,N);
    Matrix_paint(:,:) = NaN;
    for j=1:len_vec
@@ -423,7 +433,7 @@ for i=1:length(Struct_Frames)
    c_max = uint8(max(vec_time_pix_colour_tmp(:,3)));
    CMAP = uint8(unique(vec_time_pix_colour_tmp(:,3)));
    
-   subplot(max_rows,3,i)
+   subplot(max_rows,max_col,ind_subfig)
       
    imagesc(uint8(Matrix_paint),[0 255])
    colormap(gray)
@@ -434,7 +444,6 @@ for i=1:length(Struct_Frames)
         colorbar('YTick',CMAP);
     
     end
-   
    
    % Find the NaN value to Mark them.
    [rows columns] = find(isnan(Matrix_paint));
@@ -460,9 +469,7 @@ for i=1:length(Struct_Frames)
        hold on
        line([x+0.5 x+0.5],[0 M+1],'LineStyle','--','Color',[0.7 0.7 0.7])
    end
-   
-   
-   
+    
    % Changing the labels axis
    xlabel(['Columns',' ','(',char(i+96),') '])
    ylabel('Rows')
@@ -470,18 +477,45 @@ for i=1:length(Struct_Frames)
    set(gca,'YTick',[1:M])
    set(gca,'XTickLabel',struct_lims)
    set(gca,'YTickLabel',struct_lims)
-  
+   
+   if (ind_subfig == elements_fig)
+       
+       ind_subfig = 1;
+       cd(PATH_folder_images)
+       set(gcf,'PaperPositionMode','auto')
+       print('-depsc2', ['Output_ATIS',num2str(ind_nameFig),'.eps'])
+       print('-dpng', ['Output_ATIS',num2str(ind_nameFig),'.png'])
+       saveas(gcf,['Output_ATIS',num2str(ind_nameFig)],'fig');
+       close all;
+       
+       if i ~= length(Struct_Frames)
+           %para no crear una figura en blanco sin nada
+           h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
+           ind_nameFig = ind_nameFig + 1;
+           cont_plot = 1; % Avisa si es necesario grabar la ultima grafica
+       else
+           cont_plot = 0;
+           
+       end
+   else
+       ind_subfig = ind_subfig + 1;
+       
+   end
+   
+   
 end
 
-cd(PATH_folder_images)
+if cont_plot
 
-set(gcf,'PaperPositionMode','auto')
-print('-depsc2', 'Output_ATIS.eps')
-print('-dpng', 'Output_ATIS.png')
-saveas(gcf,'Output_ATIS','fig');
+    cd(PATH_folder_images)
+    set(gcf,'PaperPositionMode','auto')
+    print('-depsc2', ['Output_ATIS',num2str(ind_nameFig),'.eps'])
+    print('-dpng', ['Output_ATIS',num2str(ind_nameFig),'.png'])
+    saveas(gcf,['Output_ATIS',num2str(ind_nameFig)],'fig');
+end
 
 
 cd(pwd_current)
 toc
-%exit
+exit
 
