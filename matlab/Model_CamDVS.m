@@ -118,10 +118,11 @@ scaleTime=1e3;
 
 %z  = zeros(Y_length+1,X_length+1);
 len_ON_events = length(ON_events);
-fig_ON = figure(1);
-colormap(fig_ON,'gray')
 
-if ( len_ON_events >=1)
+
+if ( len_ON_events >1)
+    fig_ON = figure(1);
+    colormap(fig_ON,'gray')
     while i < len_ON_events
 
         vec_time_pix = ON_events{i+1};
@@ -162,11 +163,12 @@ end
 
 len_OFF_events = length(OFF_events);
 z  = zeros(2*M,2*N);
-fig_OFF = figure(2);
-colormap(fig_OFF,'gray')
+
 i = 0;
 
-if ( len_OFF_events >=1)
+if ( len_OFF_events >1)
+    fig_OFF = figure(2);
+    colormap(fig_OFF,'gray')
     while i < len_OFF_events
 
         vec_time_pix = OFF_events{i+1};

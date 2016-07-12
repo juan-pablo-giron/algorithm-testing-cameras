@@ -8,25 +8,17 @@ curr_pwd = pwd;
 
 tic;
 
-%PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/spiral8X8_250/';
-%PATH_input = getenv('PATH_folder_input'); %'/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
-%PATH_folder_images = getenv('PATH_folder_images'); % '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
-%name_signal = getenv('name_Signalsinput') %'TrianguleWave7X8_250';
-%name_signal = 'spiral8X8_250';
-%N = str2num(getenv('N')); %7;
-%M = str2num(getenv('M')); %8;
+PATH_input = getenv('PATH_folder_input'); 
+PATH_folder_images = getenv('PATH_folder_images'); 
+name_signal = getenv('name_Signalsinput'); 
+N = str2num(getenv('N')); 
+M = str2num(getenv('M')); 
+V_p = str2num(getenv('Vdon'));
+V_n = str2num(getenv('Vdoff'));
+Vhigh = str2num(getenv('Vhigh'));
+Vlow = str2num(getenv('Vlow'));
 
-%PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/illuminationAtis8X8_150_4/';
-%PATH_folder_images  = PATH_input;
-%name_signal = 'illuminationAtis8X8_150_4';
-%N = 8;
-%M = 8;
 
-PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/illuminationAtis2X2_150_4/';
-PATH_folder_images  = PATH_input;
-name_signal = 'illuminationAtis2X2_150_4';
-N = 2;
-M = 2;
 
 %% Transistor's parameters
 nn = 1.334;
@@ -41,8 +33,6 @@ Isn = 2*nn*fi^2*Kn*Ratio;
 
 % Known vaiables
 Vref = 1.5;
-V_p = 1.3;          % V_tetha+
-V_n = 1.7;         % V_tetha-
 Vos = 5.42e-3;      % Voffset comparador
 Iph_max = 1e-9;
 Iph_min = 20e-12;
@@ -66,14 +56,9 @@ ON_events = {[]};
 OFF_events = {[]};
 Events = {[]};
 Event_pix = {[]};
-
 ind_ON = 1;
 ind_OFF = 1;
-
 cd(PATH_input)
-
-
-
 
 
 for i=0:quant_pixel-1;
@@ -150,7 +135,7 @@ for x=1:2*M
     end
 end
 
-if ( len_ON_events >=1)
+if ( len_ON_events > 1)
     fig_ON = figure('Visible','off','units','normalized');%,'outerposition',[0 0 1 1]);
     colormap(fig_ON,'gray')
     while i < len_ON_events
@@ -252,8 +237,8 @@ end
 
 Vint = zeros(len_t,quant_pixel);
 C = 30e-15;
-Vhigh = 1.7;
-Vlow = 200e-3;
+%Vhigh = 1.7;
+%Vlow = 200e-3;
 resol = 255;
 Clim = [0 255];
 Matrix_Color = {[]};
@@ -312,7 +297,7 @@ for i=0:quant_pixel-1;
                 Color_pix.vec_color(ind_events) = Color;
                 Color_pix.vec_time(ind_events,:) = t_low;%[t_high t_low];%T_int;%t(j);
                 Matrix_time_pix_colour(ind_TPC,1) = t_low;
-                Matrix_time_pix_colour(ind_TPC,2) = i; % From 0 to N.
+                Matrix_time_pix_colour(ind_TPC,2) = i; % From 0 to N-1.
                 Matrix_time_pix_colour(ind_TPC,3) = Color;
                 ind_events = ind_events + 1;
                 ind_TPC = ind_TPC + 1;
@@ -407,9 +392,8 @@ for i=1:len_Matrix2print
 end
 
 % Painting
-struct_lims = {[]};
-max_col = 3;
-max_rows = ceil(length(Struct_Frames)/3);
+max_col = floor(sqrt(length(Struct_Frames)));%3;
+max_rows = ceil(sqrt(length(Struct_Frames)))+1;%ceil(length(Struct_Frames)/3);
 
  h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
  

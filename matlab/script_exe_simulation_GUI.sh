@@ -261,7 +261,7 @@ echo "number_bits=$number_bits" >> env_var.sh
 echo "M=$M" >> env_var.sh
 echo "N=$N" >> env_var.sh
 echo "Vdoff=$Vdoff" >> env_var.sh
-echo "Vdoff=$Vdon" >> env_var.sh
+echo "Vdon=$Vdon" >> env_var.sh
 echo "Vhigh=$Vhigh" >> env_var.sh
 echo "Vlow=$Vlow" >> env_var.sh
 echo "nameNetlist_spectre_Orig=$nameNetlist_spectre_Orig" >> env_var.sh
@@ -345,10 +345,34 @@ else
   #echo "Frames=$Frames" >> env_var.sh
   #echo "export Frames" >> env_var.sh
   cd $PATH_scriptPython
-
+ 
   python setting_input_netlist_UNIX_ATIS.py
   cd $PATH_folder_simulation
   spectre +mt ++aps -format psfascii $nameNetlist_spectre
+    
+  # Analysis for ATIS Pixel
+
+  if [ "$?" = 0 ]
+  then
+    sleep 50
+    cd $PATH_scriptPython
+    python sort_data_ATIS_pixel_UNIX.py
+    
+    if [ "$?" = 0 ]
+    then
+      #kdialog --msgbox "Starting the Post-processing with MATLAB close it when end"
+      cd $PATH_scriptMatlab
+      matlab -nodesktop -nosplash -r Model_CamDVS
+      matlab -nodesktop -nosplash -r plotTran_DVS
+    else
+      kdialog --error "PLEASE verify your Python script there are some errors
+      run post-processing after solved"
+    fi
+  else
+    kdialog --error "PLEASE VERIFY IF YOUR ENVIROMENT VARIABLES FOR SPECTRE ARE CONFIGURED"
+    cd $PATH_scriptMatlab
+    return
+  fi
   
 fi
 

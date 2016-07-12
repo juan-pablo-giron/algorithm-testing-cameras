@@ -8,19 +8,17 @@ curr_pwd = pwd;
 
 tic;
 
-%PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/spiral8X8_250/';
-%PATH_input = getenv('PATH_folder_input'); %'/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
-%PATH_folder_images = getenv('PATH_folder_images'); % '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
-%name_signal = getenv('name_Signalsinput') %'TrianguleWave7X8_250';
-%name_signal = 'spiral8X8_250';
-%N = str2num(getenv('N')); %7;
-%M = str2num(getenv('M')); %8;
+PATH_input = getenv('PATH_folder_input'); 
+PATH_folder_images = getenv('PATH_folder_images'); 
+name_signal = getenv('name_Signalsinput'); 
+N = str2num(getenv('N')); 
+M = str2num(getenv('M')); 
+V_p = str2num(getenv('Vdon'));
+V_n = str2num(getenv('Vdoff'));
+Vhigh = str2num(getenv('Vhigh'));
+Vlow = str2num(getenv('Vlow'));
 
-PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/illuminationAtis8X8_150_4/';
-PATH_folder_images  = PATH_input;
-name_signal = 'illuminationAtis8X8_150_4';
-N = 8;
-M = 8;
+
 
 %% Transistor's parameters
 nn = 1.334;
@@ -35,8 +33,6 @@ Isn = 2*nn*fi^2*Kn*Ratio;
 
 % Known vaiables
 Vref = 1.5;
-V_p = 1.3;          % V_tetha+
-V_n = 1.7;         % V_tetha-
 Vos = 5.42e-3;      % Voffset comparador
 Iph_max = 1e-9;
 Iph_min = 20e-12;
@@ -60,14 +56,9 @@ ON_events = {[]};
 OFF_events = {[]};
 Events = {[]};
 Event_pix = {[]};
-
 ind_ON = 1;
 ind_OFF = 1;
-
 cd(PATH_input)
-
-
-
 
 
 for i=0:quant_pixel-1;
@@ -117,22 +108,35 @@ end
 
 cd(PATH_folder_images)
 
-
-
 i = 0;
-%X = 0:X_length;
-%Y = 0:Y_length;
 X = 0:2*N-1;
 Y = 0:2*M-1;
 z  = zeros(2*M,2*N);
 scaleTime=1e3;
-
-%z  = zeros(Y_length+1,X_length+1);
 len_ON_events = length(ON_events);
 
+struct_limsX = {[]};
+struct_limsY = {[]};
+for x=1:2*N
+    
+    if rem(x,2) == 1
+        struct_limsX{x} = '';
+    else
+        struct_limsX{x} = num2str(x/2 - 1);
+    end
+end
 
-if ( len_ON_events >=1)
-    fig_ON = figure('Visible','on','units','normalized');%,'outerposition',[0 0 1 1]);
+for x=1:2*M
+    
+    if rem(x,2) == 1
+        struct_limsY{x} = '';
+    else
+        struct_limsY{x} = num2str(x/2 - 1);
+    end
+end
+
+if ( len_ON_events > 1)
+    fig_ON = figure('Visible','off','units','normalized');%,'outerposition',[0 0 1 1]);
     colormap(fig_ON,'gray')
     while i < len_ON_events
         
@@ -158,7 +162,8 @@ if ( len_ON_events >=1)
     %colorbar;
     set(gca,'xtick',X);
     set(gca,'ytick',Y);
-    set(gca,'XTickLabels',{'','1','','2'})
+    %set(gca,'XTickLabels',struct_limsY)
+    %set(gca,'YTickLabels',struct_limsX)
     set(gca,'Ydir','reverse')
     xlim([0 N])
     ylim([0 M])
@@ -171,6 +176,7 @@ if ( len_ON_events >=1)
     set(fig_ON,'PaperPositionMode','auto')
     print('-depsc2','DVS_ON_Model.eps')
     print('-dpng','DVS_ON_Model.png')
+    saveas(gcf,'DVS_ON_Model','fig');
 end
 
 
@@ -206,6 +212,8 @@ if ( len_OFF_events >1)
     set(gca,'Ydir','reverse')
     set(gca,'xtick',X);
     set(gca,'ytick',Y);
+    %set(gca,'XTickLabels',struct_limsY)
+    %set(gca,'YTickLabels',struct_limsX)
     xlim([0 N])
     ylim([0 M])
     xlabel('COLUMNS')
@@ -217,6 +225,7 @@ if ( len_OFF_events >1)
     set(fig_OFF,'PaperPositionMode','auto')
     print('-depsc2','DVS_OFF_Model.eps')
     print('-dpng','DVS_OFF_Model.png')
+    saveas(gcf,'DVS_OFF_Model','fig');
 end
 
 
@@ -228,8 +237,8 @@ end
 
 Vint = zeros(len_t,quant_pixel);
 C = 30e-15;
-Vhigh = 1.7;
-Vlow = 200e-3;
+%Vhigh = 1.7;
+%Vlow = 200e-3;
 resol = 255;
 Clim = [0 255];
 Matrix_Color = {[]};
@@ -288,7 +297,7 @@ for i=0:quant_pixel-1;
                 Color_pix.vec_color(ind_events) = Color;
                 Color_pix.vec_time(ind_events,:) = t_low;%[t_high t_low];%T_int;%t(j);
                 Matrix_time_pix_colour(ind_TPC,1) = t_low;
-                Matrix_time_pix_colour(ind_TPC,2) = i; % From 0 to N.
+                Matrix_time_pix_colour(ind_TPC,2) = i; % From 0 to N-1.
                 Matrix_time_pix_colour(ind_TPC,3) = Color;
                 ind_events = ind_events + 1;
                 ind_TPC = ind_TPC + 1;
@@ -337,6 +346,7 @@ plot(t,Vdiff(:,29))
 clearvars -except Matrix_time_pix_colour Vdiff Vint t curr_pwd PATH_input ...
     PATH_folder_images name_signal N M
 
+close all;
 
 % Sort the Matrix_time_pixel_colour by time less to higher
 
@@ -348,7 +358,7 @@ Struct_Frames = {[]};
 vec_time_pix_colour_tmp = N*M*ones(1,3);
 ind_struct = 1;
 ind_Matrix_tmp = 1;
-struct_lims = {[
+struct_lims = {[]};
 for x=0:N-1
     
     struct_lims{x+1} = num2str(x);
@@ -382,9 +392,8 @@ for i=1:len_Matrix2print
 end
 
 % Painting
-struct_lims = {[]};
-max_col = 3;
-max_rows = ceil(length(Struct_Frames)/3);
+max_col = floor(sqrt(length(Struct_Frames)));%3;
+max_rows = ceil(sqrt(length(Struct_Frames)))+1;%ceil(length(Struct_Frames)/3);
 
  h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
  
@@ -408,7 +417,14 @@ for i=1:length(Struct_Frames)
       
    imagesc(uint8(Matrix_paint),[0 255])
    colormap(gray)
-   colorbar('Ylim',[c_min c_max],'YTick',CMAP);
+   
+   if c_min ~= c_max
+        colorbar('Ylim',[c_min c_max],'YTick',CMAP);
+    else
+        colorbar('YTick',CMAP);
+    
+    end
+   
    
    % Find the NaN value to Mark them.
    [rows columns] = find(isnan(Matrix_paint));
@@ -438,7 +454,7 @@ for i=1:length(Struct_Frames)
    
    
    % Changing the labels axis
-   xlabel('Columns')
+   xlabel(['Columns',' ','(',char(i+96),') '])
    ylabel('Rows')
    set(gca,'XTick',[1:N])
    set(gca,'YTick',[1:M])
@@ -447,11 +463,11 @@ for i=1:length(Struct_Frames)
    
    % Inserting the letters to each plot
    
-   text(N/2+1,M+2.5,['(',char(i+96),') '],...
-        'HorizontalAlignment','right',...
-        'VerticalAlignment','bottom',...
-        'color','k',...
-        'fontw','b')
+%    text(N/2+1,M+2.5,['(',char(i+96),') '],...
+%         'HorizontalAlignment','right',...
+%         'VerticalAlignment','bottom',...
+%         'color','k',...
+%         'fontw','b')
    
 end
 
@@ -460,6 +476,7 @@ cd(PATH_folder_images)
 set(gcf,'PaperPositionMode','auto')
 print('-depsc2', 'Output_Model_ATIS.eps')
 print('-dpng', 'Output_Model_ATIS.png')
+saveas(gcf,'OutputModel_ATIS','fig');
 
 
 

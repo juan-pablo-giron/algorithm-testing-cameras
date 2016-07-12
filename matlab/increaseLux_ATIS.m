@@ -7,10 +7,11 @@ clear all;clc;close all;
 
 curr_path = pwd;
 
-N =8; 
-M =8;
+N =2; 
+M =2;
 freq = 150;
-frames = 4;
+frames = 255;
+Max_Subplots = 20;
 rpm = freq*60;
 T_Rst = 200e-6;
 
@@ -64,9 +65,9 @@ struct_limsY = struct_limsX;
     
 %% Creating the frames    
 
-NroCols = 3;
-NroRows = ceil(frames/NroCols);
- h=figure('Visible','on','units','normalized','outerposition',[0 0 1 1]);
+NroCols = floor(sqrt(frames));%3;
+NroRows = ceil(sqrt(frames))+1;
+h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
 for fr=0:frames
 
     Rini = M/2;Rend = Rini + 1;

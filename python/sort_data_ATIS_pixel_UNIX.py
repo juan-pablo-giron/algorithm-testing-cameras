@@ -29,16 +29,22 @@ l_signals = ['time']                #by default if the simulation was transient
 string_start = 'VALUE'              #default
 string_stop = 'END'                 #default
 string_index_file = 'index_data'    #DVS
+string_index_file_A = 'index_data_A'  #ATIS
 string_data = 'data_'+name_simulation
 
 #DVS
 lst_desired_signals = ['data','En_Read_Row','En_Read_pixel','Global_rst']
 lst_bus_data = ['data']
 
+#ATIS
+lst_desired_signals_A = ['data_A','En_Read_Row_A','En_Read_pixel_A','Global_rst','Req_fr']
+lst_bus_data_A = ['data_A']
+
 
 File = open(PATH_folder_simulation+name_folder_output_Spectre+'/'+name_tran,'r')
 file_data = open(PATH_sim_output_matlab+string_data+'.csv','w') # Create a file with the columnar ASCII format Only data
 path_file_index = PATH_sim_output_matlab+string_index_file+'.csv' #DVS
+path_file_index_A = PATH_sim_output_matlab+string_index_file_A+'.csv' #ATIS
 file_header = open(PATH_sim_output_matlab+'header.txt','w')
 l_output = list(File.readlines())    # save the output as a list of strings
 l_output = [w.replace('\n','') for w in l_output] # remove the '\n' string 
@@ -74,6 +80,7 @@ while x < line_VALUE:
 ##     CALLING THE FUNCTION TO CREATE THE INDEXs   ##
 
 getIndex_desiredSignals(l_signals,lst_desired_signals,lst_bus_data,number_bits,path_file_index) #DVS
+getIndex_desiredSignals(l_signals,lst_desired_signals_A,lst_bus_data_A,number_bits,path_file_index_A) #ATIS
 
 #####################################################
 
