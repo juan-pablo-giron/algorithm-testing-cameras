@@ -65,8 +65,19 @@ struct_limsY = struct_limsX;
     
 %% Creating the frames    
 
-NroCols = floor(sqrt(frames));%3;
-NroRows = ceil(sqrt(frames))+1;
+max_subfig = 16;
+ind_subfig = 1;
+ind_nameFig = 1;
+% Garantizar que siempre se vean un maximo de subplot
+% si es hay demasiados frames, entonces se subdividen
+% las figuras. Dando un mejor visual.
+
+frames_maxsubfig = ceil((frames+1)/max_subfig);
+elements_fig = ceil((frames+1)/frames_maxsubfig);
+max_col = ceil(sqrt(elements_fig));
+max_rows = max_col;    
+
+
 h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
 for fr=0:frames
 
@@ -101,7 +112,7 @@ for fr=0:frames
  %% Painting the frame  
     %h = figure('Visible','on');
     
-    subplot(NroRows,NroCols,fr+1)
+    subplot(max_rows,max_col,ind_subfig)
     
     c_min = uint8(min(Matrix_grayscale));
     c_max = uint8(max(Matrix_grayscale));
@@ -144,13 +155,29 @@ for fr=0:frames
        end
        hold on
        line([x+0.5 x+0.5],[0 M+1],'LineStyle','--','Color',[0.7 0.7 0.7])
+    end
+   
+    if (ind_subfig == elements_fig)
+       
+       ind_subfig = 1;
+       set(gcf,'PaperPositionMode','auto')
+       print('-depsc2', ['Input_ATIS',num2str(ind_nameFig),'.eps'])
+       print('-dpng', ['Input_ATIS',num2str(ind_nameFig),'.png'])
+       close all;
+       
+       if fr ~= frames
+           %para no crear una figura en blanco sin nada
+           h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
+           ind_nameFig = ind_nameFig + 1;
+           cont_plot = 1; % Avisa si es necesario grabar la ultima grafica
+       else
+           cont_plot = 0;
+           
+       end
+   else
+       ind_subfig = ind_subfig + 1;
+       
    end
-    
-    %text(N/2 + 0.5,M+1,['(',char(fr+1+96),') ']) ,...
-        %'HorizontalAlignment','center',...
-        %'VerticalAlignment','bottom',...
-        %'color','k',...
-        %'fontw','b')
     
     
     %% Colocando los valores de la matriz dentro del vector unidimensional
@@ -168,11 +195,12 @@ for fr=0:frames
     
 end
 
-set(gcf,'PaperPositionMode','auto')
-print('-depsc2', 'Input_ATIS.eps')
-print('-dpng', 'Input_ATIS.png')
 
-%saveas(gca,strcat('Frame_',num2str(fr)),'png')
+if cont_plot
+    set(gcf,'PaperPositionMode','auto')
+    print('-depsc2', ['Input_ATIS',num2str(ind_nameFig),'.eps'])
+    print('-dpng', ['Input_ATIS',num2str(ind_nameFig),'.png'])
+end
 
 %% Interporlation
 

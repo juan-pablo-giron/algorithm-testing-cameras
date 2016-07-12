@@ -7,10 +7,11 @@ clear all;clc;close all;
 
 curr_path = pwd;
 
-N =8; 
-M =8;
+N =2; 
+M =2;
 freq = 150;
-frames = 4;
+frames = 255;
+Max_Subplots = 20;
 rpm = freq*60;
 T_Rst = 200e-6;
 
@@ -64,9 +65,20 @@ struct_limsY = struct_limsX;
     
 %% Creating the frames    
 
-NroCols = 3;
-NroRows = ceil(frames/NroCols);
+max_subfig = 16;
+ind_subfig = 1;
+ind_nameFig = 1;
+% Garantizar que siempre se vean un maximo de subplot
+% si es hay demasiados frames, entonces se subdividen
+% las figuras. Dando un mejor visual.
 
+frames_maxsubfig = ceil(length(Struct_Frames)/max_subfig);
+elements_fig = ceil(length(Struct_Frames)/frames_maxsubfig);
+max_col = ceil(sqrt(elements_fig));
+max_rows = max_col;    
+
+
+h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
 for fr=0:frames
 
     Rini = M/2;Rend = Rini + 1;
@@ -100,7 +112,7 @@ for fr=0:frames
  %% Painting the frame  
     %h = figure('Visible','on');
     
-    subplot(NroRows,NroCols,fr+1)
+    subplot(max_rows,max_col,ind_subfig)
     
     c_min = uint8(min(Matrix_grayscale));
     c_max = uint8(max(Matrix_grayscale));
@@ -120,7 +132,7 @@ for fr=0:frames
     set(gca,'YTickLabel',struct_limsY)
     set(gca,'XTickLabel',struct_limsX)
     grid off;
-    xlabel('Columns')
+    xlabel(['Columns',' ','(',char(fr+1+96),') '])
     ylabel('Rows')
     
     lim_inf = (samples)*fr+1;
@@ -143,14 +155,31 @@ for fr=0:frames
        end
        hold on
        line([x+0.5 x+0.5],[0 M+1],'LineStyle','--','Color',[0.7 0.7 0.7])
+    end
+   
+    if (ind_subfig == elements_fig)
+       
+       ind_subfig = 1;
+       cd(PATH_folder_images)
+       set(gcf,'PaperPositionMode','auto')
+       print('-depsc2', ['Input_ATIS',num2str(ind_nameFig),'.eps'])
+       print('-dpng', ['Input_ATIS',num2str(ind_nameFig),'.png'])
+       close all;
+       
+       if i ~= length(Struct_Frames)
+           %para no crear una figura en blanco sin nada
+           h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
+           ind_nameFig = ind_nameFig + 1;
+           cont_plot = 1; % Avisa si es necesario grabar la ultima grafica
+       else
+           cont_plot = 0;
+           
+       end
+   else
+       ind_subfig = ind_subfig + 1;
+       
    end
     
-    text(1,1,['(',char(ii+96),') '],...
-        'HorizontalAlignment','center',...
-        'VerticalAlignment','bottom',...
-        'color','r',...
-        'fontw','b')
-    saveas(gca,strcat('Frame_',num2str(fr)),'png')
     
     %% Colocando los valores de la matriz dentro del vector unidimensional
     % de pixeles
@@ -165,6 +194,13 @@ for fr=0:frames
     end
     Matrix_tmpColor(:,:) = 0;
     
+end
+
+
+if cont_plot
+    set(gcf,'PaperPositionMode','auto')
+    print('-depsc2', ['Input_ATIS',num2str(ind_nameFig),'.eps'])
+       print('-dpng', ['Input_ATIS',num2str(ind_nameFig),'.png'])
 end
 
 %% Interporlation
