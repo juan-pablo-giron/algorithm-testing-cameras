@@ -167,5 +167,5 @@ plot3dDVS_fn(ON_events,OFF_events,'SIMULATED')
 cd(pwd_current)
 
 toc
-%exit
+exit
 

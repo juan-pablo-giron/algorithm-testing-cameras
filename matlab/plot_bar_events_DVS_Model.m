@@ -17,6 +17,7 @@ PATH_folder_images = getenv('PATH_folder_images');
 
 V_p = str2double(getenv('Vdon'));
 V_n = str2double(getenv('Vdoff'));
+Vref = 1.5;
 
 % Paso 1. Contruir un vector 
 
@@ -63,7 +64,7 @@ figure('Visible','off');
 bar(vec_TC_ON,'FaceColor', [0.7 0.7 0.7], 'EdgeColor', [0.7 0.7 0.7])
 hold on
 bar(vec_TC_OFF,'FaceColor', 'k', 'EdgeColor', 'k')
-legend(['VdiffON=',num2str(V_p),'V'],['VdiffOFF=',num2str(V_n),'V'])
+legend(['VdiffON=',num2str(abs(V_p-Vref)),'V'],['VdiffOFF=',num2str(abs(V_n-Vref)),'V'])
 xlabel('\theta_{ev}(%)')
 ylabel('#pixels')
 xlim([0 100])

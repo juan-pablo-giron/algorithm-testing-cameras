@@ -236,3 +236,4 @@ plot2dATIS(Matrix_time_pix_colour,'MODEL')
 
 toc
 cd(curr_pwd)
+exit
