@@ -208,26 +208,21 @@ if ( len_OFF_events >1)
     end
 
     % adjusting apperance
-    %colorbar;
     set(gca,'Ydir','reverse')
     set(gca,'xtick',X);
     set(gca,'ytick',Y);
-    %set(gca,'XTickLabels',struct_limsY)
-    %set(gca,'YTickLabels',struct_limsX)
     xlim([0 N])
     ylim([0 M])
     xlabel('COLUMNS')
     ylabel('ROWS')
     zlabel('Time ms')
     name_title = 'OFF EVENTS MODEL';
-    name_fig = 'OFF_events_3D_Model';
     title(name_title)
     set(fig_OFF,'PaperPositionMode','auto')
     print('-depsc2','DVS_OFF_Model.eps')
     print('-dpng','DVS_OFF_Model.png')
     saveas(gcf,'DVS_OFF_Model','fig');
 end
-
 
 
 
@@ -242,7 +237,6 @@ C = 30e-15;
 resol = 255;
 Clim = [0 255];
 Matrix_Color = {[]};
-Color_pix = {[]};
 Matrix_time_pix_colour = zeros(1,3);
 i = 0;
 ack_Rst = 0;
@@ -266,6 +260,8 @@ for i=0:quant_pixel-1;
     ind_events = 1;
     Vint(1,i+1) = Vo;
     Color_pix = {[]};
+    ack_Rst = 0;
+    ack_Vhigh = 0;
     for j=1:len_t-1
         
         if ~(isempty(find(time_events == t(j),1)))
@@ -343,8 +339,8 @@ plot(t,Vdiff(:,29))
 
 % Free memory
 
-clearvars -except Matrix_time_pix_colour Vdiff Vint t curr_pwd PATH_input ...
-    PATH_folder_images name_signal N M
+% clearvars -except Matrix_time_pix_colour Vdiff Vint t curr_pwd PATH_input ...
+%     PATH_folder_images name_signal N M
 
 close all;
 

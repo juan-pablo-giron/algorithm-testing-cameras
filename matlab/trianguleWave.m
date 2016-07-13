@@ -24,7 +24,7 @@ clear all;clc;close all;
 N = 2; 
 M = 2;
 quant_pixel=N*M;
-freq = 50;
+freq = 200;
 resol = 256; % Count colours that we wanna to see 
 rpm = freq*60;
 t_hold = (1/freq)/resol;
@@ -50,7 +50,7 @@ PATH_input = strcat(PATH_input,nameSignal,'/');
 cd(curr_path);
 
 Imax = 1e-9;
-Imin = 5e-12;
+Imin = 20e-12;
 deltaI = (Imax - Imin)/(resol-1);
 
 deltat = (T/2)/(samplesPerHold*resol); % T/2 porque es para arriba y para abjao en el mismo periodo
