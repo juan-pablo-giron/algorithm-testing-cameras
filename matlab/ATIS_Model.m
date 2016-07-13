@@ -49,11 +49,11 @@ t = input_signal(:,1);
 len_t = length(t);
 quant_pixel = N*M;
 Vdiff=zeros(len_t,quant_pixel);
-Vdiff_ind = zeros(len_t,1);
+Vdiff_ind = zeros(len_t,1); % Individual
 % structure ON 
-ON_events = {[]};
+ON_events = {[]}; ON_events2TC = zeros(1,2);
 % structure OFF event
-OFF_events = {[]};
+OFF_events = {[]}; OFF_events2TC = zeros(1,2);
 Events = {[]};
 Event_pix = {[]};
 ind_ON = 1;
@@ -80,6 +80,8 @@ for i=0:quant_pixel-1;
        if (value <= VdiffON)
            Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) + abs(value); %reset to Vref
            vec_time_pix = [t(j) i];
+           ON_events2TC(ind_ON,1) = i;
+           ON_events2TC(ind_ON,2) = Iph(j);
            ON_events{ind_ON} = vec_time_pix;
            Event_pix.value(ind_event) = t(j);
            ind_ON = ind_ON + 1;
@@ -89,6 +91,8 @@ for i=0:quant_pixel-1;
 
                 Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) - abs(value); %reset to Vref
                 vec_time_pix = [t(j) i];
+                OFF_events2TC(ind_OFF,1) = i;
+                OFF_events2TC(ind_OFF,2) = Iph(j);
                 OFF_events{ind_OFF} = vec_time_pix;
                 Event_pix.value(ind_event) = t(j);
                 ind_OFF = ind_OFF + 1;
@@ -103,128 +107,15 @@ for i=0:quant_pixel-1;
     Events{i+1} = Event_pix;
 end
 
+
+% plot_bar_events_DVS_model
+
+cd(curr_pwd)
+plot_bar_events_DVS_Model(ON_events2TC,OFF_events2TC,Iph_min,Iph_max);
+
 % Paso 3. Plot
 
-
-cd(PATH_folder_images)
-
-i = 0;
-X = 0:2*N-1;
-Y = 0:2*M-1;
-z  = zeros(2*M,2*N);
-scaleTime=1e3;
-len_ON_events = length(ON_events);
-
-struct_limsX = {[]};
-struct_limsY = {[]};
-for x=1:2*N
-    
-    if rem(x,2) == 1
-        struct_limsX{x} = '';
-    else
-        struct_limsX{x} = num2str(x/2 - 1);
-    end
-end
-
-for x=1:2*M
-    
-    if rem(x,2) == 1
-        struct_limsY{x} = '';
-    else
-        struct_limsY{x} = num2str(x/2 - 1);
-    end
-end
-
-if ( len_ON_events > 1)
-    fig_ON = figure('Visible','off','units','normalized');%,'outerposition',[0 0 1 1]);
-    colormap(fig_ON,'gray')
-    while i < len_ON_events
-        
-        vec_time_pix = ON_events{i+1};
-        t = vec_time_pix(1);
-        pixel = vec_time_pix(2);
-        row = fix(pixel/N);
-        col = rem(pixel,N);
-        y1  = row+1;
-        y2  = y1+1;
-        x1  = col+1;
-        x2  = x1+1;
-        z(:,:) = NaN; % Avoid that Matlab create lines no desired
-        z([y1 y2],[x1 x2]) = scaleTime*t;
-        surf(X,Y,z)
-        hold on
-        grid on
-        i = i+1;
-
-    end
-
-    % adjusting apperance
-    %colorbar;
-    set(gca,'xtick',X);
-    set(gca,'ytick',Y);
-    %set(gca,'XTickLabels',struct_limsY)
-    %set(gca,'YTickLabels',struct_limsX)
-    set(gca,'Ydir','reverse')
-    xlim([0 N])
-    ylim([0 M])
-    xlabel('COLUMNS')
-    ylabel('ROWS')
-    zlabel('Time ms')
-    name_title = 'ON EVENTS MODEL';
-    name_fig = 'ON_events_3D_Model';
-    title(name_title)
-    set(fig_ON,'PaperPositionMode','auto')
-    print('-depsc2','DVS_ON_Model.eps')
-    print('-dpng','DVS_ON_Model.png')
-    saveas(gcf,'DVS_ON_Model','fig');
-end
-
-
-len_OFF_events = length(OFF_events);
-z  = zeros(2*M,2*N);
-i = 0;
-
-if ( len_OFF_events >1)
-    fig_OFF = figure('Visible','off');
-    colormap(fig_OFF,'gray')
-    while i < len_OFF_events
-
-        vec_time_pix = OFF_events{i+1};
-        t = vec_time_pix(1);
-        pixel = vec_time_pix(2);
-        row = fix(pixel/N);
-        col = rem(pixel,N);
-        y1  = row+1;
-        y2  = y1+1;
-        x1  = col+1;
-        x2  = x1+1;
-        z(:,:) = NaN; % Avoid that Matlab create lines no desired
-        z([y1 y2],[x1 x2]) = scaleTime*t;
-        surf(X,Y,z)
-        hold on
-        grid on
-        i = i+1;
-
-    end
-
-    % adjusting apperance
-    set(gca,'Ydir','reverse')
-    set(gca,'xtick',X);
-    set(gca,'ytick',Y);
-    xlim([0 N])
-    ylim([0 M])
-    xlabel('COLUMNS')
-    ylabel('ROWS')
-    zlabel('Time ms')
-    name_title = 'OFF EVENTS MODEL';
-    title(name_title)
-    set(fig_OFF,'PaperPositionMode','auto')
-    print('-depsc2','DVS_OFF_Model.eps')
-    print('-dpng','DVS_OFF_Model.png')
-    saveas(gcf,'DVS_OFF_Model','fig');
-end
-
-
+plot3dDVS_fn(ON_events,OFF_events)
 
 %% ========================================================= %%
 
@@ -503,4 +394,3 @@ end
 
 toc
 cd(curr_pwd)
-exit
