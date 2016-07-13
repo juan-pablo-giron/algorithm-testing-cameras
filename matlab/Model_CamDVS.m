@@ -20,6 +20,7 @@ N = str2num(getenv('N')); %7;
 M = str2num(getenv('M')); %8;
 V_p = str2num(getenv('Vdon'));
 V_n = str2num(getenv('Vdoff'));
+T_Rst = 200e-6;
 
 pwd_current=pwd;
 
@@ -84,7 +85,7 @@ for i=0:quant_pixel-1;
        value = Vdiff_ind(j);
        if (value <= VdiffON)
            Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) + abs(value); %reset to Vref
-           vec_time_pix = [t(j) i];
+           vec_time_pix = [t(j)+T_Rst i];
            ON_events2TC(ind_ON,1) = i;
            ON_events2TC(ind_ON,2) = Iph(j);
            ON_events{ind_ON} = vec_time_pix;
@@ -95,7 +96,7 @@ for i=0:quant_pixel-1;
            if ( value >= VdiffOFF)
 
                 Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) - abs(value); %reset to Vref
-                vec_time_pix = [t(j) i];
+                vec_time_pix = [t(j)+T_Rst i];
                 OFF_events2TC(ind_OFF,1) = i;
                 OFF_events2TC(ind_OFF,2) = Iph(j);
                 OFF_events{ind_OFF} = vec_time_pix;
@@ -118,9 +119,9 @@ end
 
 cd(pwd_current)
 close all;
-plot_bar_events_DVS_Model(ON_events2TC,OFF_events2TC,Iph_min,Iph_max);
+plot_bar_events_DVS_Model(ON_events2TC,OFF_events2TC,Iph_min,Iph_max,'MODEL');
 close all;
-plot3dDVS_fn(ON_events,OFF_events)
+plot3dDVS_fn(ON_events,OFF_events,'MODEL')
 
 cd(pwd_current)
 

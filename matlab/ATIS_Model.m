@@ -37,6 +37,7 @@ Vos = 5.42e-3;      % Voffset comparador
 Iph_max = 1e-9;
 Iph_min = 20e-12;
 A = 20;             % Gain closed loop differentiator
+T_Rst = 200e-6;
 
 VdiffON = V_p - Vref + Vos;  
 VdiffOFF= V_n - Vref + Vos;
@@ -79,22 +80,22 @@ for i=0:quant_pixel-1;
        value = Vdiff_ind(j);
        if (value <= VdiffON)
            Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) + abs(value); %reset to Vref
-           vec_time_pix = [t(j) i];
+           vec_time_pix = [t(j)+T_Rst i];
            ON_events2TC(ind_ON,1) = i;
            ON_events2TC(ind_ON,2) = Iph(j);
            ON_events{ind_ON} = vec_time_pix;
-           Event_pix.value(ind_event) = t(j);
+           Event_pix.value(ind_event) = t(j)+T_Rst;
            ind_ON = ind_ON + 1;
            ind_event=ind_event+1;
        else
            if ( value >= VdiffOFF)
 
                 Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) - abs(value); %reset to Vref
-                vec_time_pix = [t(j) i];
+                vec_time_pix = [t(j)+T_Rst i];
                 OFF_events2TC(ind_OFF,1) = i;
                 OFF_events2TC(ind_OFF,2) = Iph(j);
                 OFF_events{ind_OFF} = vec_time_pix;
-                Event_pix.value(ind_event) = t(j);
+                Event_pix.value(ind_event) = t(j)+T_Rst;
                 ind_OFF = ind_OFF + 1;
                 ind_event=ind_event+1;
            else
@@ -111,11 +112,11 @@ end
 % plot_bar_events_DVS_model
 
 cd(curr_pwd)
-plot_bar_events_DVS_Model(ON_events2TC,OFF_events2TC,Iph_min,Iph_max);
+plot_bar_events_DVS_Model(ON_events2TC,OFF_events2TC,Iph_min,Iph_max,'MODEL');
 
 % Paso 3. Plot
 
-plot3dDVS_fn(ON_events,OFF_events)
+plot3dDVS_fn(ON_events,OFF_events,'MODEL')
 
 %% ========================================================= %%
 
@@ -143,7 +144,7 @@ ind_TPC = 1;
 for i=0:quant_pixel-1;
     name_input = strcat(name_signal,'_',num2str(i),'.csv');
     input_signal = importdata(name_input);
-    t = input_signal(:,1);
+    t = input_signal(:,1) + T_Rst; %Como en spectre que tiene un atraso la senal
     Iph = input_signal(:,2);
     Vo = 0;
     Event_pix = Events{i+1};
@@ -228,169 +229,10 @@ plot(t,Vdiff(:,29))
 
 %% ====================== Painting the images ======================== %%
 
-% Free memory
-
-% clearvars -except Matrix_time_pix_colour Vdiff Vint t curr_pwd PATH_input ...
-%     PATH_folder_images name_signal N M
-
 close all;
 
-% Sort the Matrix_time_pixel_colour by time less to higher
-
-Matrix2print = sortrows(Matrix_time_pix_colour,1);
-
-% Building the frames to plotting
-len_Matrix2print = length(Matrix2print);
-Struct_Frames = {[]};
-vec_time_pix_colour_tmp = N*M*ones(1,3);
-ind_struct = 1;
-ind_Matrix_tmp = 1;
-struct_lims = {[]};
-for x=0:N-1
-    
-    struct_lims{x+1} = num2str(x);
-    
-end
-
-for i=1:len_Matrix2print
-    
-    time    = Matrix2print(i,1);
-    pixel   = Matrix2print(i,2);
-    colour  = Matrix2print(i,3);
-    if isempty(find(vec_time_pix_colour_tmp(:,2) == pixel,1))
-        vec_time_pix_colour_tmp(ind_Matrix_tmp,1) = time;
-        vec_time_pix_colour_tmp(ind_Matrix_tmp,2) = pixel;
-        vec_time_pix_colour_tmp(ind_Matrix_tmp,3) = colour; 
-        ind_Matrix_tmp = ind_Matrix_tmp + 1;
-    else
-        Struct_Frames{ind_struct} = vec_time_pix_colour_tmp;
-        vec_time_pix_colour_tmp = N*M*ones(1,3);
-        ind_Matrix_tmp = 1;
-        vec_time_pix_colour_tmp(ind_Matrix_tmp,1) = time;
-        vec_time_pix_colour_tmp(ind_Matrix_tmp,2) = pixel;
-        vec_time_pix_colour_tmp(ind_Matrix_tmp,3) = colour;
-        ind_struct = ind_struct + 1;
-        ind_Matrix_tmp = ind_Matrix_tmp + 1;
-    end
-    
-    if i == len_Matrix2print
-        Struct_Frames{ind_struct} = vec_time_pix_colour_tmp;
-    end
-end
-
-% Painting
-
-max_subfig = 16;
-ind_subfig = 1;
-ind_nameFig = 1;
-% Garantizar que siempre se vean un maximo de subplot
-% si es hay demasiados frames, entonces se subdividen
-% las figuras. Dando un mejor visual.
-
-frames_maxsubfig = ceil(length(Struct_Frames)/max_subfig);
-elements_fig = ceil(length(Struct_Frames)/frames_maxsubfig);
-max_col = ceil(sqrt(elements_fig));
-max_rows = max_col;    
-
-
-h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
-
-for i=1:length(Struct_Frames)
-   vec_time_pix_colour_tmp = Struct_Frames{i};
-   len_vec = length(vec_time_pix_colour_tmp);
-   Matrix_paint = zeros(M,N);
-   Matrix_paint(:,:) = NaN;
-   for j=1:len_vec
-      pixel = vec_time_pix_colour_tmp(j,2);
-      colour = vec_time_pix_colour_tmp(j,3);
-      indx = fix((pixel)/M)+1;indy = rem(pixel,N)+1;
-      Matrix_paint(indx,indy) = colour; 
-   end
-  
-   c_min = uint8(min(vec_time_pix_colour_tmp(:,3)));
-   c_max = uint8(max(vec_time_pix_colour_tmp(:,3)));
-   CMAP = uint8(unique(vec_time_pix_colour_tmp(:,3)));
-   
-   subplot(max_rows,max_col,ind_subfig)
-      
-   imagesc(uint8(Matrix_paint),[0 255])
-   colormap(gray)
-   
-   if c_min ~= c_max
-        colorbar('Ylim',[c_min c_max],'YTick',CMAP);
-    else
-        colorbar('YTick',CMAP);
-    
-    end
-   
-   % Find the NaN value to Mark them.
-   [rows columns] = find(isnan(Matrix_paint));
-   text(columns,rows,'\color{white}NE','HorizontalAlignment','center', ...
-       'FontSize',8)
-   
-   %Creating the title
-   title(strcat('Time = [ ',num2str(min(vec_time_pix_colour_tmp(:,1))*1e3), ...
-       ' - ', num2str(max(vec_time_pix_colour_tmp(:,1))*1e3),'] ms'))
-   
-   % Creating lines to marking 
-   vc_lineX = linspace(0,N+1,200);
-   vc_lineY = ones(1,length(vc_lineX))/2;
-    
-   for x=1:N
-       
-       for y=1:M
-           
-           hold on;
-           plot(vc_lineX,vc_lineY+y,'--','Color',[0.7 0.7 0.7]);
-           
-       end
-       hold on
-       line([x+0.5 x+0.5],[0 M+1],'LineStyle','--','Color',[0.7 0.7 0.7])
-   end
-    
-   % Changing the labels axis
-   xlabel(['Columns',' ','(',char(i+96),') '])
-   ylabel('Rows')
-   set(gca,'XTick',[1:N])
-   set(gca,'YTick',[1:M])
-   set(gca,'XTickLabel',struct_lims)
-   set(gca,'YTickLabel',struct_lims)
-   
-   if (ind_subfig == elements_fig)
-       
-       ind_subfig = 1;
-       cd(PATH_folder_images)
-       set(gcf,'PaperPositionMode','auto')
-       print('-depsc2', ['Output_Model_ATIS',num2str(ind_nameFig),'.eps'])
-       print('-dpng', ['Output_Model_ATIS',num2str(ind_nameFig),'.png'])
-       saveas(gcf,['Output_Model_ATIS',num2str(ind_nameFig)],'fig');
-       close all;
-       
-       if i ~= length(Struct_Frames)
-           %para no crear una figura en blanco sin nada
-           h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
-           ind_nameFig = ind_nameFig + 1;
-           cont_plot = 1; % Avisa si es necesario grabar la ultima grafica
-       else
-           cont_plot = 0;
-           
-       end
-   else
-       ind_subfig = ind_subfig + 1;
-       
-   end
-   
-   
-end
-
-if cont_plot
-
-    cd(PATH_folder_images)
-    set(gcf,'PaperPositionMode','auto')
-    print('-depsc2', ['Output_Model_ATIS',num2str(ind_nameFig),'.eps'])
-    print('-dpng', ['Output_Model_ATIS',num2str(ind_nameFig),'.png'])
-    saveas(gcf,['Output_Model_ATIS',num2str(ind_nameFig)],'fig');
-end
+cd(curr_pwd)
+plot2dATIS(Matrix_time_pix_colour,'MODEL')
 
 toc
 cd(curr_pwd)

@@ -13,16 +13,19 @@ PATH_sim_output_matlab = getenv('PATH_sim_output_matlab');
 name_simulation = getenv('name_simulation');
 PATH_folder_images = getenv('PATH_folder_images');
 number_bits = str2num(getenv('number_bits'));
+PATH_input = getenv('PATH_folder_input'); 
+name_signal = getenv('name_Signalsinput'); 
+
 N = str2num(getenv('N'));
 M = str2num(getenv('M'));
+T_Rst = 200e-6;
+Iph_min = 20e-12;
+Iph_max = 1e-9;
 
 cd(PATH_sim_output_matlab)
 
-%name_simulation = 'DVS2x2_resol20';
-%name_simulation ='DVS2x2_TW_T30ms';
 string_data = strcat('data_',name_simulation,'.csv');
 string_index_file = 'index_data.csv';
-%number_bits = 3;
 middle_point = 0.9;
 
 % header
@@ -33,12 +36,11 @@ index_desired = importdata(string_index_file);
 len_index = length(index_desired);
 len_row_data_Sim = length(data_Sim);
 
-scaleTime = 1e3;
 
 vec_desiredData = zeros(len_row_data_Sim,6); % Always 6 [time data parity(ON/OFF)
 digitalSignal = zeros(len_row_data_Sim,len_index);
 vec_pixels = zeros(len_row_data_Sim,1); 
-time = scaleTime*data_Sim(:,1);
+time = data_Sim(:,1);
 vec_desiredData(:,1) = time;
 
 %paso 1. leer los datos de la simulacion y pasar de analogico a digital
@@ -77,10 +79,9 @@ vec_desiredData(:,6) = digitalSignal(:,index_Globalrst); %global reset
 
 state = 0;
 % structure ON 
-ON_events = {[]};
+ON_events = {[]}; ON_events2TC = zeros(1,2);
 % structure OFF event
-OFF_events = {[]};
-
+OFF_events = {[]}; OFF_events2TC = zeros(1,2);
 i=1;
 ind_ON=1;
 ind_OFF = 1;
@@ -98,6 +99,16 @@ while (i<=len_row_data_Sim)
                 t = vec_desiredData(cur_index,1);
                 pix = vec_desiredData(cur_index,2);
                 vec_time_pix = [t pix];
+                
+                % For Bar plot
+                name_input = strcat(PATH_input,name_signal,'_',num2str(pix),'.csv');
+                input_signal = importdata(name_input);
+                t_tmp = input_signal(:,1) + T_Rst;
+                Iph = input_signal(:,2);
+                j = find(t_tmp >= t,1);
+                ON_events2TC(ind_ON,1) = pix;
+                ON_events2TC(ind_ON,2) = Iph(j);
+                %end bar plot
                 ON_events{ind_ON} = vec_time_pix;
                 ind_ON = ind_ON + 1;
             else
@@ -105,6 +116,18 @@ while (i<=len_row_data_Sim)
                 t = vec_desiredData(cur_index,1);
                 pix = vec_desiredData(cur_index,2);
                 vec_time_pix = [t pix];
+                
+                % For Bar plot
+                name_input = strcat(PATH_input,name_signal,'_',num2str(pix),'.csv');
+                input_signal = importdata(name_input);
+                t_tmp = input_signal(:,1) + T_Rst;
+                Iph = input_signal(:,2);
+                j = find(t_tmp >= t,1);
+                OFF_events2TC(ind_OFF,1) = pix;
+                OFF_events2TC(ind_OFF,2) = Iph(j);
+                %end bar plot
+                
+                
                 OFF_events{ind_OFF} = vec_time_pix;
                 ind_OFF = ind_OFF + 1;
             end
@@ -129,121 +152,20 @@ end
 % Paso 4. Plot
 
 
-cd(PATH_folder_images)
+% plot_bar_events_DVS_model
 
-% ON EVENTS
+cd(pwd_current)
 
-i = 0;
-%X = 0:X_length;
-%Y = 0:Y_length;
-X = 0:2*N-1;
-Y = 0:2*M-1;
-z  = zeros(2*M,2*N);
+plot_bar_events_DVS_Model(ON_events2TC,OFF_events2TC,Iph_min,Iph_max,'SIMULATED');
 
-%z  = zeros(Y_length+1,X_length+1);
-len_ON_events = length(ON_events);
+% Paso 3. Plot
+
+plot3dDVS_fn(ON_events,OFF_events,'SIMULATED')
 
 
-if ( len_ON_events > 1)
-    fig_ON = figure(1);
-    colormap(fig_ON,'gray')
-    while i < len_ON_events
-
-        vec_time_pix = ON_events{i+1};
-        t = vec_time_pix(1);
-        pixel = vec_time_pix(2);
-        row = fix(pixel/N);
-        col = rem(pixel,N);
-        y1  = row+1;
-        y2  = y1+1;
-        x1  = col+1;
-        x2  = x1+1;
-        z(:,:) = NaN; % Avoid that Matlab create lines no desired
-        z([y1 y2],[x1 x2]) = t;
-        surf(X,Y,z)
-        hold on
-        grid on
-        i = i+1;
-
-    end
-
-    % adjusting apperance
-    colorbar;
-    set(gca,'xtick',X);
-    set(gca,'ytick',Y);
-    set(gca,'Ydir','reverse')
-    xlim([0 N])
-    ylim([0 M])
-    %vec_time_pix = ON_events{1};
-    %min_t = vec_time_pix(1);
-    %vec_time_pix = ON_events{len_ON_events};
-    %max_t = vec_time_pix(1);
-    %set(gca,'zlim',[min_t max_t])
-    xlabel('X')
-    ylabel('Y')
-    zlabel('Time ms')
-    name_title = 'ON EVENTS';
-    name_fig = 'ON_events_3D';
-    title(name_title)
-    saveas(fig_ON,strcat(name_fig,'.fig'),'fig');
-    saveas(fig_ON,strcat(name_fig,'.png'),'png');
-end
-
-
-len_OFF_events = length(OFF_events);
-z  = zeros(2*M,2*N);
-
-i = 0;
-
-if ( len_OFF_events > 1)
-    fig_OFF = figure(2);
-    colormap(fig_OFF,'gray')
-    while i < len_OFF_events
-
-        vec_time_pix = OFF_events{i+1};
-        t = vec_time_pix(1);
-        pixel = vec_time_pix(2);
-        row = fix(pixel/N);
-        col = rem(pixel,N);
-        y1  = row+1;
-        y2  = y1+1;
-        x1  = col+1;
-        x2  = x1+1;
-        z(:,:) = NaN; % Avoid that Matlab create lines no desired
-        z([y1 y2],[x1 x2]) = t;
-        surf(X,Y,z)
-        hold on
-        grid on
-        i = i+1;
-
-    end
-
-    % adjusting apperance
-    colorbar;
-    set(gca,'xtick',X);
-    set(gca,'ytick',Y);
-    set(gca,'Ydir','reverse')
-    xlim([0 N])
-    ylim([0 M])
-    %vec_time_pix = OFF_events{1};
-    %min_t = vec_time_pix(1);
-    %vec_time_pix = OFF_events{len_OFF_events};
-    %max_t = vec_time_pix(1);
-    %set(gca,'zlim',[min_t max_t])
-    xlabel('COLUMNS')
-    ylabel('ROWS')
-    zlabel('Time ms')
-    name_title = 'OFF EVENTS';
-    name_fig = 'OFF_events_3D';
-    title(name_title)
-    saveas(fig_OFF,strcat(name_fig,'.fig'),'fig');
-    saveas(fig_OFF,strcat(name_fig,'.png'),'png');
-end
-
-%dlmwrite('desiredSignals.csv',vec_desiredData,'delimiter',',','precision',10,'newline','unix');
 
 cd(pwd_current)
 
 toc
-exit
+%exit
 

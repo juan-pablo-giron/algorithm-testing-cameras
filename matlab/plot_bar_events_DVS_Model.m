@@ -9,7 +9,7 @@
 % TC_OFF = abs(log(Idark/Ibright))
 
 function []=plot_bar_events_DVS_Model(M_ON_Events,M_OFF_Events, ...
-    Idark,Ibright)
+    Idark,Ibright,string)
 
 curr_pwd = pwd;
 
@@ -70,9 +70,9 @@ xlim([0 100])
 title(['Total events = ',num2str(sum(vec_TC_OFF)+sum(vec_TC_ON))])
 
 set(gcf,'PaperPositionMode','auto')
-print('-depsc2', 'BAR_TC.eps')
-print('-dpng', 'BAR_TC.png')
-saveas(gcf,'BAR_TC','fig')
+print('-depsc2', ['BAR_TC_',string,'.eps'])
+print('-dpng', ['BAR_TC_',string,'.png'])
+saveas(gcf,['BAR_TC_',string],'fig')
 
 cd(curr_pwd)
 

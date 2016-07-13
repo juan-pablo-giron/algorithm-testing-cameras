@@ -1,6 +1,6 @@
 % funcion que hace el plot para el DVS en 3D
 
-function [] = plot3dDVS_fn(ON_events,OFF_events)
+function [] = plot3dDVS_fn(ON_events,OFF_events,string)
 
 N = str2num(getenv('N')); 
 M = str2num(getenv('M')); 
@@ -67,13 +67,12 @@ if ( len_ON_events > 1)
     xlabel('COLUMNS')
     ylabel('ROWS')
     zlabel('Time ms')
-    name_title = 'ON EVENTS MODEL';
-    name_fig = 'ON_events_3D_Model';
+    name_title = ['DVS ON EVENTS ',string];
     title(name_title)
     set(fig_ON,'PaperPositionMode','auto')
-    print('-depsc2','DVS_ON_Model.eps')
-    print('-dpng','DVS_ON_Model.png')
-    saveas(gcf,'DVS_ON_Model','fig');
+    print('-depsc2',['DVS_ON_',string,'.eps'])
+    print('-dpng',['DVS_ON_',string,'.png'])
+    saveas(gcf,['DVS_ON_',string],'fig');
 end
 
 
@@ -113,10 +112,10 @@ if ( len_OFF_events >1)
     xlabel('COLUMNS')
     ylabel('ROWS')
     zlabel('Time ms')
-    name_title = 'OFF EVENTS MODEL';
+    name_title = ['DVS OFF EVENTS ',string];
     title(name_title)
     set(fig_OFF,'PaperPositionMode','auto')
-    print('-depsc2','DVS_OFF_Model.eps')
-    print('-dpng','DVS_OFF_Model.png')
-    saveas(gcf,'DVS_OFF_Model','fig');
+    print('-depsc2',['DVS_OFF_',string,'.eps'])
+    print('-dpng',['DVS_OFF_',string,'.png'])
+    saveas(gcf,['DVS_OFF_',string],'fig');
 end
