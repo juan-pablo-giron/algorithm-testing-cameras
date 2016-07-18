@@ -62,12 +62,14 @@ cd(PATH_folder_images)
 
 figure('Visible','off');
 bar(vec_TC_ON,'FaceColor', [0.7 0.7 0.7], 'EdgeColor', [0.7 0.7 0.7])
+%hist(vec_TC_ON,10)%'FaceColor', [0.7 0.7 0.7], 'EdgeColor', [0.7 0.7 0.7])
 hold on
 bar(vec_TC_OFF,'FaceColor', 'k', 'EdgeColor', 'k')
+%hist(vec_TC_OFF,10);%'FaceColor', 'k', 'EdgeColor', 'k')
 legend(['VdiffON=',num2str(abs(V_p-Vref)),'V'],['VdiffOFF=',num2str(abs(V_n-Vref)),'V'])
 xlabel('\theta_{ev}(%)')
 ylabel('#pixels')
-xlim([0 100])
+xlim([0 30])
 title(['Total events = ',num2str(sum(vec_TC_OFF)+sum(vec_TC_ON))])
 
 set(gcf,'PaperPositionMode','auto')

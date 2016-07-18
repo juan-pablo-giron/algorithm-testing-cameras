@@ -148,6 +148,7 @@ for i=0:quant_pixel-1;
     Iph = input_signal(:,2);
     Vo = 0;
     Event_pix = Events{i+1};
+        
     time_events = Event_pix.value;
     ind_events = 1;
     Vint(1,i+1) = Vo;
@@ -236,4 +237,4 @@ plot2dATIS(Matrix_time_pix_colour,'MODEL')
 
 toc
 cd(curr_pwd)
-exit
+%exit

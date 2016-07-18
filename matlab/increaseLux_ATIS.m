@@ -1,5 +1,5 @@
-% Esta funci�n proporciona el conjunto de datos necesarios para 
-% simular una c�mara ATIS.
+% Esta funci???n proporciona el conjunto de datos necesarios para 
+% simular una c???mara ATIS.
 
 tic;
 
@@ -7,10 +7,10 @@ clear all;clc;close all;
 
 curr_path = pwd;
 
-N =2; 
-M =2;
+N = 8; 
+M = 8;
 freq = 150;
-frames = 255;
+frames = 4;
 Max_Subplots = 20;
 rpm = freq*60;
 T_Rst = 200e-6;

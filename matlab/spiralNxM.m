@@ -23,7 +23,7 @@ PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis
 cd(PATH_input);
 nameSignal = strcat('spiral',int2str(N),'X',int2str(M),'_',int2str(freq));
 name_folder = strcat(nameSignal,'/');
-[s,mess1,mess2]=mkdir(name_folder)
+[s,mess1,mess2]=mkdir(name_folder);
 if (~strcmp(mess1,''))
    
     rmdir(name_folder,'s');
