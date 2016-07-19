@@ -33,14 +33,13 @@ cd(curr_path);
 pixel = 0;
 start_col = 1;end_Col = N;
 start_row = 2;end_row = M;
-%I0 = 50e-12;
-%Ich = 100e-12;
 
 I0 = 20e-15;
-%Ich = 100e-12;
 quant_pixel = N*M;
 Ich1 = linspace(20e-12,1e-9,quant_pixel);
-Ich2 = linspace(1e-9,20e-9,quant_pixel);
+delta_Ich1 = Ich1(2) - Ich1(1);
+I_ph = 1e-9;
+
 scaleTime = 1e3;
 
 state = 0;
@@ -71,16 +70,35 @@ h = figure(1);
 
 % Ajustando el primer valor
 
-Matrix_pixels(1,:) = I0;
-Matrix_pixels(2,:) = I0;
+Matrix_pixels(:,:) = I0;
+Matrix_pixels(:,:) = I0;
 ind_time_start1 = 3;
 ind_time_start2 = len_t/2 + 3;
+
+
+% Se contruye una matriz de N*M con numeros del 1 hasta N*M
+
+Matrix_next_pixel = zeros(M,N);
+pix = 1;
+for row=1:N
+    
+    for col=1:M
+        
+        Matrix_next_pixel(row,col) = pix;
+        pix = pix + 1;
+        
+    end
+    
+end
+
+
 
 % Only are fired ON spikes between 0 to T/2
 
 while (pixel < quant_pixel)
    
    z(:,:) = NaN;
+   
    
       
    switch state
@@ -90,9 +108,11 @@ while (pixel < quant_pixel)
             % the gradient go to rigth
             if ( j < end_Col)
                 
+                ind_pix = Matrix_next_pixel(i,j);
+                
                 time1 = vec_time(pixel+ind_time_start1);
-                Matrix_pixels(ind_time_start1+pixel:len_t,pixel+1) = Ich1(pixel+1);
-                Matrix_pixels(ind_time_start1+pixel+1:len_t,pixel+1) = Ich1(pixel+1);
+                Matrix_pixels(ind_time_start1+pixel:len_t,ind_pix) = I_ph;
+                Matrix_pixels(ind_time_start1+pixel+1:len_t,ind_pix) = I_ph;
                 ind_time_start1 = ind_time_start1 + 1;
                 % --- plot ---%
                 y1  = i;
@@ -106,7 +126,7 @@ while (pixel < quant_pixel)
                 % --- End plot ---%
                 j = j + 1;
                 pixel = pixel + 1;
-                %export = true;
+                I_ph = I_ph - delta_Ich1; 
             else
                 end_Col = end_Col - 1;
                 state = 1;
@@ -117,10 +137,12 @@ while (pixel < quant_pixel)
        
             % The gradient is downing by one column
             if ( i < end_row )
-                %Array(i,j) = Ich(pixel+1);
+                
+                ind_pix = Matrix_next_pixel(i,j);
+                %fprintf('Pixel Nro = %d \n',ind_pix)
                 time1 = vec_time(pixel+ind_time_start1);
-                Matrix_pixels(ind_time_start1+pixel:len_t,pixel+1) = Ich1(pixel+1);
-                Matrix_pixels(ind_time_start1+pixel+1:len_t,pixel+1) = Ich1(pixel+1);
+                Matrix_pixels(ind_time_start1+pixel:len_t,ind_pix) = I_ph;
+                Matrix_pixels(ind_time_start1+pixel+1:len_t,ind_pix) = I_ph;
                 ind_time_start1 = ind_time_start1 + 1;
                 
                 % --- plot ---%
@@ -136,7 +158,7 @@ while (pixel < quant_pixel)
                 
                 i = i + 1;
                 pixel = pixel + 1;
-                %export = true;
+                I_ph = I_ph - delta_Ich1;
             else
                 end_row = end_row - 1;
                 state = 2;
@@ -146,10 +168,12 @@ while (pixel < quant_pixel)
            
             % el gradiente esta yendo de derecha a izquierda
             if ( j > start_col)
-                %Array(i,j) = Ich(pixel+1);
+                
+                ind_pix = Matrix_next_pixel(i,j);
+                %fprintf('Pixel Nro = %d \n',ind_pix)
                 time1 = vec_time(pixel+ind_time_start1);
-                Matrix_pixels(ind_time_start1+pixel:len_t,pixel+1) = Ich1(pixel+1);
-                Matrix_pixels(ind_time_start1+pixel+1:len_t,pixel+1) = Ich1(pixel+1);
+                Matrix_pixels(ind_time_start1+pixel:len_t,ind_pix) = I_ph;
+                Matrix_pixels(ind_time_start1+pixel+1:len_t,ind_pix) = I_ph;
                 ind_time_start1 = ind_time_start1 + 1;
                 
                 % --- plot ---%
@@ -165,7 +189,7 @@ while (pixel < quant_pixel)
                 
                 j = j - 1;
                 pixel = pixel + 1;
-                %export = true;
+                I_ph = I_ph - delta_Ich1;
             else
                 start_col = start_col + 1;
                 state = 3;
@@ -175,10 +199,11 @@ while (pixel < quant_pixel)
            
            % El gradiente esta subiendo por una columna
            if ( i >= start_row) 
-               %Array(i,j) = Ich(pixel+1);
+               
+               ind_pix = Matrix_next_pixel(i,j);
                time1 = vec_time(pixel+ind_time_start1);
-               Matrix_pixels(ind_time_start1+pixel:len_t,pixel+1) = Ich1(pixel+1);
-               Matrix_pixels(ind_time_start1+pixel+1:len_t,pixel+1) = Ich1(pixel+1);
+               Matrix_pixels(ind_time_start1+pixel:len_t,ind_pix) = I_ph;
+               Matrix_pixels(ind_time_start1+pixel+1:len_t,ind_pix) = I_ph;
                ind_time_start1 = ind_time_start1 + 1;
                % --- plot ---%
                y1  = i;
@@ -194,7 +219,7 @@ while (pixel < quant_pixel)
                
                i = i - 1;
                pixel = pixel + 1;
-               %export = true;
+               I_ph = I_ph - delta_Ich1;
            else
                i = i + 1;
                j = j + 1;
@@ -210,9 +235,11 @@ while (pixel < quant_pixel)
            end
        case 4
            % Left one pixel only!
+           
+           ind_pix = Matrix_next_pixel(i,j);
            time1 = vec_time(pixel+ind_time_start1);
-           Matrix_pixels(ind_time_start1+pixel:len_t,pixel+1) = Ich1(pixel+1);
-           Matrix_pixels(ind_time_start1+pixel+1:len_t,pixel+1) = Ich1(pixel+1);
+           Matrix_pixels(ind_time_start1+pixel:len_t,ind_pix) = I_ph;
+           Matrix_pixels(ind_time_start1+pixel+1:len_t,ind_pix) = I_ph;
            ind_time_start1 = ind_time_start1 + 1;
                       
            pixel = pixel + 1;
@@ -228,10 +255,13 @@ while (pixel < quant_pixel)
            grid on
            % --- End plot ---%
    end
+   
 end
 
 
 % Only are fired OFF spikes between T/2 to T
+
+%{
 
 pixel = 0;
 state = 0;
@@ -250,10 +280,10 @@ while (pixel < quant_pixel)
            
             % the gradient go to rigth
             if ( j < end_Col)
-                
+                ind_pix = Matrix_next_pixel(i,j);
                 time1 = vec_time(pixel+ind_time_start1);
-                Matrix_pixels(ind_time_start1+pixel:len_t,pixel+1) = Ich2(pixel+1);
-                Matrix_pixels(ind_time_start1+pixel+1:len_t,pixel+1) = Ich2(pixel+1);
+                Matrix_pixels(ind_time_start1+pixel:len_t,ind_pix) = Ich2(ind_pix);
+                Matrix_pixels(ind_time_start1+pixel+1:len_t,ind_pix) = Ich2(ind_pix);
                 ind_time_start1 = ind_time_start1 + 1;
                 % --- plot ---%
                 %y1  = i;
@@ -279,9 +309,10 @@ while (pixel < quant_pixel)
             % The gradient is downing by one column
             if ( i < end_row )
                 %Array(i,j) = Ich(pixel+1);
+                ind_pix = Matrix_next_pixel(i,j);
                 time1 = vec_time(pixel+ind_time_start1);
-                Matrix_pixels(ind_time_start1+pixel:len_t,pixel+1) = Ich2(pixel+1);
-                Matrix_pixels(ind_time_start1+pixel+1:len_t,pixel+1) = Ich2(pixel+1);
+                Matrix_pixels(ind_time_start1+pixel:len_t,ind_pix) = Ich2(ind_pix);
+                Matrix_pixels(ind_time_start1+pixel+1:len_t,ind_pix) = Ich2(ind_pix);
                 ind_time_start1 = ind_time_start1 + 1;
                 
                 % --- plot ---%
@@ -308,9 +339,10 @@ while (pixel < quant_pixel)
             % el gradiente esta yendo de derecha a izquierda
             if ( j > start_col)
                 %Array(i,j) = Ich(pixel+1);
+                ind_pix = Matrix_next_pixel(i,j);
                 time1 = vec_time(pixel+ind_time_start1);
-                Matrix_pixels(ind_time_start1+pixel:len_t,pixel+1) = Ich2(pixel+1);
-                Matrix_pixels(ind_time_start1+pixel+1:len_t,pixel+1) = Ich2(pixel+1);
+                Matrix_pixels(ind_time_start1+pixel:len_t,ind_pix) = Ich2(ind_pix);
+                Matrix_pixels(ind_time_start1+pixel+1:len_t,ind_pix) = Ich2(ind_pix);
                 ind_time_start1 = ind_time_start1 + 1;
                 
                 % --- plot ---%
@@ -337,9 +369,10 @@ while (pixel < quant_pixel)
            % El gradiente esta subiendo por una columna
            if ( i >= start_row) 
                %Array(i,j) = Ich(pixel+1);
+               ind_pix = Matrix_next_pixel(i,j);
                time1 = vec_time(pixel+ind_time_start1);
-               Matrix_pixels(ind_time_start1+pixel:len_t,pixel+1) = Ich2(pixel+1);
-               Matrix_pixels(ind_time_start1+pixel+1:len_t,pixel+1) = Ich2(pixel+1);
+               Matrix_pixels(ind_time_start1+pixel:len_t,ind_pix) = Ich2(ind_pix);
+               Matrix_pixels(ind_time_start1+pixel+1:len_t,ind_pix) = Ich2(ind_pix);
                ind_time_start1 = ind_time_start1 + 1;
                % --- plot ---%
                %y1  = i;
@@ -370,9 +403,10 @@ while (pixel < quant_pixel)
            end
        case 4
            % Left one pixel only!
+           ind_pix = Matrix_next_pixel(i,j);
            time1 = vec_time(pixel+ind_time_start1);
-           Matrix_pixels(ind_time_start1+pixel:len_t,pixel+1) = Ich2(pixel+1);
-           Matrix_pixels(ind_time_start1+pixel+1:len_t,pixel+1) = Ich2(pixel+1);
+           Matrix_pixels(ind_time_start1+pixel:len_t,ind_pix) = Ich2(ind_pix);
+           Matrix_pixels(ind_time_start1+pixel+1:len_t,ind_pix) = Ich2(ind_pix);
            ind_time_start1 = ind_time_start1 + 1;
                       
            pixel = pixel + 1;
@@ -389,19 +423,30 @@ while (pixel < quant_pixel)
    end
 end
 
-
-
-%interp1 is used to interpolate the input
-%interp_InputSignal(PATH_input,nameSignal,quant_pixel,len_t,samples) 
+%}
 
 cd(PATH_input)
 
+
+% Interpolation
+
+
+time_interp = linspace(0,T,len_t*50);
+
+parfor pixel=1:quant_pixel
+    
+   I_pd=Matrix_pixels(:,pixel);
+   I_pd_interp = interp1(vec_time',I_pd,time_interp','linear');
+   name_file = strcat(nameSignal,'_',int2str(pixel-1),'.csv');
+   dlmwrite(name_file,[time_interp' I_pd_interp],'delimiter',' ','precision',10,'newline','unix'); 
+end
 
 
 period = T;
 fid = fopen('README.txt','wt');
 fprintf(fid,' N %d\n M %d\n T %d \n freq %d (Hz) \n Sample %d \n RPM %d \n',N,M,period,1/period,samples,rpm);
 fclose(fid);
+
 
 
 colorbar;

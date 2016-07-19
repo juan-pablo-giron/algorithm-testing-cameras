@@ -92,12 +92,8 @@ for i=1:length(Struct_Frames)
    colormap(gray)
    
    if c_min ~= c_max
-        if length(CMAP) >10
-            ind_CMAP = floor(linspace(1,length(CMAP),10));
-            colorbar('Ylim',[c_min c_max],'YTick',CMAP(ind_CMAP));
-        else
-            colorbar('Ylim',[c_min c_max],'YTick',CMAP);
-        end
+       if length(CMAP) > 5
+        colorbar('Ylim',[c_min c_max],'YTick',CMAP);
     else
         colorbar('YTick',CMAP);
     

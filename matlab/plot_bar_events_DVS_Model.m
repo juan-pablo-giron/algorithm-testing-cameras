@@ -69,7 +69,7 @@ bar(vec_TC_OFF,'FaceColor', 'k', 'EdgeColor', 'k')
 legend(['VdiffON=',num2str(abs(V_p-Vref)),'V'],['VdiffOFF=',num2str(abs(V_n-Vref)),'V'])
 xlabel('\theta_{ev}(%)')
 ylabel('#pixels')
-xlim([0 30])
+xlim([0 100])
 title(['Total events = ',num2str(sum(vec_TC_OFF)+sum(vec_TC_ON))])
 
 set(gcf,'PaperPositionMode','auto')

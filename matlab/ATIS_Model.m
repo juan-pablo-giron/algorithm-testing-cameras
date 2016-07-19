@@ -13,10 +13,10 @@ PATH_folder_images = getenv('PATH_folder_images');
 name_signal = getenv('name_Signalsinput'); 
 N = str2num(getenv('N')); 
 M = str2num(getenv('M')); 
-V_p = str2num(getenv('Vdon'));
-V_n = str2num(getenv('Vdoff'));
-Vhigh = str2num(getenv('Vhigh'));
-Vlow = str2num(getenv('Vlow'));
+V_p = 1.4%str2num(getenv('Vdon'));
+V_n = 1.6%str2num(getenv('Vdoff'));
+Vhigh = 1.7%str2num(getenv('Vhigh'));
+Vlow = 0.2%str2num(getenv('Vlow'));
 
 
 

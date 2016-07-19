@@ -53,7 +53,7 @@ case "$choice_TypeSim" in
     
     cd $PATH_scriptPython
     python sort_data_ATIS_pixel_UNIX.py
-      
+    #echo "Simulando"  
     if [ "$?" = 0 ]
     then
       #kdialog --msgbox "Starting the Post-processing with MATLAB close it when end"
