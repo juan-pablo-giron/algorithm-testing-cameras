@@ -60,7 +60,8 @@ Vdiff_ind = zeros(len_t,1);
 ON_events = {[]}; ON_events2TC = zeros(1,2);
 % structure OFF event
 OFF_events = {[]}; OFF_events2TC = zeros(1,2);
-
+xmax = 90e-3;
+xmin = -90e-3;
 
 ind_ON = 1;
 ind_OFF = 1;
@@ -79,10 +80,17 @@ for i=0:quant_pixel-1;
     Vdiff_max = max(Vdiff_ind);    %used to normalized
     Vdiff_ind = Vdiff_ind - Vdiff_max; %used to normalized
     
+    % Cambia aleatoriamente el valor de Vref debido al offset inducido pela
+    % chave
+    
+    x = xmin + rand(1,1)*(xmax - xmin);
+        
     % Paso 2. Encontrar los eventos ON y OFF.
     ind_event = 1;
     for j=1:len_t
        value = Vdiff_ind(j);
+       VdiffON = V_p - (Vref+x) + Vos;  
+       VdiffOFF= V_n - (Vref+x) + Vos;
        if (value <= VdiffON)
            Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) + abs(value); %reset to Vref
            vec_time_pix = [t(j)+T_Rst i];
@@ -92,6 +100,7 @@ for i=0:quant_pixel-1;
            Event_pix.value(ind_event) = t(j);
            ind_ON = ind_ON + 1;
            ind_event=ind_event+1;
+           x = xmin + rand(1,1)*(xmax - xmin); % Voffset inducido pela chave
        else
            if ( value >= VdiffOFF)
 
@@ -103,6 +112,7 @@ for i=0:quant_pixel-1;
                 Event_pix.value(ind_event) = t(j);
                 ind_OFF = ind_OFF + 1;
                 ind_event=ind_event+1;
+                x = xmin + rand(1,1)*(xmax - xmin); % Voffset inducido pela chave
            else
                continue
            end
@@ -126,4 +136,4 @@ plot3dDVS_fn(ON_events,OFF_events,'MODEL')
 cd(pwd_current)
 
 toc
-exit
+%exit

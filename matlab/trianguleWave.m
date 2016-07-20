@@ -21,8 +21,8 @@ tic;
 
 clear all;clc;close all;
 
-N = 2; 
-M = 2;
+N = 32; 
+M = 32;
 quant_pixel=N*M;
 freq = 200;
 resol = 256; % Count colours that we wanna to see 
@@ -64,49 +64,57 @@ end
 
 I_ph = zeros(1,len_t);
 I = Imin;
+
+%for p=0:quant_pixel-1
+    
 i = 0;
-
-for p=0:quant_pixel-1
+while ( i<=len_t)
     
-    i = 0;
-    while ( i<=len_t)
-
-        if ( i < len_t/2)
-
-            I_ph(i+1:i+samplesPerHold) = I;
-            I = I + deltaI;
-
-
-        else
-
-            I = I - deltaI;
-            I_ph(i+1:i+samplesPerHold) = I;
-
-        end
-
-        if ( i + samplesPerHold <len_t)
-            i = i+samplesPerHold;
-        else
-            i = len_t + 1;
-        end
-
+    if ( i < len_t/2)
+        
+        I_ph(i+1:i+samplesPerHold) = I;
+        I = I + deltaI;
+        
+        
+    else
+        
+        I = I - deltaI;
+        I_ph(i+1:i+samplesPerHold) = I;
+        
     end
-    signal(:,1) = t';
-    signal(:,2) = I_ph';
     
-    % interp1
-    cd(PATH_input)
-    t_start=t(1);
- 	t_stop=t(length(t));
- 	time_interp = t_start:t_stop/(25*len_t*samplesPerHold):t_stop;
- 	I_pd_interp = interp1(t,I_ph,time_interp,'linear');
-    name_file = strcat(nameSignal,'_',num2str(p),'.csv');
-	dlmwrite(name_file,[time_interp' I_pd_interp'],'delimiter',' ','precision',10,'newline','unix');
+    if ( i + samplesPerHold <len_t)
+        i = i+samplesPerHold;
+    else
+        i = len_t + 1;
+    end
+    
+end
+signal(:,1) = t';
+signal(:,2) = I_ph';
+    
+    
     
 
+%end
+
+% Writting the files All are the same
+
+% interp1
+cd(PATH_input)
+t_start=t(1);
+t_stop=t(length(t));
+time_interp = linspace(t_start,t_stop,10*len_t);
+I_pd_interp = interp1(t,I_ph,time_interp,'linear');
+
+parfor p=0:quant_pixel-1
+
+    name_file = strcat(nameSignal,'_',num2str(p),'.csv');
+    dlmwrite(name_file,[time_interp' I_pd_interp'],'delimiter',' ','precision',10,'newline','unix');
 end
 
-cd(PATH_input)
+%cd(PATH_input)
+name_file = strcat(nameSignal,'_',num2str(0),'.csv');
 data_tmp=importdata(name_file);
 t=data_tmp(:,1);
 period = t(length(t));

@@ -13,10 +13,10 @@ PATH_folder_images = getenv('PATH_folder_images');
 name_signal = getenv('name_Signalsinput'); 
 N = str2num(getenv('N')); 
 M = str2num(getenv('M')); 
-V_p = 1.4%str2num(getenv('Vdon'));
-V_n = 1.6%str2num(getenv('Vdoff'));
-Vhigh = 1.7%str2num(getenv('Vhigh'));
-Vlow = 0.2%str2num(getenv('Vlow'));
+V_p = str2num(getenv('Vdon'));
+V_n = str2num(getenv('Vdoff'));
+Vhigh = str2num(getenv('Vhigh'));
+Vlow = str2num(getenv('Vlow'));
 
 
 
@@ -76,6 +76,7 @@ for i=0:quant_pixel-1;
     
     % Paso 2. Encontrar los eventos ON y OFF.
     ind_event = 1;
+    Event_pix = {[]};
     for j=1:len_t
        value = Vdiff_ind(j);
        if (value <= VdiffON)
@@ -237,4 +238,4 @@ plot2dATIS(Matrix_time_pix_colour,'MODEL')
 
 toc
 cd(curr_pwd)
-%exit
+exit

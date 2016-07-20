@@ -36,7 +36,7 @@ start_row = 2;end_row = M;
 
 I0 = 20e-15;
 quant_pixel = N*M;
-Ich1 = linspace(20e-12,1e-9,quant_pixel);
+Ich1 = linspace(18e-12,1e-9,quant_pixel);
 delta_Ich1 = Ich1(2) - Ich1(1);
 I_ph = 1e-9;
 
