@@ -57,7 +57,7 @@ xmax = 20e-3;
 xmin = -50e-3;
 
 % Creando el vector Edges
-Max_Edges = 5; 
+Max_Edges = 50; 
 Events_ON = zeros(Max_Edges,N*M);
 Events_OFF = zeros(Max_Edges,N*M);
 %
@@ -79,7 +79,7 @@ for numEdge=1:Max_Edges
     parfor i=0:quant_pixel-1;
 
         % paso 1. Encontrar Vdiff para cada uno de los pixeles
-        name_input = strcat(PATH_input,name_signal,'_',num2str(i),'.csv')
+        name_input = strcat(PATH_input,name_signal,'_',num2str(i),'.csv');
         input_signal = importdata(name_input);
         Iph = input_signal(:,2);
         log_Iph = log(Iph/Isn);
@@ -95,7 +95,7 @@ for numEdge=1:Max_Edges
         for j=1:len_t
            value = Vdiff_ind(j);
            VdiffON = V_p - (Vref+x) + Vos;  
-           VdiffOFF= V_n - (Vref+x) + Vos;
+           
            
            if (value <= VdiffON)
                % Hubo evento ON
@@ -108,7 +108,7 @@ for numEdge=1:Max_Edges
                %%
 
            else
-               
+               VdiffOFF= V_n - (Vref+x) + Vos;
                if ( value >= VdiffOFF)
                    % Hubo evento off
                    Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) - abs(value); %reset to Vref
