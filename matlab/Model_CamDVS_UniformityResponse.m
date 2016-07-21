@@ -42,16 +42,34 @@ Iph_max = 1e-9;
 Iph_min = 20e-12;
 A = 20;             % Gain closed loop differentiator
 
-
-VdiffON = V_p - Vref + Vos;  
-VdiffOFF= V_n - Vref + Vos;
-Iph_max = 1e-9;
-Iph_min = 20e-12;
-
-
+% Senal de entrada
 name_input = strcat(PATH_input,name_signal,'_0.csv');
 input_signal = importdata(name_input);
 t = input_signal(:,1);
+Iph = input_signal(:,2);
+log_Iph = log(Iph/Isn);
+
+clearvars input_signal
+
+%
+
+% Lims de variacion
+xmax = 50e-3;
+xmin = -50e-3;
+%
+
+
+% Creando el vector Edges
+
+len_Iph = length(Iph);
+Max_Edges = 200; % Solo es un lim pero puede ser menor la cantidad
+ind_Iph = floor(linspace(1,len_Iph,Max_Edges));
+vec_edges = unique(Iph(ind_Iph)); % No se garantiza que hayan Max_Edges
+Events_ON = zeros(length(vec_edges),N*M);
+Events_OFF = zeros(length(vec_edges),N*M);
+%
+
+
 len_t = length(t);
 quant_pixel = N*M;
 Vdiff=zeros(len_t,quant_pixel);
@@ -60,21 +78,14 @@ Vdiff_ind = zeros(len_t,1);
 ON_events = {[]}; ON_events2TC = zeros(1,2);
 % structure OFF event
 OFF_events = {[]}; OFF_events2TC = zeros(1,2);
-xmax = 90e-3;
-xmin = -90e-3;
 
 ind_ON = 1;
 ind_OFF = 1;
 
-cd(PATH_input)
-
 for i=0:quant_pixel-1;
 
     % paso 1. Encontrar Vdiff para cada uno de los pixeles
-    name_input = strcat(name_signal,'_',num2str(i),'.csv');
-    input_signal = importdata(name_input);
-    Iph = input_signal(:,2);
-    log_Iph = log(Iph/Isn);
+       
     Vdiff(:,i+1) = -nn*fi*A*log_Iph;
     Vdiff_ind = Vdiff(:,i+1);
     Vdiff_max = max(Vdiff_ind);    %used to normalized
@@ -86,7 +97,7 @@ for i=0:quant_pixel-1;
     x = xmin + rand(1,1)*(xmax - xmin);
         
     % Paso 2. Encontrar los eventos ON y OFF.
-    ind_event = 1;
+    %ind_event = 1;
     for j=1:len_t
        value = Vdiff_ind(j);
        VdiffON = V_p - (Vref+x) + Vos;  
@@ -94,25 +105,29 @@ for i=0:quant_pixel-1;
        if (value <= VdiffON)
            Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) + abs(value); %reset to Vref
            vec_time_pix = [t(j)+T_Rst i];
-           ON_events2TC(ind_ON,1) = i;
-           ON_events2TC(ind_ON,2) = Iph(j);
            ON_events{ind_ON} = vec_time_pix;
-           Event_pix.value(ind_event) = t(j);
            ind_ON = ind_ON + 1;
-           ind_event=ind_event+1;
-           x = xmin + rand(1,1)*(xmax - xmin); % Voffset inducido pela chave
+           % Busca el indice que se ajusta el valor Edges
+           ind_vec_edge = find(vec_edges > Iph(j),1) - 1;
+           Events_ON(ind_vec_edge,i+1) = Events_ON(ind_vec_edge,i+1) + 1; 
+           %
+           
+           % Voffset inducido pela chave
+           x = xmin + rand(1,1)*(xmax - xmin); 
+           
        else
            if ( value >= VdiffOFF)
-
                 Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) - abs(value); %reset to Vref
                 vec_time_pix = [t(j)+T_Rst i];
-                OFF_events2TC(ind_OFF,1) = i;
-                OFF_events2TC(ind_OFF,2) = Iph(j);
                 OFF_events{ind_OFF} = vec_time_pix;
-                Event_pix.value(ind_event) = t(j);
                 ind_OFF = ind_OFF + 1;
-                ind_event=ind_event+1;
-                x = xmin + rand(1,1)*(xmax - xmin); % Voffset inducido pela chave
+                % Busca el indice que se ajusta el valor Edges
+                ind_vec_edge = find(vec_edges > Iph(j),1) - 1;
+                Events_OFF(ind_vec_edge,i+1) = Events_OFF(ind_vec_edge,i+1) + 1; 
+                %
+                
+                % Voffset inducido pela chave
+                x = xmin + rand(1,1)*(xmax - xmin);
            else
                continue
            end
@@ -120,18 +135,75 @@ for i=0:quant_pixel-1;
 
     end
     Vdiff(:,i+1) = Vdiff_ind;
-    Events{i+1} = Event_pix;
 end
+
+% Construir un vector para crear el histograma, eliminando el numero 0
+
+ind = 1;
+Vec2HistON = [];
+Vec2HistOFF = [];
+
+% ON
+for x = 1:length(vec_edges)
+    
+    for y = 1:N*M
+        
+        if Events_ON(x,y) ~= 0 
+            Vec2HistON(ind) = Events_ON(x,y);
+            ind = ind + 1;
+        else
+            continue;
+        end
+    end
+    
+end
+
+% OFF 
+ind = 1;
+for x = 1:length(vec_edges)
+    
+    for y = 1:N*M
+        
+        if Events_OFF(x,y) ~= 0 
+            Vec2HistOFF(ind) = Events_OFF(x,y);
+            ind = ind + 1;
+        else
+            continue;
+        end
+        
+    end
+    
+end
+
+
+
+%
 
 
 % Paso 3. Plot
 
 
 cd(pwd_current)
-close all;
-plot_bar_events_DVS_Model(ON_events2TC,OFF_events2TC,Iph_min,Iph_max,'MODEL');
-close all;
-plot3dDVS_fn(ON_events,OFF_events,'MODEL')
+%close all;
+%plot_bar_events_DVS_Model(ON_events2TC,OFF_events2TC,Iph_min,Iph_max,'MODEL');
+%close all;
+%plot3dDVS_fn(ON_events,OFF_events,'MODEL')
+
+
+% Grafico histograma
+
+figure
+
+[y x] = hist(Vec2HistON);
+scatter(x,y,'x','r')
+set(gca,'xscale','log')
+hold on
+[y x] = hist(Vec2HistOFF);
+scatter(x,y,'o','b')
+legend('ON events','OFF events')
+grid on
+
+clearvars Vec2HistON Vec2HistOFF Events_OFF Events_ON
 
 cd(pwd_current)
 
