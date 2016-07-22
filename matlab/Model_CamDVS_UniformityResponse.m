@@ -60,7 +60,7 @@ ON_events = {[]}; ON_events2TC = zeros(1,2);
 OFF_events = {[]}; OFF_events2TC = zeros(1,2);
 
 % Vec Events per pixel per edge
-MaxEdges = 10;
+MaxEdges = 2;
 Matrix_pix_edges_ON = zeros(N*M,MaxEdges);
 Matrix_pix_edges_OFF = zeros(N*M,MaxEdges);
 %
@@ -74,7 +74,7 @@ matrix2hist1_ON = {[]};
 matrix2hist1_OFF = {[]};
 names2legend = {[]};
 
-sigma_max = 40e-3;
+sigma_max = 45e-3;
 
 cd(PATH_input)
 
@@ -146,6 +146,8 @@ matlabpool close
 
 
 % Draw the histogram Number 1
+
+%% OFF
 matrix2hist2_OFF = {[]};
 
 Matrix_pix_events = [];
@@ -153,70 +155,67 @@ Matrix_pix_events = [];
 for ind_diff=1:length(deltaV)
     figure(1)
     Matrix_pix_events = matrix2hist1_OFF{ind_diff};
-    [rows cols] = size(Matrix_pix_events);
-    vec2hist = reshape(Matrix_pix_events,rows*cols,1); %convert to unidimensional array
-    ind_valids = vec2hist > 0;
+    
+    ind_valids =  Matrix_pix_events > 0;
+    
+    %[rows cols] = size(Matrix_pix_events);
+    %vec2hist = reshape(Matrix_pix_events,rows*cols,1); %convert to unidimensional array
+    %ind_valids = vec2hist > 0;
+    
     subplot(2,2,ind_diff)
-    hist(vec2hist(ind_valids))
-    set(gca,'xscale','log','xlim',[1 1.15*max(vec2hist)])
-    legend(names2legend{ind_diff})
-    title(['Mean=',num2str(mean(vec2hist)),' events'])
+    
+    %hist(vec2hist(ind_valids))
+    %[x y]=hist(vec2hist(ind_valids));
+    
+    hist(Matrix_pix_events)
+    [x y]=hist(Matrix_pix_events);
+    [rows cols] = size(x);
+    vec_x = unique(reshape(x,rows*cols,1));
+    matrix2hist2_OFF{ind_diff} = vec_x; % para el segundo histograma
+    set(gca,'xscale','log','xlim',[1 100])
+    %legend(names2legend{ind_diff})
+    title(['Mean=',num2str(mean(vec2hist)),' events & \sigma= ',num2str(std(vec2hist))])
     xlabel('#events/pixel/edge')
     ylabel('# pixels')
     grid on
     
-    %figOFF=figure(1);
-    %[x y]=hist(matrix2hist1_OFF(:,ind_diff));
-    %h=bar(y,x,vec_Color{ind_diff});
-    %hAllAxes = findobj(h,'type','axes');
-    %h1=findobj(hAllAxes,'tag','legend');
-    %xlabel('#events/pixel/edge')
-    %ylabel('# pixels')
-    %grid on
-    %legend(names2legend{ind_diff})
-    %set(gca,'xscale','log','xlim',[1 1.15*max(y)])
-    %matrix2hist2_OFF{ind_diff} = x;
 end
 title('OFF EVENTS')
+
+
+%% ON
 
 matrix2hist2_ON = {[]};
 
 for ind_diff=1:length(deltaV)
     figure(2)
     Matrix_pix_events = matrix2hist1_ON{ind_diff};
-    [rows cols] = size(Matrix_pix_events);
-    vec2hist = reshape(Matrix_pix_events,rows*cols,1);
-    ind_valids = vec2hist > 0;
+    %[rows cols] = size(Matrix_pix_events);
+    %vec2hist = reshape(Matrix_pix_events,rows*cols,1);
+    %ind_valids = vec2hist > 0;
     subplot(2,2,ind_diff)
-    hist(vec2hist(ind_valids))
-    set(gca,'xscale','log','xlim',[1 1.15*max(vec2hist)])
-    legend(names2legend{ind_diff})
-    title(['Mean=',num2str(mean(vec2hist)),' events'])
+    %hist(vec2hist(ind_valids))
+    %[x y]=hist(vec2hist(ind_valids));
+    
+    hist(Matrix_pix_events)
+    [x y]=hist(Matrix_pix_events);
+    [rows cols] = size(x);
+    vec_x = unique(reshape(x,rows*cols,1));
+    matrix2hist2_ON{ind_diff} = vec_x;
+    set(gca,'xscale','log','xlim',[1 100])
+    %legend(names2legend{ind_diff})
+    title(['Mean=',num2str(mean(vec2hist)),' events & \sigma= ',num2str(std(vec2hist)),'VdiffOFF= ',num2str(names2legend{ind_diff})])
     xlabel('#events/pixel/edge')
     ylabel('# pixels')
     grid on    
     
-    
-    %figON=figure(2);
-    %subplot(2,2,ind_diff)
-    %[x y]=hist(matrix2hist1_ON(:,ind_diff));
-    %h=bar(y,x,vec_Color{ind_diff});
-    %hAllAxes2 = findobj(h,'type','axes');
-    %h2=findobj(hAllAxes2,'tag','legend');
-    %grid on
-    %xlabel('#events/pixel/edge')
-    %ylabel('# pixels')
-    %title('ON EVENTS')
-    %legend(names2legend{ind_diff})
-    %set(gca,'xscale','log','xlim',[1 1.15*max(y)]);
-    %matrix2hist2_ON{ind_diff} = x;
 end
 
 
 
 %% Drawing the second histogram
 
-%{
+
 
 ratio = 5; %significa un contraste de 5:1
 theta = log(ratio);
@@ -228,8 +227,9 @@ for ind_diff=1:length(deltaV)
     vec_x = matrix2hist2_OFF{ind_diff};
     ind_valid = vec_x > 0 ;
     vec_x = (theta./vec_x(ind_valid))*100;
-    [x y]=hist(vec_x);
-    bar(y,x,'FaceColor',[0.7 0.7 0.7]);
+    hist(vec_x)
+    %[x y]=hist(vec_x);
+    %bar(y,x,'FaceColor',[0.7 0.7 0.7]);
     xlabel('\theta_{ev}')
     ylabel('# pixels')
     legend(names2legend{ind_diff})
@@ -240,8 +240,9 @@ for ind_diff=1:length(deltaV)
     vec_x = matrix2hist2_ON{ind_diff};
     ind_valid = vec_x > 0 ;
     vec_x = (theta./vec_x(ind_valid))*100;
-    [x y]=hist(vec_x);
-    bar(y,x,'FaceColor',[0.7 0.7 0.7]);
+    hist(vec_x)
+    %[x y]=hist(vec_x);
+    %bar(y,x,'FaceColor',[0.7 0.7 0.7]);
     xlabel('\theta_{ev}')
     ylabel('# pixels')
     legend(names2legend{ind_diff})
