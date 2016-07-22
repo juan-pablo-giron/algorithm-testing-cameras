@@ -21,8 +21,10 @@ tic;
 
 clear all;clc;close all;
 
-N = 8; 
-M = 8;
+matlabpool open 8;
+
+N = 32; 
+M = 32;
 quant_pixel=N*M;
 freq = 200;
 T = 1/freq;
@@ -67,20 +69,20 @@ end
 
 
 
-time_interp = linspace(0,T,2000*len_t);
+time_interp = linspace(0,T,200*len_t);
 
 cd(PATH_input)
 h = figure(1);
 ind_pix = 0;
-for i=1:M
+parfor i=1:M
     vec_Iph = Matrix_Iph(:,i);
     I_pd_interp = interp1(t',vec_Iph,time_interp','linear');
     plot(time_interp*1e3,I_pd_interp,'Color',[1/i,2/(5*i),3/(4*i)]);
     hold on
     for j=1:N
-        name_file = strcat(nameSignal,'_',num2str(ind_pix),'.csv');
+        name_file = strcat(nameSignal,'_',num2str((i-1)*N+(j-1)),'.csv');
         dlmwrite(name_file,[time_interp' I_pd_interp],'delimiter',' ','precision',10,'newline','unix');
-        ind_pix = ind_pix + 1;
+        %ind_pix = ind_pix + 1;
     end
 end
 
@@ -89,5 +91,8 @@ saveas(h,nameSignal,'fig');
 xlabel('time ms')
 ylabel('I_{pd} (pA)')
 
+matlabpool close;
 
 cd(curr_path);
+
+toc;

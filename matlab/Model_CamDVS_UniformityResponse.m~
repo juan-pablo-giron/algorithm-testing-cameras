@@ -11,15 +11,16 @@
 close all;clc;clear;
 
 tic;
-matlabpool open 8;
+
+matlabpool open 8
 
 PATH_input = getenv('PATH_folder_input'); %'/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
 PATH_folder_images = getenv('PATH_folder_images'); % '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
 name_signal = getenv('name_Signalsinput'); %'TrianguleWave7X8_250';
 N = str2num(getenv('N')); %7;
 M = str2num(getenv('M')); %8;
-V_p = 1.65;%str2num(getenv('Vdon'));
-V_n = 1.35;%str2num(getenv('Vdoff'));
+V_p = 1.28;%str2num(getenv('Vdon'));
+V_n = 1.72;%str2num(getenv('Vdoff'));
 T_Rst = 200e-6;
 
 pwd_current=pwd;
@@ -38,30 +39,18 @@ Isn = 2*nn*fi^2*Kn*Ratio;
 % Known vaiables
 Vref = 1.5;
 Vos = 5.42e-3;      % Voffset comparador
-Iph_max = 1e-9;
-Iph_min = 20e-12;
 A = 20;             % Gain closed loop differentiator
 
-% Senal de entrada
+
+VdiffON = V_p - Vref + Vos;  
+VdiffOFF= V_n - Vref + Vos;
+
+
 
 name_input = strcat(PATH_input,name_signal,'_0.csv');
 input_signal = importdata(name_input);
 t = input_signal(:,1);
 len_t = length(t);
-Iph = input_signal(:,2);
-log_Iph = log(Iph/Isn);
-
-
-% Lims de variacion
-xmax = 20e-3;
-xmin = -50e-3;
-
-% Creando el vector Edges
-Max_Edges = 50; 
-Events_ON = zeros(Max_Edges,N*M);
-Events_OFF = zeros(Max_Edges,N*M);
-%
-
 quant_pixel = N*M;
 Vdiff=zeros(len_t,quant_pixel);
 Vdiff_ind = zeros(len_t,1);
@@ -70,80 +59,171 @@ ON_events = {[]}; ON_events2TC = zeros(1,2);
 % structure OFF event
 OFF_events = {[]}; OFF_events2TC = zeros(1,2);
 
-ind_ON = 1;
-ind_OFF = 1;
+% Vec Events per pixel per edge
+MaxEdges = 1;
+Matrix_pix_edges_ON = zeros(N*M,MaxEdges);
+Matrix_pix_edges_OFF = zeros(N*M,MaxEdges);
+%
 
+vec_Color = {'r','b','g','y'};
+deltaV  = linspace(0.1,0.2,length(vec_Color));
+%matrix2hist1_ON = zeros(N*M,length(deltaV));
+%matrix2hist1_OFF = zeros(N*M,length(deltaV));
 
-for numEdge=1:Max_Edges
+matrix2hist1_ON = {[]};
+matrix2hist1_OFF = {[]};
+names2legend = {[]};
 
-    parfor i=0:quant_pixel-1;
+cd(PATH_input)
 
-        % paso 1. Encontrar Vdiff para cada uno de los pixeles
-        name_input = strcat(PATH_input,name_signal,'_',num2str(i),'.csv');
-        input_signal = importdata(name_input);
-        Iph = input_signal(:,2);
-        log_Iph = log(Iph/Isn);
-        Vdiff_ind = -nn*fi*A*log_Iph;
-        Vdiff_max = max(Vdiff_ind);    %used to normalized
-        Vdiff_ind = Vdiff_ind - Vdiff_max; %used to normalized
-
-        % Paso 2. Encontrar los eventos ON y OFF.
+for ind_diff=1:length(deltaV)
+    V_p = Vref - deltaV(ind_diff);
+    V_n = Vref + deltaV(ind_diff);
+    Matrix_pix_edges_ON = zeros(N*M,MaxEdges);
+    Matrix_pix_edges_OFF = zeros(N*M,MaxEdges);
+    names2legend{ind_diff} = num2str(deltaV(ind_diff));
+    for edge=1:MaxEdges
         
-        x = normrnd(0,xmax,1,1); % Variacion de Voffset de la chave
-        Events_ON_tmp = zeros(Max_Edges,1);
-        Events_OFF_tmp = zeros(Max_Edges,1);
-        for j=1:len_t
-           value = Vdiff_ind(j);
-           VdiffON = V_p - (Vref+x) + Vos;  
-           
-           
-           if (value <= VdiffON)
-               % Hubo evento ON
-               
-               Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) + abs(value); %reset to Vref
-               
-               Events_ON_tmp(numEdge) = Events_ON_tmp(numEdge) + 1; 
-               
-               x = normrnd(0,xmax,1,1);
-               %%
-
-           else
-               VdiffOFF= V_n - (Vref+x) + Vos;
-               if ( value >= VdiffOFF)
-                   % Hubo evento off
-                   Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) - abs(value); %reset to Vref
-                   
-                   Events_OFF_tmp(numEdge) = Events_OFF_tmp(numEdge) + 1; 
-                   
-                   x = normrnd(0,xmax,1,1);
-                   
-               else
-                   continue
-               end
-           end
-
-        end
-        Vdiff(:,i+1) = Vdiff_ind;
+        parfor i=0:quant_pixel-1;
+            
+            % paso 1. Encontrar Vdiff para cada uno de los pixeles
+            name_input = strcat(name_signal,'_',num2str(i),'.csv');
+            input_signal = importdata(name_input);
+            Iph = input_signal(:,2);
+            log_Iph = log(Iph/Isn);
+            Vdiff_ind = -nn*fi*A*log_Iph;
+            Vdiff_max = max(Vdiff_ind);    %used to normalized
+            Vdiff_ind = Vdiff_ind - Vdiff_max; %used to normalized
+            
+            % Paso 2. Encontrar los eventos ON y OFF.
+            ind_event = 1;
+            events_off = 0;
+            events_on = 0;
+            Vrnd = normrnd(0,40e-3,1,1);
+            for j=1:len_t
+                value = Vdiff_ind(j);
                 
-        % Construir un vector para crear el histograma, eliminando el numero 0
-                    
-        Events_ON(:,i+1) = Events_ON_tmp;
-        Events_OFF(:,i+1) = Events_ON_tmp;
+                % Norm Rnd
+                
+                VdiffON = V_p - (Vref+Vrnd) + Vos;
+                VdiffOFF= V_n - (Vref+Vrnd) + Vos;
+                % Norm Rnd
+                if (value <= VdiffON)
+                    Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) + abs(value); %reset to Vref
+                    events_on = events_on + 1;
+                    Vrnd = normrnd(0,40e-3,1,1);
+                else
+                    if ( value >= VdiffOFF)
+                        
+                        Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) - abs(value); %reset to Vref
+                        events_off = events_off + 1;
+                        Vrnd = normrnd(0,40e-3,1,1);
+                    else
+                        continue
+                    end
+                end
+                
+            end
+            %fprintf('Pixel # %d #Events_ON %d #events_off %d\n',i,events_on,events_off)
+            Vdiff(:,i+1) = Vdiff_ind;
+            Matrix_pix_edges_ON(i+1,edge) = events_on;
+            Matrix_pix_edges_OFF(i+1,edge) = events_off;
+        end
         
     end
+    matrix2hist1_ON{ind_diff} = Matrix_pix_edges_ON;%mean_ON_events';
+    matrix2hist1_OFF{ind_diff} = Matrix_pix_edges_OFF;%mean_OFF_events';
+    %mean_ON_events = mean(Matrix_pix_edges_ON.');
+    %mean_OFF_events = mean(Matrix_pix_edges_OFF.');
+    %matrix2hist1_ON(:,ind_diff) = Matrix_pix_edges_ON;%mean_ON_events';
+    %matrix2hist1_OFF(:,ind_diff) = Matrix_pix_edges_OFF;%mean_OFF_events';
     
 end
-
 matlabpool close
 
-% Calcular la media de cada pixel dividiendo la suma por la cantidad de
-% edges
 
 
-% Sacar el histograma con las medias de los pixeles
+% Draw the histogram Number 1
+matrix2hist2_OFF = {[]};
 
+Matrix_pix_events = [];
+
+for ind_diff=1:length(deltaV)
+    
+    Matrix_pix_events = matrix2hist1_OFF{ind_diff};
+    
+    figOFF=figure(1);
+    subplot(2,2,ind_diff)
+    
+    hist(Matrix_pix_events(:,ind_diff))
+    
+    %[x y]=hist(matrix2hist1_OFF(:,ind_diff));
+    %h=bar(y,x,vec_Color{ind_diff});
+    %hAllAxes = findobj(h,'type','axes');
+    %h1=findobj(hAllAxes,'tag','legend');
+    %xlabel('#events/pixel/edge')
+    %ylabel('# pixels')
+    %grid on
+    %legend(names2legend{ind_diff})
+    %set(gca,'xscale','log','xlim',[1 1.15*max(y)])
+    %matrix2hist2_OFF{ind_diff} = x;
+end
+title('OFF EVENTS')
+
+matrix2hist2_ON = {[]};
+
+for ind_diff=1:length(deltaV)
+    figON=figure(2);
+    subplot(2,2,ind_diff)
+    [x y]=hist(matrix2hist1_ON(:,ind_diff));
+    h=bar(y,x,vec_Color{ind_diff});
+    hAllAxes2 = findobj(h,'type','axes');
+    h2=findobj(hAllAxes2,'tag','legend');
+    grid on
+    xlabel('#events/pixel/edge')
+    ylabel('# pixels')
+    title('ON EVENTS')
+    legend(names2legend{ind_diff})
+    set(gca,'xscale','log','xlim',[1 1.15*max(y)]);
+    matrix2hist2_ON{ind_diff} = x;
+end
+
+
+
+%% Drawing the second histogram
+
+ratio = 5; %significa un contraste de 5:1
+theta = log(ratio);
+
+for ind_diff=1:length(deltaV)
+    
+    figure(3)
+    subplot(2,2,ind_diff)
+    vec_x = matrix2hist2_OFF{ind_diff};
+    ind_valid = vec_x > 0 ;
+    vec_x = (theta./vec_x(ind_valid))*100;
+    [x y]=hist(vec_x);
+    bar(y,x,'FaceColor',[0.7 0.7 0.7]);
+    xlabel('\theta_{ev}')
+    ylabel('# pixels')
+    legend(names2legend{ind_diff})
+    grid on
+    
+    figure(4)
+    subplot(2,2,ind_diff)
+    vec_x = matrix2hist2_ON{ind_diff};
+    ind_valid = vec_x > 0 ;
+    vec_x = (theta./vec_x(ind_valid))*100;
+    [x y]=hist(vec_x);
+    bar(y,x,'FaceColor',[0.7 0.7 0.7]);
+    xlabel('\theta_{ev}')
+    ylabel('# pixels')
+    legend(names2legend{ind_diff})
+    grid on
+end
+
+
+%}
 
 cd(pwd_current)
-
-toc
-%exit
+toc;
