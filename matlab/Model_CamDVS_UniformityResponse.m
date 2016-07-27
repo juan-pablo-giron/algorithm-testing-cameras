@@ -12,10 +12,10 @@ close all;clc;clear;
 
 tic;
 
-matlabpool open 8
+%matlabpool open 8
 
 PATH_input = getenv('PATH_folder_input'); %'/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
-%PATH_input = 'C:\Users\Ana Maria Zuñiga V\Documents\JP\MATLAB\Inputs\BAR32X32_200\';
+%PATH_input = 'C:\Users\Ana Maria Zu?iga V\Documents\JP\MATLAB\Inputs\BAR32X32_200\';
 PATH_folder_images = getenv('PATH_folder_images'); % '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
 
 %PATH_input='/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/BAR32X32_200/';
@@ -57,10 +57,6 @@ clear t
 
 % Vec Events per pixel per edge
 MaxEdges = 10;
-
-
-matrix2hist1_ON = {[]};
-matrix2hist1_OFF = {[]};
 
 % Structure data
 Matrix_pix_edges_ON = zeros(N*M,1);
@@ -124,115 +120,23 @@ parfor i=0:quant_pixel-1;
     Matrix_pix_edges_OFF(i+1) = events_off;
 end
 
-matlabpool close
+%matlabpool close
 
 % Mean events fired per pixel edges
 
 Matrix_pix_edges_ON = Matrix_pix_edges_ON/MaxEdges;
 Matrix_pix_edges_OFF = Matrix_pix_edges_OFF/MaxEdges;
-        
-%% OFF
-
-cd(PATH_folder_images)
 
 
 %% ======================   Histograms    ============================= %%
-
+cd(pwd_current)
 VDIFF = abs(Vref - V_n);
-Ibright = 100e-12;
-Idark  = 20e-12;
-SensivityStimulus = log(Ibright/Idark);
-
-%% ------------------------ ON CHANNEL  -------------------------------%%
-
-mu = mean(Matrix_pix_edges_ON);
-
-figure('Visible','on','units','normalized')
-valid_indx = Matrix_pix_edges_ON > 0;
-hist(Matrix_pix_edges_ON(valid_indx));
-set(gca,'xscale','log','xlim',[1 40]);
-xlabel('#events/pixel/edge')
-ylabel('# pixels')
-title(['\mu=',num2str(mu)])
-legend(['VDIFF ON = ',num2str(VDIFF)])
-grid on
-
-% SAVE FIGURES
-string = 'Model';
-set(gcf,'PaperPositionMode','auto')
-print('-depsc2', [string,'_HIST1_ON_',num2str(VDIFF),'.eps'])
-print('-dpng', [string,'_HIST1_ON_',num2str(VDIFF),'.png'])
-saveas(gca,[string,'_HIST1_ON_',num2str(VDIFF)],'fig');
-
-% HIST 2
-
-%close all;
-figure('Visible','on','units','normalized')
-Matrix_pix_edges_ON2 = 100*SensivityStimulus./Matrix_pix_edges_ON(valid_indx);
-mu = mean(Matrix_pix_edges_ON2);
-sigma = std(Matrix_pix_edges_ON2);
-hist(Matrix_pix_edges_ON2);
-set(gca,'xlim',[1 40]);
-xlabel('%{\theta_{ev}}^+')
-ylabel('# pixels')
-title(['\mu = ',num2str(mu),' ','\sigma = ',num2str(sigma)])
-legend(['VDIFF ON = ',num2str(VDIFF)])
-grid on
-
-% SAVE FIGURES
-string = 'Model';
-set(gcf,'PaperPositionMode','auto')
-print('-depsc2', [string,'_CS_ON_',num2str(VDIFF),'.eps'])
-print('-dpng', [string,'_CS_ON_',num2str(VDIFF),'.png'])
-saveas(gca,[string,'_CS_ON_',num2str(VDIFF)],'fig');
-
-
-%%  ---------------------  OFF CHANNEL ---------------------------- %
-%close all;
-figure('Visible','on','units','normalized')
-mu = mean(Matrix_pix_edges_OFF);
-valid_indx = Matrix_pix_edges_OFF > 0;
-hist(Matrix_pix_edges_OFF(valid_indx));
-set(gca,'xscale','log','xlim',[1 40]);
-xlabel('#events/pixel/edge')
-ylabel('# pixels')
-title(['\mu=',num2str(mu)])
-legend(['VDIFF OFF = ',num2str(VDIFF)])
-grid on
-
-% SAVE FIGURES
-string = 'Model';
-set(gcf,'PaperPositionMode','auto')
-print('-depsc2', [string,'_HIST1_OFF_',num2str(VDIFF),'.eps'])
-print('-dpng', [string,'_HIST1_OFF_',num2str(VDIFF),'.png'])
-saveas(gca,[string,'_HIST1_OFF_',num2str(VDIFF)],'fig');
-
-% HIST 2
-
-%close all;
-figure('Visible','on','units','normalized')
-Matrix_pix_edges_OFF2 = 100*SensivityStimulus./Matrix_pix_edges_OFF(valid_indx);
-mu = mean(Matrix_pix_edges_OFF2);
-sigma = std(Matrix_pix_edges_OFF2);
-hist(Matrix_pix_edges_OFF2);
-set(gca,'xlim',[1 40]);
-xlabel('% {\theta_{ev}}^-')
-ylabel('# pixels')
-title(['\mu = ',num2str(mu),' ','\sigma = ',num2str(sigma)])
-legend(['VDIFF OFF = ',num2str(VDIFF)])
-grid on
-
-% SAVE FIGURES
-string = 'Model';
-set(gcf,'PaperPositionMode','auto')
-print('-depsc2', [string,'_CS_OFF_',num2str(VDIFF),'.eps'])
-print('-dpng', [string,'_CS_OFF_',num2str(VDIFF),'.png'])
-saveas(gca,[string,'_CS_OFF_',num2str(VDIFF)],'fig');
-
+string = 'MODEL';
+plotHistograms(Matrix_pix_edges_ON,Matrix_pix_edges_OFF,string,VDIFF)
 
 cd(pwd_current)
 toc;
 
-%clear all;
+clear all,close all;
 
-%exit;
+exit;
