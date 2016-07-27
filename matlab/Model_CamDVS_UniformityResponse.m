@@ -15,12 +15,16 @@ tic;
 matlabpool open 8
 
 PATH_input = getenv('PATH_folder_input'); %'/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
+%PATH_input = 'C:\Users\Ana Maria Zuñiga V\Documents\JP\MATLAB\Inputs\BAR32X32_200\';
 PATH_folder_images = getenv('PATH_folder_images'); % '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/TrianguleWave7X8_250/';
+
+%PATH_input='/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/BAR32X32_200/';
+
 name_signal = getenv('name_Signalsinput'); %'TrianguleWave7X8_250';
 N = str2num(getenv('N')); %7;
 M = str2num(getenv('M')); %8;
-V_p = 1.28;%str2num(getenv('Vdon'));
-V_n = 1.72;%str2num(getenv('Vdoff'));
+V_p = str2num(getenv('Vdon'));
+V_n = str2num(getenv('Vdoff'));
 T_Rst = 200e-6;
 
 pwd_current=pwd;
@@ -60,21 +64,19 @@ ON_events = {[]}; ON_events2TC = zeros(1,2);
 OFF_events = {[]}; OFF_events2TC = zeros(1,2);
 
 % Vec Events per pixel per edge
-MaxEdges = 2;
+MaxEdges = 10;
 Matrix_pix_edges_ON = zeros(N*M,MaxEdges);
 Matrix_pix_edges_OFF = zeros(N*M,MaxEdges);
 %
 
 vec_Color = {'r','b','g','y'};
 deltaV  = linspace(0.1,0.2,length(vec_Color));
-%matrix2hist1_ON = zeros(N*M,length(deltaV));
-%matrix2hist1_OFF = zeros(N*M,length(deltaV));
 
 matrix2hist1_ON = {[]};
 matrix2hist1_OFF = {[]};
 names2legend = {[]};
 
-sigma_max = 45e-3;
+sigma_max = 40e-3;
 
 cd(PATH_input)
 
@@ -87,6 +89,7 @@ for ind_diff=1:length(deltaV)
     for edge=1:MaxEdges
         
         parfor i=0:quant_pixel-1;
+        %for i=0:quant_pixel-1;
             
             % paso 1. Encontrar Vdiff para cada uno de los pixeles
             name_input = strcat(name_signal,'_',num2str(i),'.csv');
@@ -135,122 +138,125 @@ for ind_diff=1:length(deltaV)
     end
     matrix2hist1_ON{ind_diff} = Matrix_pix_edges_ON;%mean_ON_events';
     matrix2hist1_OFF{ind_diff} = Matrix_pix_edges_OFF;%mean_OFF_events';
-    %mean_ON_events = mean(Matrix_pix_edges_ON.');
-    %mean_OFF_events = mean(Matrix_pix_edges_OFF.');
-    %matrix2hist1_ON(:,ind_diff) = Matrix_pix_edges_ON;%mean_ON_events';
-    %matrix2hist1_OFF(:,ind_diff) = Matrix_pix_edges_OFF;%mean_OFF_events';
-    
+        
 end
-matlabpool close
-
+%matlabpool close
 
 
 % Draw the histogram Number 1
 
 %% OFF
-matrix2hist2_OFF = {[]};
 
+cd(PATH_folder_images)
+
+matrix2hist2_OFF = {[]};
 Matrix_pix_events = [];
 
 for ind_diff=1:length(deltaV)
-    figure(1)
+    h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
     Matrix_pix_events = matrix2hist1_OFF{ind_diff};
-    
-    ind_valids =  Matrix_pix_events > 0;
-    
-    %[rows cols] = size(Matrix_pix_events);
-    %vec2hist = reshape(Matrix_pix_events,rows*cols,1); %convert to unidimensional array
-    %ind_valids = vec2hist > 0;
-    
+    if length(Matrix_pix_events(1,:)) > 1
+        vec_mean = mean(Matrix_pix_events.');
+    else
+        vec_mean = Matrix_pix_events;
+    end
     subplot(2,2,ind_diff)
-    
-    %hist(vec2hist(ind_valids))
-    %[x y]=hist(vec2hist(ind_valids));
-    
-    hist(Matrix_pix_events)
-    [x y]=hist(Matrix_pix_events);
-    [rows cols] = size(x);
-    vec_x = unique(reshape(x,rows*cols,1));
-    matrix2hist2_OFF{ind_diff} = vec_x; % para el segundo histograma
+    hist(vec_mean)
+    [y,x]=hist(vec_mean);
+    ind_valids =  vec_mean > 0;
+    matrix2hist2_OFF{ind_diff} = vec_mean(ind_valids);
     set(gca,'xscale','log','xlim',[1 100])
-    %legend(names2legend{ind_diff})
-    title(['Mean=',num2str(mean(vec2hist)),' events & \sigma= ',num2str(std(vec2hist))])
+    title(['\mu=',num2str(mean(vec_mean)),' events & \sigma= ',num2str(std(vec_mean)),' VdiffOFF= ',num2str(names2legend{ind_diff}),'V'])
     xlabel('#events/pixel/edge')
     ylabel('# pixels')
     grid on
-    
 end
-title('OFF EVENTS')
 
+string = 'Model';
+set(h,'PaperPositionMode','auto')
+print('-depsc2', ['Output_',string,'_DVS_UNIFORMITY_OFF','.eps'])
+print('-dpng', ['Output_',string,'_DVS_UNIFORMITY_OFF','.png'])
+saveas(h,['Output_',string,'_DVS_UNIFORMITY_OFF'],'fig');
 
 %% ON
 
 matrix2hist2_ON = {[]};
 
 for ind_diff=1:length(deltaV)
-    figure(2)
+    h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
     Matrix_pix_events = matrix2hist1_ON{ind_diff};
-    %[rows cols] = size(Matrix_pix_events);
-    %vec2hist = reshape(Matrix_pix_events,rows*cols,1);
-    %ind_valids = vec2hist > 0;
+    if length(Matrix_pix_events(1,:)) > 1
+        vec_mean = mean(Matrix_pix_events.');
+    else
+        vec_mean = Matrix_pix_events;
+    end
     subplot(2,2,ind_diff)
-    %hist(vec2hist(ind_valids))
-    %[x y]=hist(vec2hist(ind_valids));
-    
-    hist(Matrix_pix_events)
-    [x y]=hist(Matrix_pix_events);
-    [rows cols] = size(x);
-    vec_x = unique(reshape(x,rows*cols,1));
-    matrix2hist2_ON{ind_diff} = vec_x;
+    hist(vec_mean)
+    [y,x]=hist(vec_mean);
+    ind_valids =  vec_mean > 0;
+    matrix2hist2_ON{ind_diff} = vec_mean(ind_valids);
     set(gca,'xscale','log','xlim',[1 100])
-    %legend(names2legend{ind_diff})
-    title(['Mean=',num2str(mean(vec2hist)),' events & \sigma= ',num2str(std(vec2hist)),'VdiffOFF= ',num2str(names2legend{ind_diff})])
+    title(['\mu=',num2str(mean(vec_mean)),' events & \sigma= ',num2str(std(vec_mean)),' VdiffON= ',num2str(names2legend{ind_diff}),'V'])
     xlabel('#events/pixel/edge')
     ylabel('# pixels')
     grid on    
     
 end
 
-
+string = 'Model';
+set(h,'PaperPositionMode','auto')
+print('-depsc2', ['Output_',string,'_DVS_UNIFORMITY_ON','.eps'])
+print('-dpng', ['Output_',string,'_DVS_UNIFORMITY_ON','.png'])
+saveas(h,['Output_',string,'_DVS_UNIFORMITY_ON'],'fig');
 
 %% Drawing the second histogram
-
-
-
 ratio = 5; %significa un contraste de 5:1
 theta = log(ratio);
 
 for ind_diff=1:length(deltaV)
     
-    figure(3)
+    h1=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
     subplot(2,2,ind_diff)
     vec_x = matrix2hist2_OFF{ind_diff};
-    ind_valid = vec_x > 0 ;
-    vec_x = (theta./vec_x(ind_valid))*100;
+    %ind_valid = vec_x > 0 ;
+    vec_x = (theta./vec_x)*100;
     hist(vec_x)
-    %[x y]=hist(vec_x);
-    %bar(y,x,'FaceColor',[0.7 0.7 0.7]);
+    set(gca,'xlim',[1 100])
     xlabel('\theta_{ev}')
     ylabel('# pixels')
-    legend(names2legend{ind_diff})
+    title(['\mu=',num2str(mean(vec_x)),' events & \sigma= ',num2str(std(vec_x)),' VdiffOFF= ',num2str(names2legend{ind_diff}),'V'])
     grid on
     
-    figure(4)
+    h2=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
     subplot(2,2,ind_diff)
     vec_x = matrix2hist2_ON{ind_diff};
-    ind_valid = vec_x > 0 ;
-    vec_x = (theta./vec_x(ind_valid))*100;
+    %ind_valid = vec_x > 0 ;
+    vec_x = (theta./vec_x)*100;
     hist(vec_x)
-    %[x y]=hist(vec_x);
-    %bar(y,x,'FaceColor',[0.7 0.7 0.7]);
+    set(gca,'xlim',[1 100])
     xlabel('\theta_{ev}')
     ylabel('# pixels')
-    legend(names2legend{ind_diff})
+    title(['\mu=',num2str(mean(vec_x)),' events & \sigma= ',num2str(std(vec_x)),' VdiffON= ',num2str(names2legend{ind_diff}),'V'])
     grid on
 end
 
+
+string = 'Model';
+set(h1,'PaperPositionMode','auto')
+print('-depsc2', ['Output_',string,'_DVS_SENSITIVITY_OFF','.eps'])
+print('-dpng', ['Output_',string,'_DVS_SENSITIVITY_OFF','.png'])
+saveas(h1,['Output_',string,'_DVS_SENSITIVITY_OFF'],'fig');
+
+set(h2,'PaperPositionMode','auto')
+print('-depsc2', ['Output_',string,'_DVS_SENSITIVITY_ON','.eps'])
+print('-dpng', ['Output_',string,'_DVS_SENSITIVITY_ON','.png'])
+saveas(h2,['Output_',string,'_DVS_SENSITIVITY_ON'],'fig');
+
+matlabpool close
 
 %}
 
 cd(pwd_current)
 toc;
+
+exit;

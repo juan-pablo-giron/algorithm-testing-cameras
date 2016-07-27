@@ -13,7 +13,7 @@ PATH_scriptPython=$PATH_script"python"/
 cd ..
 
 
-choice_TypeSim=$(kdialog --menu "CHOOSE ONE:" 1 "DVS" 2 "ATIS" --title "What is the camera that do you want simulate?")
+choice_TypeSim=$(kdialog --menu "CHOOSE ONE:" 1 "DVS" 2 "ATIS" 3 "DVS Calc Sens. Contrast" --title "What is the camera that do you want simulate?")
 echo $choice_TypeSim
 
 ############################################################
@@ -298,45 +298,52 @@ echo "export nameNetlist_spectre" >> env_var.sh
 #############################################################################################3
 
 
-if [ "$choice_TypeSim" = 1 ]
-then
-  clear
-  echo "Simulating a DVS camera wait it could take some minutes, hours or days"
-  # Execution of commands for DVS
 
-  cd $PATH_scriptPython
+case "$choice_TypeSim" in
 
-  python setting_input_netlist_UNIX_DVS2.py
+#if [ "$choice_TypeSim" = 1 ]
+#then
 
-  cd $PATH_folder_simulation
+  1) #DVS
+    clear
+    echo "Simulating a DVS camera wait it could take some minutes, hours or days"
+    # Execution of commands for DVS
 
-  spectre +mt ++aps -format psfascii $nameNetlist_spectre
-  # Command for DVS pixel
-
-
-  if [ "$?" = 0 ]
-  then
-    sleep 50
     cd $PATH_scriptPython
-    python sort_data_DVS_pixel_UNIX.py
-    
+
+    python setting_input_netlist_UNIX_DVS2.py
+
+    cd $PATH_folder_simulation
+
+    spectre +mt ++aps -format psfascii $nameNetlist_spectre
+    # Command for DVS pixel
+
+
     if [ "$?" = 0 ]
     then
-      #kdialog --msgbox "Starting the Post-processing with MATLAB close it when end"
-      cd $PATH_scriptMatlab
-      matlab -nodesktop -nosplash -r Model_CamDVS
-      matlab -nodesktop -nosplash -r plotTran_DVS
+      sleep 50
+      cd $PATH_scriptPython
+      python sort_data_DVS_pixel_UNIX.py
+      
+      if [ "$?" = 0 ]
+      then
+	#kdialog --msgbox "Starting the Post-processing with MATLAB close it when end"
+	cd $PATH_scriptMatlab
+	matlab -nodesktop -nosplash -r Model_CamDVS
+	matlab -nodesktop -nosplash -r plotTran_DVS
+      else
+	kdialog --error "PLEASE verify your Python script there are some errors
+	run post-processing after solved"
+      fi
     else
-      kdialog --error "PLEASE verify your Python script there are some errors
-      run post-processing after solved"
+      kdialog --error "PLEASE VERIFY IF YOUR ENVIROMENT VARIABLES FOR SPECTRE ARE CONFIGURED"
+      cd $PATH_scriptMatlab
+      return
     fi
-  else
-    kdialog --error "PLEASE VERIFY IF YOUR ENVIROMENT VARIABLES FOR SPECTRE ARE CONFIGURED"
-    cd $PATH_scriptMatlab
-    return
-  fi
+    ;;
+#else
 
-else
+  2) #ATIS
   
   ## For the ATIS simulation is extracted the quantity of Frames
   #Col_Frame=$(cat $PATH_inputs/"README.txt" | awk '{print NF}' | sort -nu | tail -n 1)
@@ -373,7 +380,49 @@ else
     cd $PATH_scriptMatlab
     return
   fi
+  ;;
+  3) # DVS sensitivity contrast
+    clear
+    echo "Simulating a DVS camera to analize the contrast sensivity ..... wait it could take some minutes, hours or days"
+    # Execution of commands for DVS
+    
+    # Run the model
+    #cd $PATH_scriptMatlab
+    #matlab -nodesktop -nosplash -r Model_CamDVS_UniformityResponse
+
+
+    cd $PATH_scriptPython  # Setting the netlist
+    python setting_input_netlist_UNIX_DVS_UniformityResponse.py
+
+    cd $PATH_folder_simulation
+    mkdir monteCarlo
+    spectre +mt ++aps -format psfascii $nameNetlist_spectre
+    # Command for DVS pixel
+
+    if [ "$?" = 0 ]
+    then
+      sleep 50
+      cd $PATH_scriptPython
+      python sort_data_DVS_pixel_UNIX.py
+      
+      if [ "$?" = 0 ]
+      then
+	cd $PATH_scriptMatlab
+	matlab -nodesktop -nosplash -r Model_CamDVS_UniformityResponse
+	matlab -nodesktop -nosplash -r CamDVS_UniformityResponse
+      else
+	kdialog --error "PLEASE verify your Python script there are some errors
+	run post-processing after solved"
+      fi
+    else
+      kdialog --error "PLEASE VERIFY IF YOUR ENVIROMENT VARIABLES FOR SPECTRE ARE CONFIGURED"
+      cd $PATH_scriptMatlab
+      return
+    fi
   
-fi
+
+#fi
+
+esac
 
 cd $PATH_scriptMatlab

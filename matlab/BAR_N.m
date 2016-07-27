@@ -15,8 +15,9 @@ tic;
 
 clear all;clc;close all;
 
-N = 2; 
-M = 2;
+N = 8; 
+M = 8;
+Edges = 10;
 quant_pixel=N*M;
 freq = 200;
 T = 1/freq;
@@ -24,7 +25,7 @@ curr_path = pwd;
 PATH_input = '/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/';
 
 cd(PATH_input);
-nameSignal = strcat('BAR',int2str(N),'X',int2str(M),'_',int2str(freq));
+nameSignal = strcat('BAR_N',int2str(N),'X',int2str(M),'_',int2str(freq));
 name_folder = strcat(nameSignal,'/');
 [s,mess1,mess2]=mkdir(name_folder);
 
@@ -40,7 +41,7 @@ cd(curr_path);
 
 closeP = 0;
 
-if N*M > 100 
+if N*M > 16
     matlabpool open 8;
     closeP = 1;
 end
@@ -65,9 +66,22 @@ for i=1:M
     
 end
 
+% Create copy Edges time 
 
+Matrix_Iph_2 = zeros(Edges*len_t,M);
 
-time_interp = linspace(0,T,200*len_t);
+for i=1:Edges
+   
+    lim_inf = (i-1)*len_t + 1;
+    lim_sup = lim_inf + len_t - 1;
+    Matrix_Iph_2(lim_inf:lim_sup,:) = Matrix_Iph;
+    
+end
+
+t = linspace(0,Edges*T,Edges*len_t);
+len_t = length(t);
+time_interp = linspace(0,Edges*T,200*len_t);
+T2 = Edges*T;
 
 cd(PATH_input)
 h = figure(1);
@@ -75,7 +89,7 @@ ind_pix = 0;
 sigma_noise = 2e-12;
 mu_noise = 0;
 parfor i=1:M
-    vec_Iph = Matrix_Iph(:,i);
+    vec_Iph = Matrix_Iph_2(:,i);
     I_pd_interp = interp1(t',vec_Iph,time_interp','linear');
     plot(time_interp*1e3,I_pd_interp,'Color',[1/i,2/(5*i),3/(4*i)]);
     hold on
@@ -94,9 +108,8 @@ xlabel('time ms')
 ylabel('I_{pd} (pA)')
 
 
-
 fid = fopen('README.txt','wt');
-fprintf(fid,' N %d\n M %d\n T %d \n freq %d (Hz)',N,M,T,freq);
+fprintf(fid,' N %d\n M %d\n T %d \n freq %d (Hz)',N,M,T2,freq);
 fclose(fid);
 
 
