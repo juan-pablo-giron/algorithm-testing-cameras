@@ -126,4 +126,4 @@ plot3dDVS_fn(ON_events,OFF_events,'MODEL')
 cd(pwd_current)
 
 toc
-%exit
+exit

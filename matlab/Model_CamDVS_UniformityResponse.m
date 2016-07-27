@@ -20,9 +20,9 @@ PATH_folder_images = getenv('PATH_folder_images'); % '/home/netware/users/jpgiro
 
 %PATH_input='/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/BAR32X32_200/';
 
-name_signal = getenv('name_Signalsinput'); %'TrianguleWave7X8_250';
-N = str2num(getenv('N')); %7;
-M = str2num(getenv('M')); %8;
+name_signal = getenv('name_Signalsinput'); 
+N = str2num(getenv('N')); 
+M = str2num(getenv('M')); 
 V_p = str2num(getenv('Vdon'));
 V_n = str2num(getenv('Vdoff'));
 T_Rst = 200e-6;
@@ -45,12 +45,6 @@ Vref = 1.5;
 Vos = 5.42e-3;      % Voffset comparador
 A = 20;             % Gain closed loop differentiator
 
-
-VdiffON = V_p - Vref + Vos;  
-VdiffOFF= V_n - Vref + Vos;
-
-
-
 name_input = strcat(PATH_input,name_signal,'_0.csv');
 input_signal = importdata(name_input);
 t = input_signal(:,1);
@@ -58,205 +52,187 @@ len_t = length(t);
 quant_pixel = N*M;
 Vdiff=zeros(len_t,quant_pixel);
 Vdiff_ind = zeros(len_t,1);
-% structure ON 
-ON_events = {[]}; ON_events2TC = zeros(1,2);
-% structure OFF event
-OFF_events = {[]}; OFF_events2TC = zeros(1,2);
+
+clear t
 
 % Vec Events per pixel per edge
 MaxEdges = 10;
-Matrix_pix_edges_ON = zeros(N*M,MaxEdges);
-Matrix_pix_edges_OFF = zeros(N*M,MaxEdges);
-%
 
-vec_Color = {'r','b','g','y'};
-deltaV  = linspace(0.1,0.2,length(vec_Color));
 
 matrix2hist1_ON = {[]};
 matrix2hist1_OFF = {[]};
-names2legend = {[]};
 
-sigma_max = 40e-3;
+% Structure data
+Matrix_pix_edges_ON = zeros(N*M,1);
+Matrix_pix_edges_OFF = zeros(N*M,1);
+
+
+% Variations
+sigma_max = 10e-3; %Vrst
+sigma_Vos = 5.42e-3;
 
 cd(PATH_input)
 
-for ind_diff=1:length(deltaV)
-    V_p = Vref - deltaV(ind_diff);
-    V_n = Vref + deltaV(ind_diff);
-    Matrix_pix_edges_ON = zeros(N*M,MaxEdges);
-    Matrix_pix_edges_OFF = zeros(N*M,MaxEdges);
-    names2legend{ind_diff} = num2str(deltaV(ind_diff));
-    for edge=1:MaxEdges
+parfor i=0:quant_pixel-1;
+    
+    
+    % paso 1. Encontrar Vdiff para cada uno de los pixeles
+    name_input = strcat(name_signal,'_',num2str(i),'.csv');
+    name_noise = strcat('noise_',num2str(i),'.csv');
+    input_signal = importdata(name_input);
+    noise_signal = importdata(name_noise);
+    Iph = input_signal(:,2);
+    noise = noise_signal(:,2);
+    Iph = Iph + noise; %Adding noise to the signal Iph
+    log_Iph = log(Iph/Isn);
+    Vdiff_ind = -nn*fi*A*log_Iph;
+    Vdiff_max = max(Vdiff_ind);    %used to normalized
+    Vdiff_ind = Vdiff_ind - Vdiff_max; %used to normalized
+    
+    % Paso 2. Encontrar los eventos ON y OFF.
+    
+    events_off = 0;
+    events_on = 0;
+    Vrnd = normrnd(0,sigma_max,1,1);
+    Vos = normrnd(0,sigma_Vos,1,1);
+    
+    for j=1:len_t
+        value = Vdiff_ind(j);
         
-        parfor i=0:quant_pixel-1;
-        %for i=0:quant_pixel-1;
-            
-            % paso 1. Encontrar Vdiff para cada uno de los pixeles
-            name_input = strcat(name_signal,'_',num2str(i),'.csv');
-            input_signal = importdata(name_input);
-            Iph = input_signal(:,2);
-            log_Iph = log(Iph/Isn);
-            Vdiff_ind = -nn*fi*A*log_Iph;
-            Vdiff_max = max(Vdiff_ind);    %used to normalized
-            Vdiff_ind = Vdiff_ind - Vdiff_max; %used to normalized
-            
-            % Paso 2. Encontrar los eventos ON y OFF.
-            ind_event = 1;
-            events_off = 0;
-            events_on = 0;
+        VdiffON = V_p - (Vref+Vrnd) + Vos;
+        VdiffOFF= V_n - (Vref+Vrnd) + Vos;
+        
+        if (value <= VdiffON)
+            Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) + abs(value); %reset to Vref
+            events_on = events_on + 1;
             Vrnd = normrnd(0,sigma_max,1,1);
-            for j=1:len_t
-                value = Vdiff_ind(j);
+        else
+            if ( value >= VdiffOFF)
                 
-                % Norm Rnd
-                
-                VdiffON = V_p - (Vref+Vrnd) + Vos;
-                VdiffOFF= V_n - (Vref+Vrnd) + Vos;
-                % Norm Rnd
-                if (value <= VdiffON)
-                    Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) + abs(value); %reset to Vref
-                    events_on = events_on + 1;
-                    Vrnd = normrnd(0,sigma_max,1,1);
-                else
-                    if ( value >= VdiffOFF)
-                        
-                        Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) - abs(value); %reset to Vref
-                        events_off = events_off + 1;
-                        Vrnd = normrnd(0,sigma_max,1,1);
-                    else
-                        continue
-                    end
-                end
-                
+                Vdiff_ind(j:len_t) = Vdiff_ind(j:len_t) - abs(value); %reset to Vref
+                events_off = events_off + 1;
+                Vrnd = normrnd(0,sigma_max,1,1);
+            else
+                continue
             end
-            %fprintf('Pixel # %d #Events_ON %d #events_off %d\n',i,events_on,events_off)
-            Vdiff(:,i+1) = Vdiff_ind;
-            Matrix_pix_edges_ON(i+1,edge) = events_on;
-            Matrix_pix_edges_OFF(i+1,edge) = events_off;
         end
         
     end
-    matrix2hist1_ON{ind_diff} = Matrix_pix_edges_ON;%mean_ON_events';
-    matrix2hist1_OFF{ind_diff} = Matrix_pix_edges_OFF;%mean_OFF_events';
-        
+    
+    Vdiff(:,i+1) = Vdiff_ind;
+    Matrix_pix_edges_ON(i+1) = events_on;
+    Matrix_pix_edges_OFF(i+1) = events_off;
 end
-%matlabpool close
 
+matlabpool close
 
-% Draw the histogram Number 1
+% Mean events fired per pixel edges
 
+Matrix_pix_edges_ON = Matrix_pix_edges_ON/MaxEdges;
+Matrix_pix_edges_OFF = Matrix_pix_edges_OFF/MaxEdges;
+        
 %% OFF
 
 cd(PATH_folder_images)
 
-matrix2hist2_OFF = {[]};
-Matrix_pix_events = [];
 
-for ind_diff=1:length(deltaV)
-    h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
-    Matrix_pix_events = matrix2hist1_OFF{ind_diff};
-    if length(Matrix_pix_events(1,:)) > 1
-        vec_mean = mean(Matrix_pix_events.');
-    else
-        vec_mean = Matrix_pix_events;
-    end
-    subplot(2,2,ind_diff)
-    hist(vec_mean)
-    [y,x]=hist(vec_mean);
-    ind_valids =  vec_mean > 0;
-    matrix2hist2_OFF{ind_diff} = vec_mean(ind_valids);
-    set(gca,'xscale','log','xlim',[1 100])
-    title(['\mu=',num2str(mean(vec_mean)),' events & \sigma= ',num2str(std(vec_mean)),' VdiffOFF= ',num2str(names2legend{ind_diff}),'V'])
-    xlabel('#events/pixel/edge')
-    ylabel('# pixels')
-    grid on
-end
+%% ======================   Histograms    ============================= %%
 
+VDIFF = abs(Vref - V_n);
+Ibright = 100e-12;
+Idark  = 20e-12;
+SensivityStimulus = log(Ibright/Idark);
+
+%% ------------------------ ON CHANNEL  -------------------------------%%
+
+mu = mean(Matrix_pix_edges_ON);
+
+figure('Visible','on','units','normalized')
+valid_indx = Matrix_pix_edges_ON > 0;
+hist(Matrix_pix_edges_ON(valid_indx));
+set(gca,'xscale','log','xlim',[1 40]);
+xlabel('#events/pixel/edge')
+ylabel('# pixels')
+title(['\mu=',num2str(mu)])
+legend(['VDIFF ON = ',num2str(VDIFF)])
+grid on
+
+% SAVE FIGURES
 string = 'Model';
-set(h,'PaperPositionMode','auto')
-print('-depsc2', ['Output_',string,'_DVS_UNIFORMITY_OFF','.eps'])
-print('-dpng', ['Output_',string,'_DVS_UNIFORMITY_OFF','.png'])
-saveas(h,['Output_',string,'_DVS_UNIFORMITY_OFF'],'fig');
+set(gcf,'PaperPositionMode','auto')
+print('-depsc2', [string,'_HIST1_ON_',num2str(VDIFF),'.eps'])
+print('-dpng', [string,'_HIST1_ON_',num2str(VDIFF),'.png'])
+saveas(gca,[string,'_HIST1_ON_',num2str(VDIFF)],'fig');
 
-%% ON
+% HIST 2
 
-matrix2hist2_ON = {[]};
+%close all;
+figure('Visible','on','units','normalized')
+Matrix_pix_edges_ON2 = 100*SensivityStimulus./Matrix_pix_edges_ON(valid_indx);
+mu = mean(Matrix_pix_edges_ON2);
+sigma = std(Matrix_pix_edges_ON2);
+hist(Matrix_pix_edges_ON2);
+set(gca,'xlim',[1 40]);
+xlabel('%{\theta_{ev}}^+')
+ylabel('# pixels')
+title(['\mu = ',num2str(mu),' ','\sigma = ',num2str(sigma)])
+legend(['VDIFF ON = ',num2str(VDIFF)])
+grid on
 
-for ind_diff=1:length(deltaV)
-    h=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
-    Matrix_pix_events = matrix2hist1_ON{ind_diff};
-    if length(Matrix_pix_events(1,:)) > 1
-        vec_mean = mean(Matrix_pix_events.');
-    else
-        vec_mean = Matrix_pix_events;
-    end
-    subplot(2,2,ind_diff)
-    hist(vec_mean)
-    [y,x]=hist(vec_mean);
-    ind_valids =  vec_mean > 0;
-    matrix2hist2_ON{ind_diff} = vec_mean(ind_valids);
-    set(gca,'xscale','log','xlim',[1 100])
-    title(['\mu=',num2str(mean(vec_mean)),' events & \sigma= ',num2str(std(vec_mean)),' VdiffON= ',num2str(names2legend{ind_diff}),'V'])
-    xlabel('#events/pixel/edge')
-    ylabel('# pixels')
-    grid on    
-    
-end
-
+% SAVE FIGURES
 string = 'Model';
-set(h,'PaperPositionMode','auto')
-print('-depsc2', ['Output_',string,'_DVS_UNIFORMITY_ON','.eps'])
-print('-dpng', ['Output_',string,'_DVS_UNIFORMITY_ON','.png'])
-saveas(h,['Output_',string,'_DVS_UNIFORMITY_ON'],'fig');
-
-%% Drawing the second histogram
-ratio = 5; %significa un contraste de 5:1
-theta = log(ratio);
-
-for ind_diff=1:length(deltaV)
-    
-    h1=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
-    subplot(2,2,ind_diff)
-    vec_x = matrix2hist2_OFF{ind_diff};
-    %ind_valid = vec_x > 0 ;
-    vec_x = (theta./vec_x)*100;
-    hist(vec_x)
-    set(gca,'xlim',[1 100])
-    xlabel('\theta_{ev}')
-    ylabel('# pixels')
-    title(['\mu=',num2str(mean(vec_x)),' events & \sigma= ',num2str(std(vec_x)),' VdiffOFF= ',num2str(names2legend{ind_diff}),'V'])
-    grid on
-    
-    h2=figure('Visible','off','units','normalized','outerposition',[0 0 1 1]);
-    subplot(2,2,ind_diff)
-    vec_x = matrix2hist2_ON{ind_diff};
-    %ind_valid = vec_x > 0 ;
-    vec_x = (theta./vec_x)*100;
-    hist(vec_x)
-    set(gca,'xlim',[1 100])
-    xlabel('\theta_{ev}')
-    ylabel('# pixels')
-    title(['\mu=',num2str(mean(vec_x)),' events & \sigma= ',num2str(std(vec_x)),' VdiffON= ',num2str(names2legend{ind_diff}),'V'])
-    grid on
-end
+set(gcf,'PaperPositionMode','auto')
+print('-depsc2', [string,'_CS_ON_',num2str(VDIFF),'.eps'])
+print('-dpng', [string,'_CS_ON_',num2str(VDIFF),'.png'])
+saveas(gca,[string,'_CS_ON_',num2str(VDIFF)],'fig');
 
 
+%%  ---------------------  OFF CHANNEL ---------------------------- %
+%close all;
+figure('Visible','on','units','normalized')
+mu = mean(Matrix_pix_edges_OFF);
+valid_indx = Matrix_pix_edges_OFF > 0;
+hist(Matrix_pix_edges_OFF(valid_indx));
+set(gca,'xscale','log','xlim',[1 40]);
+xlabel('#events/pixel/edge')
+ylabel('# pixels')
+title(['\mu=',num2str(mu)])
+legend(['VDIFF OFF = ',num2str(VDIFF)])
+grid on
+
+% SAVE FIGURES
 string = 'Model';
-set(h1,'PaperPositionMode','auto')
-print('-depsc2', ['Output_',string,'_DVS_SENSITIVITY_OFF','.eps'])
-print('-dpng', ['Output_',string,'_DVS_SENSITIVITY_OFF','.png'])
-saveas(h1,['Output_',string,'_DVS_SENSITIVITY_OFF'],'fig');
+set(gcf,'PaperPositionMode','auto')
+print('-depsc2', [string,'_HIST1_OFF_',num2str(VDIFF),'.eps'])
+print('-dpng', [string,'_HIST1_OFF_',num2str(VDIFF),'.png'])
+saveas(gca,[string,'_HIST1_OFF_',num2str(VDIFF)],'fig');
 
-set(h2,'PaperPositionMode','auto')
-print('-depsc2', ['Output_',string,'_DVS_SENSITIVITY_ON','.eps'])
-print('-dpng', ['Output_',string,'_DVS_SENSITIVITY_ON','.png'])
-saveas(h2,['Output_',string,'_DVS_SENSITIVITY_ON'],'fig');
+% HIST 2
 
-matlabpool close
+%close all;
+figure('Visible','on','units','normalized')
+Matrix_pix_edges_OFF2 = 100*SensivityStimulus./Matrix_pix_edges_OFF(valid_indx);
+mu = mean(Matrix_pix_edges_OFF2);
+sigma = std(Matrix_pix_edges_OFF2);
+hist(Matrix_pix_edges_OFF2);
+set(gca,'xlim',[1 40]);
+xlabel('% {\theta_{ev}}^-')
+ylabel('# pixels')
+title(['\mu = ',num2str(mu),' ','\sigma = ',num2str(sigma)])
+legend(['VDIFF OFF = ',num2str(VDIFF)])
+grid on
 
-%}
+% SAVE FIGURES
+string = 'Model';
+set(gcf,'PaperPositionMode','auto')
+print('-depsc2', [string,'_CS_OFF_',num2str(VDIFF),'.eps'])
+print('-dpng', [string,'_CS_OFF_',num2str(VDIFF),'.png'])
+saveas(gca,[string,'_CS_OFF_',num2str(VDIFF)],'fig');
+
 
 cd(pwd_current)
 toc;
 
-exit;
+%clear all;
+
+%exit;
