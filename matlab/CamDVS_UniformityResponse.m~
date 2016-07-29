@@ -19,9 +19,9 @@ name_signal = getenv('name_Signalsinput');
 
 N = str2double(getenv('N'));
 M = str2double(getenv('M'));
-T_Rst = 200e-6;
-Iph_min = 20e-12;
-Iph_max = 1e-9;
+V_p = str2num(getenv('Vdon'));
+V_n = str2num(getenv('Vdoff'));
+
 
 cd(PATH_sim_output_matlab)
 
@@ -79,14 +79,7 @@ vec_desiredData(:,6) = digitalSignal(:,index_Globalrst); %global reset
 %paso 3. Maquina de estados para determinar la validez de un dato
 
 state = 0;
-% structure ON 
-ON_events = {[]}; 
-% structure OFF event
-OFF_events = {[]}; 
 i=1;
-ind_ON=1;
-ind_OFF = 1;
-
 
 % Structures to calculate sensitivity contrast
 Matrix_pix_edges_ON = zeros(N*M,1);
@@ -126,19 +119,21 @@ while (i<=len_row_data_Sim)
     
 	
 end 
+MaxEdges = 2;
+Matrix_pix_edges_ON = Matrix_pix_edges_ON/MaxEdges;
+Matrix_pix_edges_OFF = Matrix_pix_edges_OFF/MaxEdges;
 
 
-% Paso 4. Plot Histograms
+%% ======================   Histograms    ============================= %%
+cd(pwd_current)
+VDIFF = abs(Vref - V_n);
+string = 'SIMULATED';
+plotHistograms(Matrix_pix_edges_ON,Matrix_pix_edges_OFF,string,VDIFF)
 
 cd(pwd_current)
-
-Matrix_pix_edges_ON  = Matrix_pix_edges_ON/
-
-
-
-
-cd(pwd_current)
-
 toc
+
+clear all,close all;clc;
+
 exit
 

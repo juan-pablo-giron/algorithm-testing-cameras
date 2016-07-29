@@ -119,13 +119,14 @@ while (i<=len_row_data_Sim)
     
 	
 end 
-
+MaxEdges = 2;
 Matrix_pix_edges_ON = Matrix_pix_edges_ON/MaxEdges;
 Matrix_pix_edges_OFF = Matrix_pix_edges_OFF/MaxEdges;
 
 
 %% ======================   Histograms    ============================= %%
 cd(pwd_current)
+Vref = 1.5;
 VDIFF = abs(Vref - V_n);
 string = 'SIMULATED';
 plotHistograms(Matrix_pix_edges_ON,Matrix_pix_edges_OFF,string,VDIFF)

@@ -15,8 +15,8 @@ tic;
 
 clear all;clc;close all;
 
-N = 8; 
-M = 8;
+N = 2; 
+M = 2;
 Edges = 10;
 quant_pixel=N*M;
 freq = 200;
@@ -47,7 +47,7 @@ if N*M > 16
 end
 
 
-Imax = 100e-12;
+Imax = 300e-12;
 Imin = 20e-12;
 
 t = linspace(0,T,M+2);
@@ -91,7 +91,7 @@ mu_noise = 0;
 parfor i=1:M
     vec_Iph = Matrix_Iph_2(:,i);
     I_pd_interp = interp1(t',vec_Iph,time_interp','linear');
-    plot(time_interp*1e3,I_pd_interp,'Color',[1/i,2/(5*i),3/(4*i)]);
+    semilogy(time_interp*1e3,I_pd_interp,'Color',[1/i,2/(5*i),3/(4*i)]);
     hold on
     for j=1:N
         name_file = strcat(nameSignal,'_',num2str((i-1)*N+(j-1)),'.csv');

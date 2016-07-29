@@ -2,7 +2,7 @@
 
 cd ../../
 
-choice_TypeSim=$(kdialog --menu "CHOOSE ONE:" 1 "DVS" 2 "ATIS" --title "What is the camera that do you want simulate?")
+choice_TypeSim=$(kdialog --menu "CHOOSE ONE:" 1 "DVS" 2 "ATIS" 3 "DVS CS" --title "What is the camera that do you want simulate?")
 echo $choice_TypeSim
 
 
@@ -65,6 +65,21 @@ case "$choice_TypeSim" in
       run post-processing after solved"
     fi
     ;;
+
+  3) # DVS CS
+    cd $PATH_scriptPython
+      python sort_data_DVS_pixel_UNIX.py
+      
+      if [ "$?" = 0 ]
+      then
+	cd $PATH_scriptMatlab
+	matlab -nodesktop -nosplash -r Model_CamDVS_UniformityResponse
+	matlab -nodesktop -nosplash -r CamDVS_UniformityResponse
+      else
+	kdialog --error "PLEASE verify your Python script there are some errors
+	run post-processing after solved"
+      fi
+      ;;
   *)
     kdialog --msgbox "Nothing selected... Aborting the post processing"
     return

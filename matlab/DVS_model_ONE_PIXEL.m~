@@ -98,8 +98,8 @@ Vdiff = Vdiff_ind;
 tscale = 1e3;
 
 subplot(3,1,1)
-plot(tscale*t,Vdiff+Vref)
-xlabel('Time (ms)')
+plot(tscale*t,Vdiff)
+xlabel('Time ms')
 ylabel('Vdiff')
 grid on
 

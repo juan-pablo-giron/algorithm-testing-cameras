@@ -25,6 +25,7 @@ N = str2num(getenv('N'));
 M = str2num(getenv('M')); 
 V_p = str2num(getenv('Vdon'));
 V_n = str2num(getenv('Vdoff'));
+Vref = 1.5;
 T_Rst = 200e-6;
 
 pwd_current=pwd;
@@ -130,6 +131,7 @@ Matrix_pix_edges_OFF = Matrix_pix_edges_OFF/MaxEdges;
 
 %% ======================   Histograms    ============================= %%
 cd(pwd_current)
+Vref = 1.5;
 VDIFF = abs(Vref - V_n);
 string = 'MODEL';
 plotHistograms(Matrix_pix_edges_ON,Matrix_pix_edges_OFF,string,VDIFF)

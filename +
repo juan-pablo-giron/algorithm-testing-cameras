@@ -1,0 +1,28 @@
+e depuran algunos datos que no debian de estar en esta carpet
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#	deleted:    Frame_3.png
+#	deleted:    GUI_plot.fig
+#	deleted:    Model_CS_OFF_0.133
+#	deleted:    Model_CS_OFF_0.133.eps
+#	deleted:    Model_CS_OFF_0.133.png
+#	deleted:    Model_CS_ON_0.133
+#	deleted:    Model_CS_ON_0.133.eps
+#	deleted:    Model_CS_ON_0.133.png
+#	deleted:    Model_CamDVS_UniformityResponse.m~
+#	deleted:    Model_HIST1_OFF_0.133
+#	deleted:    Model_HIST1_OFF_0.133.eps
+#	deleted:    Model_HIST1_OFF_0.133.png
+#	deleted:    Model_HIST1_ON_0.133
+#	deleted:    Model_HIST1_ON_0.133.eps
+#	deleted:    Model_HIST1_ON_0.133.png
+#	deleted:    logfile.txt
+#	deleted:    post_processing.sh~
+#	deleted:    script_exe_simulation_GUI.sh~
+#	deleted:    ../python/setting_input_netlist_UNIX_ATIS.py~
+#	deleted:    ../python/setting_input_netlist_UNIX_DVS2.py~
+#
