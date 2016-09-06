@@ -43,8 +43,8 @@ input_signal = importdata(name_input);
 
 % Known vaiables
 Vref = 1.5;
-V_p = 1.3;          % V_tetha+
-V_n = 1.7;         % V_tetha-
+V_p = 1.35;          % V_tetha+
+V_n = 1.65;         % V_tetha-
 Vos = 5.42e-3;      % Voffset comparador
 
 Iph_max = 100e-12;
