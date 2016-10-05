@@ -73,6 +73,7 @@ if ( len_ON_events > 1)
     print('-depsc2',['DVS_ON_',string,'.eps'])
     print('-dpng',['DVS_ON_',string,'.png'])
     saveas(gcf,['DVS_ON_',string],'fig');
+    saveas(gcf,['DVS_ON_',string],'svg');
 end
 
 
@@ -118,4 +119,5 @@ if ( len_OFF_events >1)
     print('-depsc2',['DVS_OFF_',string,'.eps'])
     print('-dpng',['DVS_OFF_',string,'.png'])
     saveas(gcf,['DVS_OFF_',string],'fig');
+    saveas(gcf,['DVS_OFF_',string],'svg');
 end

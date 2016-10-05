@@ -144,6 +144,7 @@ for i=1:length(Struct_Frames)
        print('-depsc2', ['Output_',string,'_ATIS',num2str(ind_nameFig),'.eps'])
        print('-dpng', ['Output_',string,'_ATIS',num2str(ind_nameFig),'.png'])
        saveas(gcf,['Output_',string,'_ATIS',num2str(ind_nameFig)],'fig');
+       saveas(gcf,['Output_',string,'_ATIS',num2str(ind_nameFig)],'svg');
        close all;
        
        if i ~= length(Struct_Frames)
@@ -170,4 +171,5 @@ if cont_plot
     print('-depsc2', ['Output_',string,'_ATIS',num2str(ind_nameFig),'.eps'])
     print('-dpng', ['Output_',string,'_ATIS',num2str(ind_nameFig),'.png'])
     saveas(gcf,['Output_',string,'_ATIS',num2str(ind_nameFig)],'fig');
+    saveas(gcf,['Output_',string,'_ATIS',num2str(ind_nameFig)],'svg');
 end
