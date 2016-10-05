@@ -103,7 +103,7 @@ for i=1:length(Struct_Frames)
     
     end
    
-   % Find the NaN value to Mark them.
+   % Find the NaN value to Mark it.
    [rows columns] = find(isnan(Matrix_paint));
    text(columns,rows,'\color{white}NE','HorizontalAlignment','center', ...
        'FontSize',10)

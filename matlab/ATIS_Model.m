@@ -2,7 +2,8 @@
 
 %% ========================= PARAMAMETERS MOSFET  ================= %%
 
-close all;clc;clear;
+
+close all;clc;clear all;
 
 curr_pwd = pwd;
 
@@ -17,9 +18,10 @@ V_p = str2num(getenv('Vdon'));
 V_n = str2num(getenv('Vdoff'));
 Vhigh = str2num(getenv('Vhigh'));
 Vlow = str2num(getenv('Vlow'));
-
-
-
+Vref = str2num(getenv('Vref'));
+if isempty(Vref)
+    Vref = 1.5;
+end
 %% Transistor's parameters
 nn = 1.334;
 np = 1.369;
@@ -32,12 +34,12 @@ Ratio = 0.5e-6/2e-6;
 Isn = 2*nn*fi^2*Kn*Ratio;
 
 % Known vaiables
-Vref = 1.5;
+%Vref = 1.5;
 Vos = 5.42e-3;      % Voffset comparador
 Iph_max = 1e-9;
 Iph_min = 20e-12;
 A = 20;             % Gain closed loop differentiator
-T_Rst = 200e-6;
+T_Rst = 1e-3;
 
 VdiffON = V_p - Vref + Vos;  
 VdiffOFF= V_n - Vref + Vos;
@@ -56,12 +58,9 @@ ON_events = {[]}; ON_events2TC = zeros(1,2);
 % structure OFF event
 OFF_events = {[]}; OFF_events2TC = zeros(1,2);
 Events = {[]};
-Event_pix = {[]};
 ind_ON = 1;
 ind_OFF = 1;
 cd(PATH_input)
-
-
 for i=0:quant_pixel-1;
 
     % paso 1. Encontrar Vdiff para cada uno de los pixeles
@@ -76,7 +75,7 @@ for i=0:quant_pixel-1;
     
     % Paso 2. Encontrar los eventos ON y OFF.
     ind_event = 1;
-    Event_pix = {[]};
+    Event_pix = struct;
     for j=1:len_t
        value = Vdiff_ind(j);
        if (value <= VdiffON)
@@ -85,7 +84,7 @@ for i=0:quant_pixel-1;
            ON_events2TC(ind_ON,1) = i;
            ON_events2TC(ind_ON,2) = Iph(j);
            ON_events{ind_ON} = vec_time_pix;
-           Event_pix.value(ind_event) = t(j)+T_Rst;
+           Event_pix.value(ind_event) = t(j)+T_Rst; % Se almacena el tiempo que hubo el evento
            ind_ON = ind_ON + 1;
            ind_event=ind_event+1;
        else
@@ -119,6 +118,8 @@ plot_bar_events_DVS_Model(ON_events2TC,OFF_events2TC,Iph_min,Iph_max,'MODEL');
 
 plot3dDVS_fn(ON_events,OFF_events,'MODEL')
 
+
+
 %% ========================================================= %%
 
 %% =============== Exposure Measurement ==================== %%
@@ -129,6 +130,7 @@ C = 30e-15;
 %Vlow = 200e-3;
 resol = 255;
 Clim = [0 255];
+%clear('Matrix_Color')% = struct;
 Matrix_Color = {[]};
 Matrix_time_pix_colour = zeros(1,3);
 i = 0;
@@ -136,9 +138,9 @@ ack_Rst = 0;
 ack_Vhigh = 0;
 vec_Times_events_pixels = zeros(1,quant_pixel);
 cd(curr_pwd)
-[vec_color vec_COD_TIME] = CodingGrayScale(Vhigh,Vlow,resol,Clim);
+[vec_color, vec_COD_TIME] = CodingGrayScale(Vhigh,Vlow,resol,Clim);
 cd(PATH_input)
-Event_pix = {[]};
+Event_pix = struct;
 ind_TPC = 1;
 
 
@@ -153,7 +155,7 @@ for i=0:quant_pixel-1;
     time_events = Event_pix.value;
     ind_events = 1;
     Vint(1,i+1) = Vo;
-    Color_pix = {[]};
+    Color_pix = struct;
     ack_Rst = 0;
     ack_Vhigh = 0;
     for j=1:len_t-1
@@ -183,6 +185,11 @@ for i=0:quant_pixel-1;
                 t_low = t(j+1);
                 T_int = t_low - t_high;
                 ind_table = find(vec_COD_TIME <= T_int , 1);
+                if isempty(ind_table)
+                    % T_int es menor que la tabla real
+                    ind_table = resol;
+                end
+                
                 Color = vec_color(ind_table);
                 Color_pix.vec_color(ind_events) = Color;
                 Color_pix.vec_time(ind_events,:) = t_low;%[t_high t_low];%T_int;%t(j);

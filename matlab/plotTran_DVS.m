@@ -18,7 +18,7 @@ name_signal = getenv('name_Signalsinput');
 
 N = str2num(getenv('N'));
 M = str2num(getenv('M'));
-T_Rst = 200e-6;
+T_Rst = 1e-3;
 Iph_min = 20e-12;
 Iph_max = 1e-9;
 

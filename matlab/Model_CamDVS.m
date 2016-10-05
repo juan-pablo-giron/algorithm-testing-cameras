@@ -20,6 +20,7 @@ N = str2num(getenv('N')); %7;
 M = str2num(getenv('M')); %8;
 V_p = str2num(getenv('Vdon'));
 V_n = str2num(getenv('Vdoff'));
+Vref = str2num(getenv('Vref'));
 T_Rst = 200e-6;
 
 pwd_current=pwd;
@@ -36,7 +37,7 @@ Ratio = 0.5e-6/2e-6;
 Isn = 2*nn*fi^2*Kn*Ratio;
 
 % Known vaiables
-Vref = 1.5;
+%Vref = 1.5;
 Vos = 5.42e-3;      % Voffset comparador
 Iph_max = 1e-9;
 Iph_min = 20e-12;

@@ -49,8 +49,8 @@ end
 PATH_input = strcat(PATH_input,nameSignal,'/');
 cd(curr_path);
 
-Imax = 1e-9;
-Imin = 20e-12;
+Imax = 150e-12;
+Imin = 100e-12;
 deltaI = (Imax - Imin)/(resol-1);
 
 deltat = (T/2)/(samplesPerHold*resol); % T/2 porque es para arriba y para abjao en el mismo periodo

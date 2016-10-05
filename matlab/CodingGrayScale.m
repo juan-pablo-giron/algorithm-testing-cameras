@@ -4,10 +4,10 @@
 % dentro de la escala cinza 
 % los datos son fijos.
 
-function [vec_color vec_COD_TIME] = CodingGrayScale(Vhigh,Vlow,resol,Clim)
+function [vec_color, vec_COD_TIME] = CodingGrayScale(Vhigh,Vlow,resol,Clim)
 
 CURVES = importdata('/home/netware/users/jpgironruiz/Desktop/Documents/Cadence_analysis/Inputs/CODING_GRAYSCALE_ATIS/CURVES_2000pts.csv');
-time_RST = 100e-9; % tiempo fijo que se usó para extraer las curvas. 
+time_RST = 100e-9; % tiempo fijo que se us? para extraer las curvas. 
 
 %Vhigh = 1.7;
 %Vlow = 200e-3;
@@ -38,8 +38,8 @@ end
 
 step = floor((len_CURVES/2)/resol);
 vec_time_curves = sort(vec_time_curves,'descend');
-for i=1:resol-1
+for i=1:resol
    
-   vec_COD_TIME(i) = vec_time_curves(step*i);
+   vec_COD_TIME(i) = vec_time_curves(step*(i-1)+1);
       
 end

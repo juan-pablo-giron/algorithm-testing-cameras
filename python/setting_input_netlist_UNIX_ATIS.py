@@ -24,6 +24,7 @@ Vdoff = float(os.environ['Vdoff'])
 Vdon = float(os.environ['Vdon'])
 Vhigh = float(os.environ['Vhigh'])
 Vlow = float(os.environ['Vlow'])
+Vref = float(os.environ['Vref'])
 
 ext_input = '.csv'
 
@@ -31,7 +32,7 @@ N = int(os.environ['N'])
 M = int(os.environ['M'])
 quant_pixels = N*M
 
-T_Rst=200e-6;
+T_Rst=1e-3;
 
 os.chdir(PATH_folder_simulation)
 
@@ -138,7 +139,7 @@ while x < len_netlist:
                 #lst_tmp[j]='Vdon T=%1.10f'%float(T)
                 #string=' '.join(lst_tmp)
                 #l_netlist[x]=string
-                new_line = 'parameters Vdon=%1.3f'%Vdon+' Vdoff=%1.3f'%Vdoff+' T=%1.10f'%float(T)+' T_Rst=%1.10f'%T_Rst+' Vhigh=%1.3f'%float(Vhigh)+' Vlow=%1.3f'%float(Vlow)
+                new_line = 'parameters Vdon=%1.3f'%Vdon+' Vdoff=%1.3f'%Vdoff+' T=%1.10f'%float(T)+' T_Rst=%1.10f'%T_Rst+' Vhigh=%1.3f'%float(Vhigh)+' Vlow=%1.3f'%float(Vlow)+' Vref=%1.3f'%Vref
                 l_netlist[x]=new_line
                 j=len_lst_tmp
             else:

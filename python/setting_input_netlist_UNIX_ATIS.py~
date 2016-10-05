@@ -22,7 +22,9 @@ PATH_folder_input = os.environ['PATH_folder_input']
 name_Signalsinput = os.environ['name_Signalsinput']
 Vdoff = float(os.environ['Vdoff'])
 Vdon = float(os.environ['Vdon'])
-
+Vhigh = float(os.environ['Vhigh'])
+Vlow = float(os.environ['Vlow'])
+Vref = float(os.environ['Vref'])
 
 ext_input = '.csv'
 
@@ -30,7 +32,7 @@ N = int(os.environ['N'])
 M = int(os.environ['M'])
 quant_pixels = N*M
 
-T_Rst=200e-6;
+T_Rst=1e-3;
 
 os.chdir(PATH_folder_simulation)
 
@@ -43,8 +45,11 @@ name_n_CurrentATIS = 'I_pdA'
 ################ end inputs ######################
 
 
-l_nodevoltageNames = []     # Save the name of the node voltage
-l_nodecurrentNames = []     # Save the name of the nodes current name
+l_nodevoltageNames = []     # Save the name of the node voltage DVS
+l_nodecurrentNames = []     # Save the name of the nodes current name DVS
+l_nodevoltageNames_A = []     # Save the name of the node voltage ATIS
+l_nodecurrentNames_A = []     # Save the name of the nodes current name ATIS
+
 f = open(nameNetlist_spectre_Orig,'r')
 f_readme=open(PATH_folder_input+'README.txt','r')
 f_netlist = open(nameNetlist_spectre,'w')
@@ -57,6 +62,7 @@ f.close()
 f_readme.close()
 #### Create the lists with the names of the node voltage/current expected #####
 
+# DVS
 x = 0
 while x <quant_pixels:
     nodeVoltageName = name_n_VoltageDVS+str(x)
@@ -66,6 +72,19 @@ while x <quant_pixels:
     x = x + 1
 
 len_nodeVoltageName = len(l_nodevoltageNames)
+
+# ATIS
+
+x = 0
+while x <quant_pixels:
+    nodeVoltageName = name_n_VoltageATIS+str(x)
+    nodeCurrentName = name_n_CurrentATIS+str(x)
+    l_nodevoltageNames_A.append(nodeVoltageName)
+    l_nodecurrentNames_A.append(nodeCurrentName)
+    x = x + 1
+
+len_nodeVoltageName_A = len(l_nodevoltageNames_A)
+
 
 #print l_nodevoltageNames
 #print l_nodecurrentNames
@@ -120,7 +139,7 @@ while x < len_netlist:
                 #lst_tmp[j]='Vdon T=%1.10f'%float(T)
                 #string=' '.join(lst_tmp)
                 #l_netlist[x]=string
-                new_line = 'parameters Vdon=%1.3f'%Vdon+' Vdoff=%1.3f'%Vdoff+' T=%1.10f'%float(T)+' T_Rst=%1.10f'%T_Rst
+                new_line = 'parameters Vdon=%1.3f'%Vdon+' Vdoff=%1.3f'%Vdoff+' T=%1.10f'%float(T)+' T_Rst=%1.10f'%T_Rst+' Vhigh=%1.3f'%float(Vhigh)+' Vlow=%1.3f'%float(Vlow)+'Vref=%1.3f'%Vref
                 l_netlist[x]=new_line
                 j=len_lst_tmp
             else:
@@ -174,7 +193,44 @@ while x < len_netlist:
              l_netlist.insert(x+1,line2)
              l_netlist.insert(x+2,line3)
              len_netlist=len(l_netlist)
-             #print '--------------------------------------------------------'    
+             #print '--------------------------------------------------------'
+             
+         ## ATIS
+         else:
+             
+             find_nameVoltage_A = string.find(name_n_VoltageATIS)
+             if (find_nameVoltage_A != -1):
+                 i=i+1
+                 #print 'x = %d'%x+'  lst[X]'+string
+                 lst_tmp=string.split(' ')
+                 lst_tmp=[w.replace('(','') for w in lst_tmp]
+                 #print lst_tmp
+                 voltage_name=lst_tmp[1] # here the name node voltage
+                 index=l_nodevoltageNames_A.index(voltage_name)
+                 #print index
+                 j=x+1
+                 while j<len_netlist:
+                     string=l_netlist[j]
+                     lst_tmp=string.split(' ')
+                     #print lst_tmp
+                     if lst_tmp[0] != '':
+                         nxt_ins=j
+                         j=len_netlist
+                     else:
+                         j=j+1
+                         
+                 #writing the desired information
+                 #print 'nxt_inst %d' %nxt_ins
+                 del l_netlist[x:nxt_ins]
+                 line1 = l_nodecurrentNames_A[index]+' ('+l_nodevoltageNames_A[index]+' 0) isource \\'
+                 line2 = '      file='+'"'+ PATH_folder_input+name_Signalsinput+'_'+str(index)+ext_input+'"'+' \\'  
+                 line3 = '      type=pwl delay=T_Rst edgetype=halfsine scale=1 stretch=1 pwlperiod=T'
+                 l_netlist.insert(x,line1)
+                 l_netlist.insert(x+1,line2)
+                 l_netlist.insert(x+2,line3)
+                 len_netlist=len(l_netlist)
+                 #print '--------------------------------------------------------'
+
     x=x+1
 print 'total pixels %d'%i
 #################### Here is written the new netlist #############################

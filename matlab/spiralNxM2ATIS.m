@@ -12,11 +12,11 @@ tic;
 
 clear all;clc;close all;
 
-matlabpool open 8;
+pool=parpool;
 
 N = 4; 
 M = 4;
-freq = 100;
+freq = 10;
 rpm = freq*60;
 
 curr_path = pwd;
@@ -442,7 +442,7 @@ parfor pixel=1:quant_pixel
    name_file = strcat(nameSignal,'_',int2str(pixel-1),'.csv');
    dlmwrite(name_file,[time_interp' I_pd_interp],'delimiter',' ','precision',10,'newline','unix'); 
 end
-matlabpool close
+delete(pool)
 
 period = T;
 fid = fopen('README.txt','wt');
