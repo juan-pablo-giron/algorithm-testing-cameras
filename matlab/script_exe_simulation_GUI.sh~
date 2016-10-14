@@ -13,7 +13,7 @@ PATH_scriptPython=$PATH_script"python"/
 cd ..
 
 
-choice_TypeSim=$(kdialog --menu "CHOOSE ONE:" 1 "DVS" 2 "ATIS" 3 "DVS Calc Sens. Contrast" --title "What is the camera that do you want simulate?")
+choice_TypeSim=$(kdialog --menu "CHOOSE ONE:" 1 "DVS" 2 "ATIS" 3 "DVS Calc Sens. Contrast" 4 "ADM DVS" --title "What is the camera that do you want simulate?")
 echo $choice_TypeSim
 
 ############################################################
@@ -136,6 +136,14 @@ if [ "$?" -ne 0 ]; then
   return
 fi;
 
+Vref=$(kdialog --inputbox "Write the Vref in format LONG");
+if [ "$?" -ne 0 ]; then
+  kdialog --error "Simulation Aborted"
+  cd $PATH_scriptMatlab
+  return
+fi;
+
+
 Vdoff=$(kdialog --inputbox "Write the Vdoff in format LONG");
 if [ "$?" -ne 0 ]; then
   kdialog --error "Simulation Aborted"
@@ -231,6 +239,7 @@ export name_folder_output_Spectre
 export number_bits
 export M
 export N
+export Vref
 export Vdon
 export Vdoff
 export Vhigh
@@ -260,6 +269,7 @@ echo "name_folder_output_Spectre=$name_folder_output_Spectre" >> env_var.sh
 echo "number_bits=$number_bits" >> env_var.sh
 echo "M=$M" >> env_var.sh
 echo "N=$N" >> env_var.sh
+echo "Vref=$Vref" >> env_var.sh
 echo "Vdoff=$Vdoff" >> env_var.sh
 echo "Vdon=$Vdon" >> env_var.sh
 echo "Vhigh=$Vhigh" >> env_var.sh
@@ -289,6 +299,7 @@ echo "export name_folder_output_Spectre" >> env_var.sh
 echo "export number_bits" >> env_var.sh
 echo "export M" >> env_var.sh
 echo "export N" >> env_var.sh
+echo "export Vref" >> env_var.sh
 echo "export Vdoff" >> env_var.sh
 echo "export Vdon" >> env_var.sh
 echo "export Vhigh" >> env_var.sh

@@ -12,8 +12,8 @@ tic;
 
 clear all;clc;close all;
 
-N = 8; 
-M = 8;
+N = 2; 
+M = 2;
 freq = 10;
 rpm = freq*60;
 
@@ -37,7 +37,7 @@ start_row = 2;end_row = M;
 
 
 I0 = 50e-12;
-Ich = 100e-12;
+Ich = 80e-12;
 scaleTime = 1e3;
 
 
@@ -60,7 +60,7 @@ vec_I_pd = zeros(size(vec_time))+I0; % Senhal
 %        <---- PW ---->
 
 % Initials condition for each time. (pixel 0).
-PW = 1/freq;
+PW = (1/freq)/quant_pixel;
 
 t1 = 0;
 t2 = 0.1*PW;
@@ -233,16 +233,15 @@ end
 
 % Interpolate the data and save into file.
 cd(PATH_input)
-Npoints = 1000;
+Npoints = 5000;
 new_vec_time = linspace(t1,t6,Npoints);
 
 for i=1:quant_pixel
     
     name_file = strcat(nameSignal,'_',int2str(i-1),'.csv');
 	I_pd_interp = interp1(vec_time(i,:),vec_I_pd(i,:),new_vec_time,'linear');
-    dlmwrite(name_file,[new_vec_time' I_pd_interp'],'delimiter',' ','precision',5,'newline','unix');
-    
-    
+    dlmwrite(name_file,[new_vec_time' I_pd_interp'],'delimiter',' ','precision',10,'newline','unix');
+        
 end
 
 cd(PATH_input)
@@ -250,7 +249,6 @@ period = t6;
 fid = fopen('README.txt','wt');
 fprintf(fid,' N %d\n M %d\n T %d \n freq %d (Hz) \n RPM %d \n Tdelay %d \n',N,M,period,1/period,rpm,t_delay);
 fclose(fid);
-
 
 colorbar;
 set(gca,'xtick',X);

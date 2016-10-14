@@ -13,7 +13,7 @@ PATH_scriptPython=$PATH_script"python"/
 cd ..
 
 
-choice_TypeSim=$(kdialog --menu "CHOOSE ONE:" 1 "DVS" 2 "ATIS" 3 "DVS Calc Sens. Contrast" --title "What is the camera that do you want simulate?")
+choice_TypeSim=$(kdialog --menu "CHOOSE ONE:" 1 "DVS" 2 "ATIS" 3 "DVS Calc Sens. Contrast" 4 "ADM DVS" --title "What is the camera that do you want simulate?")
 echo $choice_TypeSim
 
 ############################################################
@@ -430,8 +430,45 @@ case "$choice_TypeSim" in
       cd $PATH_scriptMatlab
       return
     fi
-  
+   ;;
+  4)
+    # ADM DVS
+    clear
+    echo "Simulating an ADM DVS camera wait it could take some minutes, hours or days"
+    # Execution of commands for DVS
 
+    cd $PATH_scriptPython
+
+    python setting_input_netlist_UNIX_ADMDVS.py
+
+    cd $PATH_folder_simulation
+
+    spectre +mt ++aps -format psfascii $nameNetlist_spectre
+    # Command for DVS pixel
+
+
+    if [ "$?" = 0 ]
+    then
+      sleep 50
+      cd $PATH_scriptPython
+      python sort_data_DVS_pixel_UNIX.py
+      
+      if [ "$?" = 0 ]
+      then
+	#kdialog --msgbox "Starting the Post-processing with MATLAB close it when end"
+	cd $PATH_scriptMatlab
+	#matlab -nodesktop -nosplash -r Model_CamDVS
+	#matlab -nodesktop -nosplash -r plotTran_DVS
+	return
+      else
+	kdialog --error "PLEASE verify your Python script there are some errors
+	run post-processing after solved"
+      fi
+    else
+      kdialog --error "PLEASE VERIFY IF YOUR ENVIROMENT VARIABLES FOR SPECTRE ARE CONFIGURED"
+      cd $PATH_scriptMatlab
+      return
+    fi
 #fi
 
 esac

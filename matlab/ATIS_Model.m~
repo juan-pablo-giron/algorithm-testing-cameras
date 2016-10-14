@@ -21,9 +21,6 @@ Vlow = str2num(getenv('Vlow'));
 Vref = str2num(getenv('Vref'));
 if isempty(Vref)
     Vref = 1.5;
-    T_Rst = 200e-6;
-else
-    T_Rst = 1e-3;
 end
 %% Transistor's parameters
 nn = 1.334;
@@ -42,7 +39,7 @@ Vos = 5.42e-3;      % Voffset comparador
 Iph_max = 1e-9;
 Iph_min = 20e-12;
 A = 20;             % Gain closed loop differentiator
-
+T_Rst = 1e-3;
 
 VdiffON = V_p - Vref + Vos;  
 VdiffOFF= V_n - Vref + Vos;
